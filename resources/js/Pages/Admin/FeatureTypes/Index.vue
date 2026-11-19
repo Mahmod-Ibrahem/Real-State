@@ -8,6 +8,7 @@
             <tr>
                 <TableHeadingCell>ID</TableHeadingCell>
                 <TableHeadingCell>Name</TableHeadingCell>
+                <TableHeadingCell>Features</TableHeadingCell>
                 <TableHeadingCell align="right"><span class="sr-only">Actions</span></TableHeadingCell>
             </tr>
             </thead>
@@ -15,6 +16,7 @@
             <tr v-for="featureType in filtered" :key="featureType.id" class="transition-colors hover:bg-slate-50">
                 <TableCell variant="muted">#{{ featureType.id }}</TableCell>
                 <TableCell variant="primary">{{ featureType.name }}</TableCell>
+                <TableCell>{{ featureType.featuresCount }}</TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(featureType)"
                                 @delete="confirmDelete('feature-types.destroy', featureType.id, 'feature type')"/>
@@ -39,7 +41,7 @@ import {useResourceModal} from '@/Composables/useResourceModal.js';
 import FeatureTypeForm from './FeatureTypeForm.vue';
 
 const props = defineProps({
-    // Plain array of {id, name}
+    // Plain array of {id, name, featuresCount}
     featureTypes: {type: Array, required: true},
 });
 

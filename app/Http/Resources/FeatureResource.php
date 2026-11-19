@@ -21,7 +21,7 @@ class FeatureResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'featureTypeId' => $this->feature_type_id,
-            'featureTypeName' => $this->featureType->name ?? 'Not Exist Yet'
+            'featureTypeName' => $this->featureType?->name,
         ];
     }
 }

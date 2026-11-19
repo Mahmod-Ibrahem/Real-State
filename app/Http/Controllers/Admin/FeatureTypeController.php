@@ -15,9 +15,10 @@ class FeatureTypeController extends Controller
     public function index()
     {
         return Inertia::render('Admin/FeatureTypes/Index', [
-            'featureTypes' => FeatureType::all()->map(fn (FeatureType $featureType) => [
+            'featureTypes' => FeatureType::withCount('features')->get()->map(fn (FeatureType $featureType) => [
                 'id' => $featureType->id,
                 'name' => $featureType->name,
+                'featuresCount' => $featureType->features_count,
             ]),
         ]);
     }
@@ -38,6 +39,10 @@ class FeatureTypeController extends Controller
 
     public function destroy(FeatureType $featureType)
     {
+        if ($featureType->features()->exists()) {
+            return back()->withErrors(['database' => 'This feature type still has features. Move or delete them first.']);
+        }
+
         $featureType->delete();
 
         return back();

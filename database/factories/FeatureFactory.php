@@ -17,6 +17,7 @@ class FeatureFactory extends Factory
     public function definition(): array
     {
         return [
+            'feature_type_id' => \App\Models\FeatureType::factory(),
             'name' => $this->faker->unique()->word(),
         ];
     }

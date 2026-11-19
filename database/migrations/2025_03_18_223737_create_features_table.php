@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('features', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('feature_type_id')->constrained('feature_types')->restrictOnDelete();
             $table->string('name')->unique();
             $table->timestamps();
         });

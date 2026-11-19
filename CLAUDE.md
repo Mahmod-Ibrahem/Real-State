@@ -38,6 +38,8 @@ Demo images come from Pexels (`PEXELS_API_KEY` in `.env`) and are downloaded onc
 
 Domain rules:
 - Location is a hierarchy: **Country → City → Area** (`cities.country_id`, `areas.city_id`). Properties store all three ids and `PropertyRequest` keeps them consistent. Dropdowns must cascade (parent filters children).
+- Features are grouped: **Feature type → Feature** (`features.feature_type_id`). The property page lists a property's features under their type, so every feature must have one.
+- Parent/child links are **required** foreign keys with `restrictOnDelete()`: never nullable, never `cascade` (a cascade silently deletes children). Deleting a parent that still has children is refused with `back()->withErrors(['database' => 'This … still has …'])`, which the admin shows as an error toast.
 - `purpose` (sale/rent) and `status` (available/sold/rented) are separate enums; Sold only with Sale, Rented only with Rent.
 - Public listing = `ListingController@index` with query filters (`/listing?purpose=sale&city=3`). There are no separate Buy/Rent pages.
 
