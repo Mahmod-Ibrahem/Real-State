@@ -57,6 +57,9 @@
         <div class="container  mt-16">
             <broker :brokers="props.brokers"/>
         </div>
+        <div v-if="faqs.data.length" class="container mt-16">
+            <FaqSection :faqs="faqs.data"/>
+        </div>
         <getintouch/>
     </section>
     <footers :footerimg="true"/>
@@ -80,6 +83,7 @@ import footers from '@/Components/Users/footer/footer.vue';
 import getintouch from '@/Components/Users/get-in-touch.vue';
 import backtotop from '@/Components/Users/back-to-top.vue'
 import listingCategory from '@/Components/Users/listing-categories.vue';
+import FaqSection from '@/Components/Users/FaqSection.vue';
 
 const props = defineProps({
     homeVideo: Object,
@@ -90,6 +94,8 @@ const props = defineProps({
     brokers: Object,
     cities: Object,
     areas: Object,
+    // Users/FaqResource collection
+    faqs: Object,
 })
 const randomImage = ref('')
 

@@ -97,6 +97,7 @@ Domain rules:
 - Features are grouped: **Feature type → Feature** (`features.feature_type_id`). The property page lists a property's features under their type, so every feature must have one.
 - Parent/child links are **required** foreign keys with `restrictOnDelete()`: never nullable, never `cascade` (a cascade silently deletes children). Deleting a parent that still has children is refused with `back()->withErrors(['database' => 'This … still has …'])`, which the admin shows as an error toast.
 - `purpose` (sale/rent) and `status` (available/sold/rented) are separate enums; Sold only with Sale, Rented only with Rent.
+- FAQs (question + answer, no categories) are shown **on the home page** (`Components/Users/FaqSection.vue`, anchor `/#faqs`), fed by `FaqService` through `HomePageService`. There is no separate public FAQ page or route; only the admin manages them at `/admin/faqs`.
 - Public listing = `ListingController@index` with query filters (`/listing?purpose=sale&city=3`). There are no separate Buy/Rent pages.
 
 ## Clean code & SRP
