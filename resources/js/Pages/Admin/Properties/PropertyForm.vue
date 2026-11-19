@@ -1,5 +1,5 @@
 <template>
-    <FormCard wide :submit-label="property ? 'Save changes' : 'Add property'" :cancel-href="route('properties.index')"
+    <FormCard :submit-label="property ? 'Save changes' : 'Add property'" :cancel-href="route('properties.index')"
               :processing="form.processing" @submit="save">
         <FormSection title="Basics" description="What visitors see first.">
             <TextField v-model="form.name" label="Title" placeholder="e.g. Modern 3-Bedroom Villa" required

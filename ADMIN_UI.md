@@ -93,7 +93,7 @@ component (and this table), don't fork the styles.
   `h-10 w-14 rounded-md object-cover`; last column `RowActions`. Empty state text says what to do
   (“No cities yet. Add your first city.” / “No cities match ‘x’.”).
 - **Form page** (create & edit share one `XForm.vue`) = layout with `title="New city"` / `"Edit city"` →
-  `FormCard` (max width `max-w-3xl`) → fields. Related fields sit in a `grid gap-5 sm:grid-cols-2`.
+  `FormCard` (fills the content width, no `max-w-*` cap on forms or their wrappers) → fields. Related fields sit in a `grid gap-5 sm:grid-cols-2`.
   Cancel returns to the list. Validation errors render under each field from `form.errors`.
 - **Dashboard** = `grid gap-4` of `Panel`s; numbers use the metric style; each metric links to its list.
 - **Auth pages** (`GuestLayout`) = centered `max-w-sm` white card, logo above, same fields and buttons.

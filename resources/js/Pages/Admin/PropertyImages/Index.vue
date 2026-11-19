@@ -4,7 +4,7 @@
             <Button variant="secondary" :href="route('properties.edit', id)">Edit property</Button>
         </template>
 
-        <div class="grid max-w-5xl gap-4">
+        <div class="grid gap-4">
             <Panel :title="`Current photos (${propertyImages.length})`">
                 <ul v-if="propertyImages.length" class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
                     <li v-for="image in propertyImages" :key="image.id" class="group relative">
@@ -18,7 +18,7 @@
                 <p v-else class="py-6 text-center text-sm text-slate-500">No photos yet. Add some below.</p>
             </Panel>
 
-            <FormCard wide submit-label="Upload photos" :processing="form.processing" :disabled="!form.images.length"
+            <FormCard submit-label="Upload photos" :processing="form.processing" :disabled="!form.images.length"
                       @submit="upload">
                 <ImagesField v-model="form.images" label="Add photos" :error="form.errors.images || form.errors['images.0']"/>
             </FormCard>

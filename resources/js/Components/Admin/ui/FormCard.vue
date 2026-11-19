@@ -1,6 +1,5 @@
 <template>
-    <form class="rounded-xl border border-slate-200 bg-white" :class="wide ? 'max-w-5xl' : 'max-w-3xl'"
-          @submit.prevent="emit('submit')">
+    <form class="w-full rounded-xl border border-slate-200 bg-white" @submit.prevent="emit('submit')">
         <div class="space-y-5 p-6">
             <slot/>
         </div>
@@ -22,8 +21,6 @@ defineProps({
     cancelHref: {type: String, default: null},
     processing: {type: Boolean, default: false},
     disabled: {type: Boolean, default: false},
-    // Wider card for long forms (property)
-    wide: {type: Boolean, default: false},
 });
 const emit = defineEmits(['submit']);
 </script>

@@ -1,6 +1,6 @@
 <template>
     <AuthenticatedLayout title="Profile" description="Your name, email and password.">
-        <div class="grid max-w-3xl gap-4">
+        <div class="grid gap-4">
             <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status"/>
             <UpdatePasswordForm/>
             <DeleteUserForm/>
