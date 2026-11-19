@@ -67,6 +67,15 @@ weight, spacing and a single accent colour, not decoration.
 Use these instead of hand-writing the markup. If a screen needs something they can't do, extend the
 component (and this table), don't fork the styles.
 
+**Custom inputs only.** The admin never renders a browser-native `<select>`, checkbox, radio or date picker,
+and there is **no PrimeVue** (removed from both bundles). Choice controls are our own components, ported from
+the Mr Egypt Tours admin's Chatwoot-style inputs (`admin/src/components/core/CustomSelect.vue`,
+`CustomToggle.vue`, `shared/checkbox/Checkbox.vue`) and built on Headless UI for keyboard and screen-reader
+support. Text, number, email and password fields stay real `<input>`/`<textarea>` elements, always through
+`TextField`. Floating panels (dropdown lists) render through Headless UI's `Portal`, never Vue's `Teleport`:
+`Modal` is a Headless `Dialog`, which makes everything outside it inert, and only a Headless `Portal` counts as
+inside the dialog.
+
 | Component | Purpose |
 |---|---|
 | `ui/Button.vue` | `variant`: `primary` (indigo, shadow-sm) · `secondary` (white, slate-300 border) · `ghost` (no border) · `danger`. `size`: `sm` (h-8) · `md` (h-9). `href` renders an Inertia `Link`. `icon` prop for a leading heroicon. `loading` disables and shows a spinner. |
@@ -79,21 +88,22 @@ component (and this table), don't fork the styles.
 | `ui/StatusBadge.vue` | `tone`: `success`·`warning`·`danger`·`info`·`neutral`. `rounded-full px-2 py-0.5 text-xs font-medium`. |
 | `ui/RowTitle.vue` | The name in a table's first column: `font-medium text-slate-900`, `hover:text-indigo-600`. `href` → Inertia `Link` to the edit page; otherwise a `<button>` emitting `click` (opens the edit modal). |
 | `ui/ToggleButton.vue` | Inline two-value field in a table: looks like a `StatusBadge` of the current value plus a swap icon; clicking emits `toggle`. `loading` shows a spinner; `aria-pressed` and a `title` say what a click changes it to. Never a switch. |
-| `ui/InlineSelect.vue` | Inline 3+-value field in a table: native `<select>` `h-7 rounded-full text-xs font-medium` tinted by `tone`; emits the new value; `loading` disables it. |
+| `ui/InlineSelect.vue` | Inline 3+-value field in a table: a Headless UI `Listbox` whose button is a `StatusBadge`-style pill (`h-7 rounded-full text-xs font-medium`, tinted by `tone`, chevron) and whose list is the same floating panel as `SelectField`; emits the new value; `loading` disables it and shows a spinner. |
 | `ui/FormCard.vue` | Form screens: `Panel` with the fields in a `space-y-5` body and a footer bar (`border-t bg-slate-50/80`): Cancel (ghost, left) · submit (primary, right, “Saving…” while processing). |
 | `ui/Modal.vue` | The only dialog shell (Headless UI `Dialog`: focus trap, Esc/backdrop close, nested dialogs). Backdrop `bg-slate-900/50`, panel `bg-white rounded-xl shadow-lg`, header title `text-base font-semibold` + optional description + close (×). `size`: `sm` (max-w-md) · `md` (max-w-lg) · `lg` (max-w-2xl) · `xl` (max-w-3xl). Fade + slight scale, 150–200ms. |
 | `ui/FormModal.vue` | `Modal` + `<form>`: fields in a `space-y-5` body, footer bar identical to `FormCard` (Cancel · submit). Used by every modal-edited resource. Closing is blocked while saving. |
 | `ui/FormSection.vue` | Groups fields in long forms (property): title `text-sm font-semibold text-slate-900` + optional description, fields in `grid gap-5 sm:grid-cols-2`; sections after the first are separated by `border-t border-slate-200 pt-6`. Use when a form has more than ~6 fields. |
 | `ui/TextField.vue` | Label above (`text-sm font-medium text-slate-700`), input `h-10 rounded-lg border-slate-300 px-3 text-sm`, hint `text-xs text-slate-500`, error `text-xs text-red-600` + red border. `type="textarea"` for multi-line. |
-| `ui/SelectField.vue` | Same frame as `TextField` for a native `<select>`; `options` are `{id, name}`; `placeholder` is the disabled first option. Use for every single-choice field (cascading location selects included). |
-| `ui/ToggleField.vue` | Switch for booleans (`is_published`), label to the right. |
+| `ui/SelectField.vue` | Every choice field (single or multiple), same frame as `TextField`. A Headless UI `Listbox` (port of Mr Egypt Tours' `CustomSelect`): button `min-h-10 rounded-lg border-slate-300` showing the chosen label or a slate-400 `placeholder`, chevron-up-down at the right; the list is a floating `rounded-lg border shadow-lg` panel (`Portal`, `position: fixed`, opens upwards near the bottom of the screen, max-h-64 scroll), active row `bg-slate-100`, chosen row indigo check. `options` are `{id, name}` (`option-value` / `option-label` to change). `multiple`: `v-model` is an array, rows get indigo checkbox squares, the button shows chips (first `max-chips`, then “+N more”), and the list starts with “Clear selection”. `searchable` adds a filter box at the top of the list (use it for long lists such as features). Ids keep their type (numbers stay numbers). |
+| `ui/ToggleField.vue` | Switch for booleans (`is_published`): Headless UI `Switch`, `h-5 w-9`, indigo when on; label and description to the right. |
+| `ui/Checkbox.vue` | Chatwoot checkbox: `h-4 w-4 rounded` with an indigo fill and white tick drawn in SVG (`appearance-none`, so it looks the same in every browser); `v-model` boolean, the label in the default slot. For a single yes/no next to text (Login's “Remember me”); in forms prefer `ToggleField`. |
+| `ui/RichTextField.vue` | Rich-text field (property description): Quill 2 used directly, same frame as `TextField`. The toolbar (bold, italic, underline, headings, bullet/numbered lists, link, clear formatting) sits in a `bg-slate-50` bar inside one `rounded-lg border-slate-300` box with the indigo focus ring; `v-model` is HTML (`''` when empty). Restyled in `admin.css`; no Quill theme colours leak in. |
 | `ui/ImageField.vue` | Single image, Mr Egypt Tours style: a dashed `rounded-xl` box at the image's real `aspect-ratio` (“Click to upload · you can crop it next”); picking a file opens `ImageCropDialog`; the cropped result fills the box with a “Change image” hover overlay and an “Adjust crop” link. Emits the cropped `File` (JPEG). `aspect-ratio`: 4/3 for property and type covers, 1 for broker photos. |
 | `ui/ImagesField.vue` | Gallery grid: `aspect-[4/3] rounded-lg` tiles + a dashed “Add photos” tile. Picked photos go through a crop queue (“Crop & next”, “Skip”, “Cancel all”, “2 of 5”); cropped ones show as dashed-indigo “New” tiles, removable before upload. `v-model` is the cropped `File[]`; `saved` (`[{id, url}]`) renders already-saved tiles first with a remove button (`@remove`). Thumbnails open `ImageLightbox`. |
 | `ui/ImageCropDialog.vue` | `Modal` around `vue-advanced-cropper`: fixed aspect frame, rotate left/right, output capped at 1600px, JPEG 0.9. Only used through `ImageField`/`ImagesField`. |
 | `ui/ImageLightbox.vue` | Full-screen preview (`bg-slate-900/85`, `object-contain`), closes on click or Esc. |
 | Gallery | The property gallery lives **inside the property form** (`Properties/PropertyGallery.vue`, Media section), mirroring Mr Egypt Tours' `TourGalleryManager`. It has **no controller or routes of its own**: everything is saved by `PropertyController` with the property. New cropped photos go as `propertyImages[]`; removing a saved photo hides its tile and adds its id to `removed_image_ids[]` (“N to remove on save”, with Undo), and the server deletes those files on update. While saving, an indigo progress bar shows the upload (`form.progress`). |
 | `ui/Toast.vue` + `Composables/useToast.js` | Top-right, white, `rounded-xl border shadow-lg`, green/red left icon. Every create/update/delete shows one. |
-| PrimeVue `MultiSelect`, `Editor` | Only where a native control can't do the job (multi-choice features, rich-text description). Themed in `admin.js` with `primary` = Tailwind indigo so they match; wrap them in the same label/error frame as `TextField`. No other PrimeVue widgets. |
 | `Composables/useResourceForm.js` | `saveResource(form, 'admin.cities', 'city', {id, multipart, onSuccess})`: `post` to `.store` or `put` to `.update` (multipart updates are sent as POST + `_method=put` so files upload), then toasts “City created/updated”; server `errors.database` → error toast. Forms send `locale: page.props.locale` (the content language chosen in the top bar), never a hard-coded `'en'`. `resetFormOnOpen(form, () => props.open, () => fields)` refills a modal form with the record being edited (or blanks) and clears errors each time it opens. |
 | `Composables/useResourceModal.js` | List-page modal state: `{isOpen, record, openCreate(), openEdit(row), close()}`. `record` is `null` when creating. |
 | `Composables/useConfirmDelete.js` | `confirmDelete(routeName, id, noun)`: confirm dialog → `router.delete` → success or error toast (server errors come back as `errors.database`). Tables never re-implement this. |
@@ -111,8 +121,8 @@ component (and this table), don't fork the styles.
     line (type, job title, email) sits under it in `text-xs text-slate-500`.
   - **Quick edits in the table**: a field with **two** values (visibility Published/Draft, purpose Sale/Rent)
     is a `ui/ToggleButton.vue` (a badge-styled button that flips to the other value on click, never a
-    switch); a field with **three or more** values (property status) is a `ui/InlineSelect.vue` (compact
-    native select). Both save immediately through a small `PATCH` endpoint, show a spinner while saving and
+    switch); a field with **three or more** values (property status) is a `ui/InlineSelect.vue` (a pill-shaped
+    dropdown). Both save immediately through a small `PATCH` endpoint, show a spinner while saving and
     toast the result.
 - **Modal create/edit** for small resources: property types, classifications, features, feature types,
   countries, cities, areas, FAQs, brokers. The list page owns a `useResourceModal()`; the toolbar's “Add …” button

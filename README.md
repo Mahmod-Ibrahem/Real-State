@@ -78,7 +78,7 @@ Complete administrative control panel for managing the entire platform:
 ### 🎨 **Modern User Interface**
 - **Vue 3 + Inertia.js** - Seamless SPA experience without API overhead
 - **TailwindCSS** - Modern, responsive design
-- **PrimeVue Components** - Rich UI component library
+- **Headless UI custom inputs** - Accessible, Chatwoot-style admin controls (no PrimeVue)
 - **Reka UI & Shadcn-style Components** - Beautiful, accessible components
 - **Lucide Icons** - Modern icon set
 - **Responsive Design** - Mobile-first approach
@@ -125,7 +125,7 @@ Complete administrative control panel for managing the entire platform:
 | **PHP Version** | PHP 8.2+ |
 | **Frontend Framework** | Vue 3 |
 | **UI Framework** | TailwindCSS |
-| **UI Components** | PrimeVue, Reka UI, Shadcn-style |
+| **UI Components** | Headless UI, Reka UI, Shadcn-style |
 | **Icons** | Lucide, Heroicons, Feather Icons |
 | **SPA Integration** | Inertia.js |
 | **Database** | MySQL |

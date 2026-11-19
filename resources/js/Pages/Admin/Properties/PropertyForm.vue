@@ -4,10 +4,9 @@
         <FormSection title="Basics" description="What visitors see first.">
             <TextField v-model="form.name" label="Title" placeholder="e.g. Modern 3-Bedroom Villa" required
                        class="sm:col-span-2" :error="form.errors.name"/>
-            <FieldFrame input-id="property-description" label="Description" required :error="form.errors.description"
-                        class="sm:col-span-2">
-                <Editor v-model="form.description" editor-style="height: 160px" :pt="{root: {id: 'property-description'}}"/>
-            </FieldFrame>
+            <RichTextField v-model="form.description" label="Description" required class="sm:col-span-2"
+                           placeholder="Describe the property, its surroundings and what makes it stand out"
+                           :error="form.errors.description"/>
             <SelectField v-model="form.property_type_id" label="Property type" :options="propertyTypes.data"
                          placeholder="Select a type" required :error="form.errors.property_type_id"/>
             <SelectField v-model="form.property_classification_id" label="Classification"
@@ -52,12 +51,9 @@
             <TextField v-model="form.sqft" label="Area (sq ft)" type="number" min="0" required :error="form.errors.sqft"/>
             <TextField v-model="form.year_built" label="Year built" type="number" min="1900" :max="CURRENT_YEAR" required
                        :error="form.errors.year_built"/>
-            <FieldFrame input-id="property-features" label="Features" required :error="form.errors.feature_ids"
-                        class="sm:col-span-2">
-                <MultiSelect v-model="form.feature_ids" input-id="property-features" :options="features.data"
-                             option-label="name" option-value="id" filter display="chip"
-                             placeholder="Select features" :max-selected-labels="6" class="w-full"/>
-            </FieldFrame>
+            <SelectField v-model="form.feature_ids" label="Features" :options="features.data" multiple searchable
+                         :max-chips="6" placeholder="Select features" search-placeholder="Search features…" required
+                         class="sm:col-span-2" :error="form.errors.feature_ids"/>
         </FormSection>
 
         <FormSection title="Media">
@@ -74,13 +70,11 @@
 <script setup>
 import {computed, watch} from 'vue';
 import {useForm} from '@inertiajs/vue3';
-import MultiSelect from 'primevue/multiselect';
-import Editor from 'primevue/editor';
-import FieldFrame from '@/Components/Admin/ui/FieldFrame.vue';
 import FormCard from '@/Components/Admin/ui/FormCard.vue';
 import FormSection from '@/Components/Admin/ui/FormSection.vue';
 import ImageField from '@/Components/Admin/ui/ImageField.vue';
 import PropertyGallery from './PropertyGallery.vue';
+import RichTextField from '@/Components/Admin/ui/RichTextField.vue';
 import SelectField from '@/Components/Admin/ui/SelectField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import ToggleField from '@/Components/Admin/ui/ToggleField.vue';

@@ -22,11 +22,9 @@
                            autocomplete="current-password" required :error="form.errors.password"/>
 
                 <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 text-sm text-slate-400">
-                        <input v-model="form.remember" type="checkbox"
-                               class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30"/>
-                        Remember me
-                    </label>
+                    <Checkbox v-model="form.remember" name="remember">
+                        <span class="text-sm text-slate-400">Remember me</span>
+                    </Checkbox>
                     <Link v-if="canResetPassword" :href="route('password.request')"
                           class="text-sm text-slate-400 hover:text-slate-600">
                         Forgot password ?
@@ -47,6 +45,7 @@
 <script setup>
 import {Head, Link, useForm} from '@inertiajs/vue3';
 import Button from '@/Components/Admin/ui/Button.vue';
+import Checkbox from '@/Components/Admin/ui/Checkbox.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import background from '@/assets/images/bg/01.jpg';
 import logo from '@/assets/images/logo.jpg';

@@ -5,8 +5,6 @@ import "vue-toastification/dist/index.css";
 import {createInertiaApp} from '@inertiajs/vue3';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 import {createApp, h} from 'vue';
-import PrimeVue from 'primevue/config';
-import Aura from '@primevue/themes/aura';
 import 'bootstrap/dist/css/bootstrap.css';
 import '@/assets/scss/style.scss'
 import bootsratp from 'bootstrap/dist/js/bootstrap.bundle.js';
@@ -30,14 +28,6 @@ createInertiaApp({
             .use(Toast)
             .use(tawk)
             .use(ZiggyVue)
-            .use(PrimeVue, {
-                theme: {
-                    preset: Aura, // Apply the Aura theme
-                    options: {
-                        darkModeSelector: false,
-                    }
-                }
-            })
             .mount(el)
 
     },

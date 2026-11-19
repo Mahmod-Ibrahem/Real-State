@@ -7,7 +7,7 @@ Rules for working in this repo. Follow them for every change; when a rule confli
 Qeima — real-estate site (Egypt-focused) with a public site and an admin panel.
 
 - **Backend:** Laravel 11, PHP 8.3. Spatie Translatable (`en`, `ar`), Cviebrock Sluggable, Spatie Permission.
-- **Frontend:** Inertia + Vue 3 (`<script setup>`), Ziggy `route()`, PrimeVue in admin.
+- **Frontend:** Inertia + Vue 3 (`<script setup>`), Ziggy `route()`, Headless UI for admin controls. No PrimeVue: every admin control is one of our own custom inputs in `Components/Admin/ui/`, never a native `<select>`/checkbox (ADMIN_UI.md §4, "Custom inputs only").
 - **Styling:** Tailwind 3. Two Vite bundles: the **public site** (`resources/js/app.js`) still loads Bootstrap 5 CSS + the template's SCSS for old pages — see Tailwind rules; the **admin** (`resources/js/admin.js`, all routes under `/admin`) is pure Tailwind — see `ADMIN_UI.md`.
 - **Status: not launched.** Edit existing migrations in place, delete unused code/routes/pages outright. No redirects, compat shims, or data migrations.
 
