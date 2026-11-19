@@ -1,0 +1,381 @@
+//
+// helper.scss
+//
+
+/*********************************/
+/*         Helper                */
+/*===============================*/
+.section {
+    padding: 100px 0;
+    position: relative;
+
+    @media (max-width: 768px) {
+        padding: 60px 0;
+    }
+}
+
+.section-two {
+    padding: 48px 0;
+    position: relative;
+}
+
+.bg-overlay {
+    background-color: $overlay;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%
+}
+
+.bg-linear-gradient {
+    background: $linear-gradient;
+}
+
+.bg-linear-gradient-2 {
+    background: $linear-gradient-2;
+}
+
+.bg-gradient-overlay {
+    background: $gradient-overlay;
+}
+
+.bg-gradient-overlay-2 {
+    background: $gradient-overlay-2;
+}
+
+.bg-primary-gradient-overlay {
+    background: $primary-gradient-overlay;
+}
+
+/*********************************/
+/*         Title CSS             */
+/*===============================*/
+.title-heading {
+    line-height: 26px;
+
+    .heading {
+        font-size: 48px !important;
+        letter-spacing: 1px;
+
+        @media (max-width: 768px) {
+            font-size: 40px !important;
+        }
+
+        &.sub-heading {
+            font-size: 32px !important;
+
+            @media (max-width: 768px) {
+                font-size: 28px !important;
+            }
+        }
+    }
+
+    .letter-spacing {
+        letter-spacing: 1px;
+    }
+
+    .para-desc {
+        font-size: 20px;
+        letter-spacing: 0.5px;
+
+        @media (max-width: 768px) {
+            font-size: 16px !important;
+        }
+    }
+}
+
+.section-title {
+    position: relative;
+
+    .title {
+        letter-spacing: 0.5px;
+        font-size: 30px !important;
+
+        @media (max-width: 768px) {
+            font-size: 26px !important;
+        }
+    }
+}
+
+.para-desc {
+    max-width: 600px;
+}
+
+.mt-100 {
+    margin-top: 100px;
+}
+
+.mb-60 {
+    margin-bottom: 60px;
+}
+
+.pt-150 {
+    padding-top: 150px !important;
+}
+
+/*********************************/
+/*         Shapes                */
+/*===============================*/
+.shape {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+
+    @media (max-width: 425px) {
+        bottom: -4px;
+    }
+
+    &>svg {
+        transform: scale(2);
+        width: 100%;
+        height: auto;
+        transform-origin: top center;
+    }
+}
+
+@media (min-width: 768px) {
+    .margin-top-100 {
+        margin-top: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mt-60 {
+        margin-top: 60px;
+    }
+}
+
+.features-absolute {
+    position: relative;
+    z-index: 2;
+    transition: all 0.5s ease;
+}
+
+.features-absolute {
+    margin: -200px 0 0px;
+
+    @media (max-width: 768px) {
+        margin: -140px 0 0;
+    }
+
+    &.subscribe-search {
+        margin: -120px 0 0px;
+
+        @media (max-width: 768px) {
+            margin: -90px 0 0px;
+        }
+    }
+}
+
+/*********************************/
+/*         Video iframe          */
+/*===============================*/
+@media (max-width: 640px) {
+
+    [data-type] iframe,
+    [data-type] video {
+        width: 500px;
+        height: 300px;
+    }
+}
+
+@media (max-width: 425px) {
+
+    [data-type] iframe,
+    [data-type] video {
+        width: 360px;
+        height: 260px;
+    }
+}
+
+@media (max-width: 375px) {
+
+    [data-type] iframe,
+    [data-type] video {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/*********************************/
+/*         Tobii Lightbox          */
+/*===============================*/
+.tobii__btn svg {
+    height: 30px;
+    width: auto;
+}
+
+.tobii__counter {
+    font-size: 16px;
+}
+
+.tobii-zoom {
+    display: block !important;
+}
+
+.tobii-zoom__icon {
+    display: none;
+}
+
+#grid {
+    padding: 0 !important;
+}
+
+.Typewriter__cursor {
+    display: none !important;
+}
+
+.modal-video {
+    animation-duration: .3s;
+    animation-name: modal-video;
+    animation-timing-function: ease-out;
+    background-color: #000000c0;
+    cursor: pointer;
+    height: 100%;
+    left: 0;
+    opacity: 1;
+    position: fixed;
+    top: 0;
+    transition: opacity .3s ease-out;
+    width: 100%;
+    z-index: 1000000;
+}
+
+.modal-video-body,
+.modal-video-inner {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+@media (orientation: landscape) {
+    .modal-video-inner {
+        box-sizing: border-box;
+        padding: 10px 60px;
+    }
+}
+
+.modal-video-inner {
+    align-items: center;
+    width: 1000px;
+}
+
+.modal-video-movie-wrap {
+    animation-duration: .3s;
+    animation-name: modal-video-inner;
+    animation-timing-function: ease-out;
+    height: 0;
+    padding-bottom: 56.25%;
+    position: relative;
+    transform: translate(0);
+    transition: transform .3s ease-out;
+    width: 100%;
+}
+
+.modal-video-movie-wrap iframe {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.modal-video-close-btn {
+    background: #0000;
+    border: none;
+    display: inline-block;
+    height: 35px;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: -45px;
+    width: 35px;
+    z-index: 2;
+}
+
+.position-class {
+    position: absolute;
+    top: -4%;
+    right: -7%;
+}
+
+/*****************/
+/*  video iframe */
+/*****************/
+@media (max-width: 640px) {
+    .modal-video-movie-wrap iframe {
+        width: 500px;
+        height: 300px;
+        padding: 15px 15px;
+    }
+
+    .position-class {
+        position: absolute;
+        top: -17%;
+        right: -3%;
+    }
+}
+
+@media (max-width: 425px) {
+    .modal-video-movie-wrap iframe {
+        width: 100% !important;
+        height: 260px;
+        padding: 15px 15px;
+    }
+}
+
+@media (max-width: 375px) {
+    .modal-video-movie-wrap iframe {
+        width: 100% !important;
+        height: auto;
+        padding: 15px 15px;
+    }
+}
+
+.lightbox {
+    cursor: pointer;
+}
+
+.vs__selected-options {
+    .vs__selected {
+        margin: 19px 0;
+        font-size: 15px;
+
+    }
+}
+
+.vs--searchable {
+    margin-left: 40px;
+}
+
+.v-select {
+    .vs__dropdown-toggle {
+        display: flex;
+        position: relative;
+        height: 60px;
+        width: 100%;
+        border: none;
+
+    }
+}
+
+
+.vs__clear {
+    display: none;
+}
+
+.vs_select-arrow {
+    position: absolute;
+    top: 18px;
+    right: 10px;
+    font-size: 20px;
+}
+
+.vs__open-indicator {
+    display: none;
+}

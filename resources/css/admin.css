@@ -1,0 +1,28 @@
+/* Admin bundle stylesheet: pure Tailwind, no Bootstrap. See ADMIN_UI.md. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tailwind.config.js maps rounded-lg/md/sm to var(--radius) (shadcn setup); without it they'd be square */
+:root {
+    --radius: 0.5rem;
+}
+
+/* Thin, quiet scrollbars for the sidebar and scrolling tables */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d4d4d8;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1aa;
+}
