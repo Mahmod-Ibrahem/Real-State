@@ -7,7 +7,6 @@
             <tr>
                 <TableHeadingCell>Question</TableHeadingCell>
                 <TableHeadingCell>Answer</TableHeadingCell>
-                <TableHeadingCell>Category</TableHeadingCell>
                 <TableHeadingCell align="right"><span class="sr-only">Actions</span></TableHeadingCell>
             </tr>
             </thead>
@@ -20,9 +19,6 @@
                 </TableCell>
                 <TableCell>
                     <p class="max-w-md truncate" :title="faq.answer">{{ faq.answer }}</p>
-                </TableCell>
-                <TableCell>
-                    <StatusBadge>{{ categoryLabel(faq.type) }}</StatusBadge>
                 </TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(faq)" @delete="confirmDelete('admin.faqs.destroy', faq.id, 'FAQ')"/>
@@ -42,10 +38,8 @@ import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
 import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
-import StatusBadge from '@/Components/Admin/ui/StatusBadge.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useResourceModal} from '@/Composables/useResourceModal.js';
-import {FAQ_CATEGORIES} from './categories.js';
 import FaqForm from './FaqForm.vue';
 
 defineProps({
@@ -53,6 +47,4 @@ defineProps({
 });
 
 const modal = useResourceModal();
-
-const categoryLabel = (value) => FAQ_CATEGORIES.find((category) => category.value === value)?.name ?? value ?? '—';
 </script>

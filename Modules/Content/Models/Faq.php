@@ -13,9 +13,8 @@ class Faq extends Model
     protected $fillable = [
         'question',
         'answer',
-        'type'
     ];
 
-    public $translatable = ['question', 'answer','type'];
+    public $translatable = ['question', 'answer'];
 
 }

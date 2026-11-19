@@ -32,298 +32,54 @@
     </div>
     <!-- Hero End -->
 
-    <!-- Start Section -->
-    <section class="section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-4 col-md-5 col-12 d-none d-md-block">
-                    <div class="rounded-3 shadow p-4 sticky-bar">
-                        <ul class="list-unstyled sidebar-nav mb-0 py-0" id="navmenu-nav">
-                            <li class="navbar-item p-0" :class="activeId === 'tech' ? 'active' : ''"><a href="#tech"
-                                                                                                        class="h6 text-dark navbar-link">Buying
-                                Questions</a></li>
-                            <li class="navbar-item mt-3 p-0" :class="activeId === 'general' ? 'active' : ''"><a
-                                href="#general" class="h6 text-dark navbar-link">General
-                                Questions</a></li>
-                            <li class="navbar-item mt-3 p-0" :class="activeId === 'payment' ? 'active' : ''"><a
-                                href="#payment" class="h6 text-dark navbar-link">Payments Questions</a></li>
-                            <li class="navbar-item mt-3 p-0" :class="activeId === 'support' ? 'active' : ''"><a
-                                href="#support" class="h6 text-dark navbar-link">Support
-                                Questions</a></li>
-                        </ul>
+    <section class="py-[72px]">
+        <div class="mx-auto max-w-3xl px-[16px]">
+            <ul v-if="faqs.data.length" class="m-0 list-none space-y-[12px] p-0">
+                <li v-for="faq in faqs.data" :key="faq.id"
+                    class="overflow-hidden rounded-xl border-[1px] border-slate-200 bg-white">
+                    <h2 class="m-0">
+                        <button type="button" :id="`faq-${faq.id}-question`" :aria-expanded="isOpen(faq.id)"
+                                :aria-controls="`faq-${faq.id}-answer`"
+                                class="flex w-full items-center justify-between gap-[16px] px-6 py-[18px] text-start text-base font-semibold text-slate-900 transition-colors hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/50"
+                                @click="toggle(faq.id)">
+                            <span>{{ faq.question }}</span>
+                            <ChevronDownIcon class="h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200"
+                                             :class="{'rotate-180 text-sky-400': isOpen(faq.id)}" aria-hidden="true"/>
+                        </button>
+                    </h2>
+                    <div v-show="isOpen(faq.id)" :id="`faq-${faq.id}-answer`" role="region"
+                         :aria-labelledby="`faq-${faq.id}-question`"
+                         class="whitespace-pre-line px-6 pb-[20px] text-[15px] leading-relaxed text-slate-600">
+                        {{ faq.answer }}
                     </div>
-                </div><!--end col-->
+                </li>
+            </ul>
+            <p v-else class="m-0 text-center text-slate-500">No questions have been added yet.</p>
+        </div>
+    </section>
 
-                <div class="col-lg-8 col-md-7 col-12">
-                    <div class="section-title scroll-div" id="tech">
-                        <h4>Buying Product</h4>
-                    </div>
-
-                    <div class="accordion mt-4 pt-2" id="buyingquestion">
-                        <div class="accordion-item border rounded-3" v-for="(item, index) in accordionItem" :key="index"
-                             :class="item.mt">
-                            <h2 class="accordion-header" :id="item.id">
-                                <button class="accordion-button border-0 bg-light" :class="{ 'collapsed': !item.show }"
-                                        type="button" data-bs-toggle="collapse" :data-bs-target="'#' + item.collapseId"
-                                        :aria-expanded="item.show ? 'true' : 'false'" :aria-controls="item.collapseId">
-                                    {{ item.question }}
-                                </button>
-                            </h2>
-                            <div :id="item.collapseId" class="accordion-collapse border-0 collapse"
-                                 aria-labelledby="headingOne" :class="{ 'show': item.show }"
-                                 data-bs-parent="#buyingquestion">
-                                <div class="accordion-body text-muted">
-                                    {{ item.answer }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-5 scroll-div" id="general">
-                        <h4>General Questions</h4>
-                    </div>
-
-                    <div class="accordion mt-4 pt-2" id="generalquestion">
-                        <div class="accordion-item border rounded" v-for="(item, index) in generalquestion" :key="index"
-                             :class="item.mt">
-                            <h2 class="accordion-header" :id="item.id">
-                                <button class="accordion-button border-0 bg-light" :class="{ 'collapsed': !item.show }"
-                                        type="button" data-bs-toggle="collapse" :data-bs-target="'#' + item.collapseId"
-                                        :aria-expanded="item.show ? 'true' : 'false'" :aria-controls="item.collapseId">
-                                    {{ item.question }}
-                                </button>
-                            </h2>
-                            <div :id="item.collapseId" class="accordion-collapse border-0 collapse"
-                                 :class="{ 'show': item.show }" aria-labelledby="headingOne"
-                                 data-bs-parent="#generalquestion">
-                                <div class="accordion-body text-muted">
-                                    {{ item.answer }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-5 scroll-div" id="payment">
-                        <h4>Payments Questions</h4>
-                    </div>
-
-                    <div class="accordion mt-4 pt-2" id="paymentquestion">
-                        <div class="accordion-item border rounded" v-for="(item, index) in paymentquestion" :key="index"
-                             :class="item.mt">
-                            <h2 class="accordion-header" :id="item.id">
-                                <button class="accordion-button border-0 bg-light" :class="{ 'collapsed': !item.show }"
-                                        type="button" data-bs-toggle="collapse" :data-bs-target="'#' + item.collapseId"
-                                        :aria-expanded="item.show ? 'true' : 'false'" :aria-controls="item.collapseId">
-                                    {{ item.question }}
-                                </button>
-                            </h2>
-                            <div :id="item.collapseId" class="accordion-collapse border-0 collapse"
-                                 :class="{ 'show': item.show }" aria-labelledby="headingOne"
-                                 data-bs-parent="#paymentquestion">
-                                <div class="accordion-body text-muted">
-                                    {{ item.answer }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-title mt-5 scroll-div" id="support">
-                        <h4>Support Questions</h4>
-                    </div>
-
-                    <div class="accordion mt-4 pt-2" id="supportquestion">
-                        <div class="accordion-item border rounded" v-for="(item, index) in supportquestion" :key="index"
-                             :class="item.mt">
-                            <h2 class="accordion-header" :id="item.id">
-                                <button class="accordion-button border-0 bg-light" :class="{ 'collapsed': !item.show }"
-                                        type="button" data-bs-toggle="collapse" :data-bs-target="'#' + item.collapseId"
-                                        :aria-expanded="item.show ? 'true' : 'false'" :aria-controls="item.collapseId">
-                                    {{ item.question }}
-                                </button>
-                            </h2>
-                            <div :id="item.collapseId" class="accordion-collapse border-0 collapse"
-                                 :class="{ 'show': item.show }" aria-labelledby="headingOne"
-                                 data-bs-parent="#supportquestion">
-                                <div class="accordion-body text-muted">
-                                    {{ item.answer }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-            </div><!--end row-->
-        </div><!--end container-->
-
-    </section><!--end section-->
-    <!-- End -->
     <footers/>
     <backtotop/>
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue'
+import {ref} from 'vue';
+import {Head} from '@inertiajs/vue3';
+import {ChevronDownIcon} from '@heroicons/vue/24/outline';
 import navbar from '@/Components/Users/navbar/navbar.vue';
-import footers from '@/Components/Users/footer/footer.vue'
-import backtotop from '@/Components/Users/back-to-top.vue'
-import imageBg from '@/assets/images/bg/02.jpg';
-import {Head} from "@inertiajs/vue3";
+import footers from '@/Components/Users/footer/footer.vue';
+import backtotop from '@/Components/Users/back-to-top.vue';
+import faqImage from '@/assets/images/bg/02.jpg';
 
-const faqImage = ref(imageBg);
+const props = defineProps({
+    // FaqResource collection: {data: [{id, question, answer}]}
+    faqs: {type: Object, required: true},
+});
 
-
-const accordionItem = ref([
-    {
-        id: "headingOne",
-        collapseId: "collapseOne",
-        question: "How does it work ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: true
-    },
-    {
-        id: "headingTwo",
-        collapseId: "collapseTwo",
-        question: "Do I need a designer to use Towntor ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingThree",
-        collapseId: "collapseThree",
-        question: "What do I need to do to start selling ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingFour",
-        collapseId: "collapseFour",
-        question: "What happens when I receive an order ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    }
-])
-
-const generalquestion = ref([
-    {
-        id: "headingFive",
-        collapseId: "collapseFive",
-        question: "How does it work ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: true
-    },
-    {
-        id: "headingSix",
-        collapseId: "collapseSix",
-        question: "Do I need a designer to use Towntor ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingSeven",
-        collapseId: "collapseSeven",
-        question: "What do I need to do to start selling ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingEight",
-        collapseId: "collapseEight",
-        question: "What happens when I receive an order ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    }
-])
-
-const paymentquestion = ref([
-    {
-        id: "headingNine",
-        collapseId: "collapseNine",
-        question: "How does it work ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: true
-    },
-    {
-        id: "headingTen",
-        collapseId: "collapseTen",
-        question: "Do I need a designer to use Towntor ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingEleven",
-        collapseId: "collapseEleven",
-        question: "What do I need to do to start selling ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingTwelve",
-        collapseId: "collapseTwelve",
-        question: "What happens when I receive an order ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    }
-])
-
-const supportquestion = ref([
-    {
-        id: "headingThirteen",
-        collapseId: "collapseThirteen",
-        question: "How does it work ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: true
-    },
-    {
-        id: "headingFourteen",
-        collapseId: "collapseFourteen",
-        question: "Do I need a designer to use Towntor ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingFifteen",
-        collapseId: "collapseFifteen",
-        question: "What do I need to do to start selling ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    },
-    {
-        id: "headingSixteen",
-        collapseId: "collapseSixteen",
-        question: "What happens when I receive an order ?",
-        answer: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.",
-        show: false,
-        mt: 'mt-2'
-    }
-])
-
-const activeId = ref('');
-
-onMounted(() => {
-    window.addEventListener('scroll', checkVisibleDiv);
-})
-
-function checkVisibleDiv() {
-    const windowHeight = window.innerHeight;
-    const divElements = document.querySelectorAll('.scroll-div');
-    divElements.forEach(div => {
-        const rect = div.getBoundingClientRect();
-        const isVisible = (rect.top <= 50 && rect.bottom <= windowHeight);
-        if (isVisible) {
-            activeId.value = div.id;
-        }
-    });
-}
+// One answer open at a time, starting with the first
+const openId = ref(props.faqs.data[0]?.id ?? null);
+const isOpen = (id) => openId.value === id;
+const toggle = (id) => {
+    openId.value = isOpen(id) ? null : id;
+};
 </script>
-
-<style lang="scss" scoped></style>

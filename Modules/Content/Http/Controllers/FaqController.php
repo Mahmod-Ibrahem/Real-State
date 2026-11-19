@@ -3,16 +3,21 @@
 namespace Modules\Content\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
+use Modules\Content\Http\Resources\Users\FaqResource;
+use Modules\Content\Services\FaqService;
 
 class FaqController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(Request $request)
+    public function __construct(protected FaqService $faqService)
     {
-        return Inertia::render('Users/Faqs');
+    }
+
+    public function __invoke(): Response
+    {
+        return Inertia::render('Users/Faqs', [
+            'faqs' => FaqResource::collection($this->faqService->all()),
+        ]);
     }
 }
