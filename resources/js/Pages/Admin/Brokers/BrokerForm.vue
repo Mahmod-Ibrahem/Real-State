@@ -49,6 +49,6 @@ const fields = () => ({
 const form = useForm(fields());
 resetFormOnOpen(form, () => props.open, fields);
 
-const save = () => saveResource(form, 'broker', 'broker',
+const save = () => saveResource(form, 'admin.brokers', 'broker',
     {id: props.broker?.id, multipart: true, onSuccess: () => emit('close')});
 </script>

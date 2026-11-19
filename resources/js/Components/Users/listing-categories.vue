@@ -10,12 +10,12 @@
     <div class="row row-cols-lg-5 row-cols-md-3 row-cols-sm-2 row-cols-1 g-4 mt-0">
         <div v-for="category in props.categories.data" :key="category" class="col">
             <div class="categories position-relative overflow-hidden rounded-3 shadow">
-                <Link :href="route('propertyType.show', category.slug)">
+                <Link :href="route('property-types.show', category.slug)">
                     <img :src="category.image" class="img-fluid cursor-pointer" alt="">
                 </Link>
 
                 <div class="p-3">
-                    <Link :href="route('propertyType.show', category.slug)" class="text-lg text-dark fs-5 fw-medium">
+                    <Link :href="route('property-types.show', category.slug)" class="text-lg text-dark fs-5 fw-medium">
                         {{ category.name }}
                     </Link>
                     <p class="text-muted small mb-0">{{ category.properties_count }}</p>

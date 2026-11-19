@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AreaResource;
-use App\Http\Resources\CityResource;
-use App\Http\Resources\CountryResource;
-use App\Http\Resources\Users\propertyResource;
-use App\Http\Resources\Users\propertyTypeResource;
-use App\Models\Area;
-use App\Models\BasicContent;
-use App\Models\Broker;
-use App\Models\City;
-use App\Models\Country;
-use App\Models\Property;
-use App\Models\PropertyClassifications;
-use App\Models\PropertyType;
+use Modules\Location\Http\Resources\AreaResource;
+use Modules\Location\Http\Resources\CityResource;
+use Modules\Location\Http\Resources\CountryResource;
+use Modules\Property\Http\Resources\Users\PropertyResource;
+use Modules\Property\Http\Resources\Users\PropertyTypeResource;
+use Modules\Location\Models\Area;
+use Modules\Content\Models\BasicContent;
+use Modules\Content\Models\Broker;
+use Modules\Location\Models\City;
+use Modules\Location\Models\Country;
+use Modules\Property\Models\Property;
+use Modules\Property\Models\PropertyClassifications;
+use Modules\Property\Models\PropertyType;
 use App\Services\HomePageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

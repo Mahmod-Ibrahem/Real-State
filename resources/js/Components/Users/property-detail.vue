@@ -290,7 +290,7 @@ function copyLink() {
 }
 
 function onSubmit() {
-    form.post(route('ClientInquiry'), {
+    form.post(route('client-inquiries.store'), {
         onSuccess: () => {
             form.reset();
         },

@@ -35,6 +35,6 @@ const fields = () => ({
 const form = useForm(fields());
 resetFormOnOpen(form, () => props.open, fields);
 
-const save = () => saveResource(form, 'propertyTypes', 'property type',
+const save = () => saveResource(form, 'admin.property-types', 'property type',
     {id: props.propertyType?.id, multipart: true, onSuccess: () => emit('close')});
 </script>

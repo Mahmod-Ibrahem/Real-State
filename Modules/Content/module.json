@@ -1,0 +1,11 @@
+{
+    "name": "Content",
+    "alias": "content",
+    "description": "FAQs, brokers and site content (About, Terms, Privacy)",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Content\\Providers\\ContentServiceProvider"
+    ],
+    "files": []
+}

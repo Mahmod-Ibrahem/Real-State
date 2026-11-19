@@ -21,7 +21,7 @@
                 </TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(feature)"
-                                @delete="confirmDelete('propertyFeatures.destroy', feature.id, 'feature')"/>
+                                @delete="confirmDelete('admin.property-features.destroy', feature.id, 'feature')"/>
                 </TableCell>
             </tr>
             </tbody>

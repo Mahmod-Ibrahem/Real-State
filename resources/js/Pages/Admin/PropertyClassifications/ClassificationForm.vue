@@ -30,6 +30,6 @@ const fields = () => ({
 const form = useForm(fields());
 resetFormOnOpen(form, () => props.open, fields);
 
-const save = () => saveResource(form, 'propertyClassifications', 'classification',
+const save = () => saveResource(form, 'admin.property-classifications', 'classification',
     {id: props.classification?.id, onSuccess: () => emit('close')});
 </script>

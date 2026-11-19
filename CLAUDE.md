@@ -25,14 +25,70 @@ Test DB work against a throwaway SQLite file, never the user's MySQL DB:
 
 Demo images come from Pexels (`PEXELS_API_KEY` in `.env`) and are downloaded once into `storage/app/demo-images` (`database/seeders/Support/DemoImages.php`). Never commit the key.
 
+## Modules (`nwidart/laravel-modules`)
+
+Domain code lives in modules under `Modules/` (namespace `Modules\`, autoloaded by the root `composer.json`
+`"Modules\\": "Modules/"`). Each module owns its models, migrations, factories, seeders, observers, services,
+enums, requests, resources, controllers (admin **and** public) and routes.
+
+| Module | Owns |
+|---|---|
+| `Location` | Country → City → Area |
+| `Property` | Property, gallery (`PropertyImages`), PropertyType, PropertyClassifications, Feature, FeatureType, `ListingPurpose`/`PropertyStatus` enums, listing pages, favourites, sell page |
+| `Lead` | PropertyLead, ContactLead, the contact page and client-inquiry form |
+| `Content` | Faq, Broker, BasicContent, the About / FAQ / Terms / Privacy pages |
+| `Dashboard` | The admin dashboard (reads other modules' models) |
+
+`app/` keeps only what is shared or spans modules: `User`, auth (Breeze) and profile, the base `Controller`,
+middleware, `ImagesUtility`/`handleDbErrors` traits, `HomeController` + `HomePageService` (the home page
+composes several modules) and `LanguageController`. `database/seeders` keeps the entry seeders
+(`DatabaseSeeder`, `DemoDatabaseSeeder`, `PermissionSeeder`, `UserSeeder`) and `Support/DemoImages`, which call
+into the modules.
+
+Module layout (lean, like the Hotel-Managment project; `app_folder` is empty so there is no `app/` level):
+
+```
+Modules/Property/
+  module.json
+  Providers/PropertyServiceProvider.php   # migrations, observers, registers RouteServiceProvider
+  Providers/RouteServiceProvider.php      # loads routes/web.php in the `web` middleware group
+  routes/web.php                          # public routes + an admin group
+  Http/Controllers/(Admin/)  Http/Requests/  Http/Resources/(Users/)
+  Models/  Enums/  Observers/  Services/
+  Database/Migrations/  Database/Factories/  Database/Seeders/
+```
+
+- **Folder names match namespaces exactly** (`Database/Seeders` ↔ `Modules\Property\Database\Seeders`).
+  PSR-4 is case-sensitive on Linux, so a lowercase `database/` folder would break autoloading in production.
+- Migrations keep their timestamps when they move; Laravel sorts migrations from all paths by filename, so
+  cross-module foreign keys still run in order.
+- Models outside `App\Models` must point at their factory: `protected static function newFactory()`.
+- A module may use another module's **models and enums** (Property uses Location's `City`); it must not
+  reach into another module's controllers, requests or resources.
+- **Inertia pages stay in `resources/js/Pages`** (one Vite build per bundle); only PHP lives in modules.
+- New module: copy an existing one's `module.json` + providers, add it to `modules_statuses.json`.
+
+## Routing
+
+- **Route names are dot-separated, each segment kebab-case**, matching the URL:
+  `/admin/property-types` → `admin.property-types.index`; never camelCase (`propertyTypes`) or PascalCase.
+- **Every admin route is named `admin.…`**: register admin routes inside `Route::admin()->group(…)` (a macro in
+  `AppServiceProvider::register()` = `auth` + `role:Super Admin` + `/admin` prefix + `admin.` name prefix), so
+  admin and public names never collide (`faqs.index` is the public FAQ page, `admin.faqs.index` the admin list).
+  Breeze auth routes (`login`, `register`, `password.*`) keep their standard names; signed-in users who open a
+  guest page are sent to `admin.dashboard` (`redirectUsersTo` in `bootstrap/app.php`).
+- Resource names come from the URL: `Route::resource('property-types', …)` (no `->names()` overrides).
+- Each module registers its own routes in `Modules/<Name>/routes/web.php`; `routes/web.php` keeps only the
+  app-level routes (home, locale switch, admin redirect, profile) and the fallback.
+
 ## Architecture (follow existing patterns)
 
 | Concern | Where | Rule |
 |---|---|---|
-| Validation | `app/Http/Requests/*Request.php` | Never validate in controllers. Cross-field rules live here (e.g. area must belong to city). |
-| Output shape | `app/Http/Resources/` (admin) and `Resources/Users/` (public) | Never pass models straight to Inertia. |
-| Fixed value sets | `app/Enums/` (`ListingPurpose`, `PropertyStatus`) | If code branches on a value, it's an enum, not an admin-editable table. Expose `label()` (translated) and `options()` for selects. |
-| Cached public data | `app/Services/*Service.php` (`Cache::rememberForever`) | Every cache key must be forgotten in the model's `app/Observers/*Observer.php`. |
+| Validation | `Modules/<Name>/Http/Requests/*Request.php` | Never validate in controllers. Cross-field rules live here (e.g. area must belong to city). |
+| Output shape | `Modules/<Name>/Http/Resources/` (admin) and `Resources/Users/` (public) | Never pass models straight to Inertia. |
+| Fixed value sets | `Modules/Property/Enums/` (`ListingPurpose`, `PropertyStatus`) | If code branches on a value, it's an enum, not an admin-editable table. Expose `label()` (translated) and `options()` for selects. |
+| Cached public data | `Modules/<Name>/Services/*Service.php` (`Cache::rememberForever`) | Every cache key must be forgotten in the model's `Observers/*Observer.php`. |
 | Image upload | `App\Traits\ImagesUtility::storeImage()` | Stores a full URL in the `image` column. |
 | Translations | `$translatable` on models; UI strings via `__()` with `lang/ar.json` | Add the Arabic string whenever you add a user-facing label. |
 

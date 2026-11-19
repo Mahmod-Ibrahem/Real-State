@@ -15,12 +15,12 @@
             <tbody class="divide-y divide-slate-100">
             <tr v-for="lead in propertyLeads.data" :key="lead.id" class="transition-colors hover:bg-slate-50">
                 <TableCell>
-                    <RowTitle :href="route('propertyLeads.edit', lead.id)" title="Open enquiry">{{ lead.full_name }}</RowTitle>
+                    <RowTitle :href="route('admin.property-leads.edit', lead.id)" title="Open enquiry">{{ lead.full_name }}</RowTitle>
                     <p class="text-xs text-slate-500">{{ lead.email }}</p>
                 </TableCell>
                 <TableCell class="whitespace-nowrap tabular-nums">{{ lead.phone }}</TableCell>
                 <TableCell>
-                    <Link v-if="lead.property_name" :href="route('properties.edit', lead.property_id)" :title="lead.property_name"
+                    <Link v-if="lead.property_name" :href="route('admin.properties.edit', lead.property_id)" :title="lead.property_name"
                           class="block max-w-[14rem] truncate font-medium text-indigo-600 hover:text-indigo-700">
                         {{ lead.property_name }}
                     </Link>
@@ -31,8 +31,8 @@
                 </TableCell>
                 <TableCell variant="muted">{{ formatDate(lead.created_at) }}</TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('propertyLeads.edit', lead.id)"
-                                @delete="confirmDelete('propertyLeads.destroy', lead.id, 'lead')">
+                    <RowActions :edit-href="route('admin.property-leads.edit', lead.id)"
+                                @delete="confirmDelete('admin.property-leads.destroy', lead.id, 'lead')">
                         <ContactActions :phone="lead.phone" :email="lead.email"/>
                     </RowActions>
                 </TableCell>

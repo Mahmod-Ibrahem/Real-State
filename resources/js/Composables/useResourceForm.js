@@ -10,7 +10,7 @@ export const currentLocale = () => usePage().props.locale ?? 'en';
 /**
  * Create or update a resource and toast the result.
  *
- *   saveResource(form, 'cities', 'city', {id: city?.id, onSuccess: close})
+ *   saveResource(form, 'admin.cities', 'city', {id: city?.id, onSuccess: close})
  *
  * Multipart updates go as POST + _method=put, because PHP doesn't parse files sent with PUT.
  */

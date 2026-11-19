@@ -1,0 +1,11 @@
+{
+    "name": "Dashboard",
+    "alias": "dashboard",
+    "description": "Admin dashboard",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Dashboard\\Providers\\DashboardServiceProvider"
+    ],
+    "files": []
+}

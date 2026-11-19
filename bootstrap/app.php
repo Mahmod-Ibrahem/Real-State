@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
 
         ]);
+        // Signed-in users opening a guest page (e.g. /admin/login) go to the admin; Laravel's default looks for a
+        // route named "dashboard", which is "admin.dashboard" here (CLAUDE.md, Routing)
+        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

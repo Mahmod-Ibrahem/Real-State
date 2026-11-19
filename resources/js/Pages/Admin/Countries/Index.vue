@@ -16,7 +16,7 @@
                 </TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(country)"
-                                @delete="confirmDelete('countries.destroy', country.id, 'country')"/>
+                                @delete="confirmDelete('admin.countries.destroy', country.id, 'country')"/>
                 </TableCell>
             </tr>
             </tbody>

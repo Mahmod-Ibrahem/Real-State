@@ -18,7 +18,7 @@
                 <TableCell>{{ area.city }}</TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(area)"
-                                @delete="confirmDelete('areas.destroy', area.id, 'area')"/>
+                                @delete="confirmDelete('admin.areas.destroy', area.id, 'area')"/>
                 </TableCell>
             </tr>
             </tbody>

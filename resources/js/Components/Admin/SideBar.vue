@@ -1,6 +1,6 @@
 <template>
     <aside class="flex h-full w-60 flex-col bg-white">
-        <Link :href="route('dashboard')" class="flex h-14 shrink-0 items-center gap-2.5 border-b border-slate-100 px-4">
+        <Link :href="route('admin.dashboard')" class="flex h-14 shrink-0 items-center gap-2.5 border-b border-slate-100 px-4">
             <img :src="logo" alt="Qeima" class="h-8 w-auto object-contain"/>
             <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Admin</span>
         </Link>

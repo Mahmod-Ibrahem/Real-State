@@ -1,5 +1,5 @@
 <template>
-    <FormCard :submit-label="property ? 'Save changes' : 'Add property'" :cancel-href="route('properties.index')"
+    <FormCard :submit-label="property ? 'Save changes' : 'Add property'" :cancel-href="route('admin.properties.index')"
               :processing="form.processing" @submit="save">
         <FormSection title="Basics" description="What visitors see first.">
             <TextField v-model="form.name" label="Title" placeholder="e.g. Modern 3-Bedroom Villa" required
@@ -153,5 +153,5 @@ watch(() => form.purpose, () => {
 const galleryError = computed(() => form.errors.propertyImages
     ?? Object.entries(form.errors).find(([key]) => key.startsWith('propertyImages.'))?.[1] ?? '');
 
-const save = () => saveResource(form, 'properties', 'property', {id: props.property?.id, multipart: true});
+const save = () => saveResource(form, 'admin.properties', 'property', {id: props.property?.id, multipart: true});
 </script>

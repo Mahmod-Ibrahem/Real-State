@@ -130,7 +130,7 @@ watch(() => form.cityId, () => {
 
 
 function submit() {
-    form.get(route('sell.buy.rent'),
+    form.get(route('sell-buy-rent'),
         {
             preserveScroll: true,
             onSuccess: () => {

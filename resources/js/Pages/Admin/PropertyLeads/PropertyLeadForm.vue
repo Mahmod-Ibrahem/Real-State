@@ -1,6 +1,6 @@
 <template>
-    <FormCard submit-label="Save changes" :cancel-href="route('propertyLeads.index')" :processing="form.processing"
-              @submit="saveResource(form, 'propertyLeads', 'lead', {id: lead.id})">
+    <FormCard submit-label="Save changes" :cancel-href="route('admin.property-leads.index')" :processing="form.processing"
+              @submit="saveResource(form, 'admin.property-leads', 'lead', {id: lead.id})">
         <div class="grid gap-5 sm:grid-cols-2">
             <TextField v-model="form.full_name" label="Name" required :error="form.errors.full_name"/>
             <TextField v-model="form.email" label="Email" type="email" required :error="form.errors.email"/>

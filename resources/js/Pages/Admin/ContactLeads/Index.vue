@@ -15,7 +15,7 @@
             <tbody class="divide-y divide-slate-100">
             <tr v-for="lead in contactLeads.data" :key="lead.id" class="transition-colors hover:bg-slate-50">
                 <TableCell>
-                    <RowTitle :href="route('contactLeads.edit', lead.id)" title="Open message">{{ lead.full_name }}</RowTitle>
+                    <RowTitle :href="route('admin.contact-leads.edit', lead.id)" title="Open message">{{ lead.full_name }}</RowTitle>
                     <p class="text-xs text-slate-500">{{ lead.email }}</p>
                 </TableCell>
                 <TableCell class="whitespace-nowrap tabular-nums">{{ lead.phone }}</TableCell>
@@ -25,8 +25,8 @@
                 </TableCell>
                 <TableCell variant="muted">{{ formatDate(lead.created_at) }}</TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('contactLeads.edit', lead.id)"
-                                @delete="confirmDelete('contactLeads.destroy', lead.id, 'message')">
+                    <RowActions :edit-href="route('admin.contact-leads.edit', lead.id)"
+                                @delete="confirmDelete('admin.contact-leads.destroy', lead.id, 'message')">
                         <ContactActions :phone="lead.phone" :email="lead.email"/>
                     </RowActions>
                 </TableCell>

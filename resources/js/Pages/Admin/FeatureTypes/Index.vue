@@ -19,7 +19,7 @@
                 <TableCell>{{ featureType.featuresCount }}</TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(featureType)"
-                                @delete="confirmDelete('feature-types.destroy', featureType.id, 'feature type')"/>
+                                @delete="confirmDelete('admin.feature-types.destroy', featureType.id, 'feature type')"/>
                 </TableCell>
             </tr>
             </tbody>

@@ -2,7 +2,7 @@
     <AuthenticatedLayout title="Properties" description="Every listing on the site, published or not.">
         <TableCard noun="properties" :meta="properties.meta" :empty="!properties.data.length"
                    empty-text="No properties yet. Add your first property."
-                   :create-href="route('properties.create')" create-label="Add property">
+                   :create-href="route('admin.properties.create')" create-label="Add property">
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>Property</TableHeadingCell>
@@ -21,7 +21,7 @@
                     <div class="flex min-w-[16rem] items-center gap-3">
                         <img :src="property.image_url" alt="" class="h-10 w-14 shrink-0 rounded-md border border-slate-200 object-cover"/>
                         <div class="min-w-0">
-                            <RowTitle :href="route('properties.edit', property.id)" :title="property.name">{{ property.name }}</RowTitle>
+                            <RowTitle :href="route('admin.properties.edit', property.id)" :title="property.name">{{ property.name }}</RowTitle>
                             <p class="text-xs text-slate-500">{{ property.propertyType }}</p>
                         </div>
                     </div>
@@ -51,8 +51,8 @@
                     {{ property.bedrooms }} bd · {{ property.bathrooms }} ba · {{ formatNumber(property.sqft) }} sq ft
                 </TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('properties.edit', property.id)"
-                                @delete="confirmDelete('properties.destroy', property.id, 'property')"/>
+                    <RowActions :edit-href="route('admin.properties.edit', property.id)"
+                                @delete="confirmDelete('admin.properties.destroy', property.id, 'property')"/>
                 </TableCell>
             </tr>
             </tbody>
@@ -95,7 +95,7 @@ const isSaving = (property, field) => Boolean(saving[`${property.id}.${field}`])
 function quickUpdate(property, field, value) {
     const key = `${property.id}.${field}`;
     saving[key] = true;
-    router.patch(route('properties.listing', property.id), {[field]: value}, {
+    router.patch(route('admin.properties.listing', property.id), {[field]: value}, {
         preserveScroll: true,
         onSuccess: () => showToast(`${property.name} updated`),
         onError: (errors) => showToast(Object.values(errors)[0] ?? 'The property could not be updated.', 'error'),

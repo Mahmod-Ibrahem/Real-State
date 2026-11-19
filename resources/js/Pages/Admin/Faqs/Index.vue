@@ -25,7 +25,7 @@
                     <StatusBadge>{{ categoryLabel(faq.type) }}</StatusBadge>
                 </TableCell>
                 <TableCell align="right">
-                    <RowActions editable @edit="modal.openEdit(faq)" @delete="confirmDelete('faq.destroy', faq.id, 'FAQ')"/>
+                    <RowActions editable @edit="modal.openEdit(faq)" @delete="confirmDelete('admin.faqs.destroy', faq.id, 'FAQ')"/>
                 </TableCell>
             </tr>
             </tbody>

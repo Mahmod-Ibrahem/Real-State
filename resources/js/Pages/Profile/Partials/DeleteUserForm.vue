@@ -31,7 +31,7 @@ const cancel = () => {
     form.clearErrors();
 };
 
-const destroy = () => form.delete(route('profile.destroy'), {
+const destroy = () => form.delete(route('admin.profile.destroy'), {
     preserveScroll: true,
     onFinish: () => form.reset(),
 });

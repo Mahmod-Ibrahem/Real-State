@@ -2,15 +2,20 @@
 
 namespace App\Services;
 
-use App\Enums\ListingPurpose;
 use Illuminate\Support\Facades\Cache;
-use App\Http\Resources\{AreaResource,
-    CityResource,
-    CountryResource,
-    Users\PropertyListResource,
-    Users\PropertyTypeResource
-};
-use App\Models\{BasicContent, PropertyClassifications};
+use Modules\Content\Models\BasicContent;
+use Modules\Content\Services\BrokerService;
+use Modules\Location\Http\Resources\AreaResource;
+use Modules\Location\Http\Resources\CityResource;
+use Modules\Location\Http\Resources\CountryResource;
+use Modules\Location\Services\AreaService;
+use Modules\Location\Services\CityService;
+use Modules\Location\Services\CountryService;
+use Modules\Property\Enums\ListingPurpose;
+use Modules\Property\Http\Resources\Users\PropertyListResource;
+use Modules\Property\Http\Resources\Users\PropertyTypeResource;
+use Modules\Property\Models\PropertyClassifications;
+use Modules\Property\Services\PropertyTypeService;
 
 class HomePageService
 {

@@ -38,7 +38,7 @@ const form = useForm({
     email: user.email,
 });
 
-const save = () => form.patch(route('profile.update'), {
+const save = () => form.patch(route('admin.profile.update'), {
     preserveScroll: true,
     onSuccess: () => showToast('Profile updated'),
 });

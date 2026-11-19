@@ -41,5 +41,5 @@ const fields = () => ({
 const form = useForm(fields());
 resetFormOnOpen(form, () => props.open, fields);
 
-const save = () => saveResource(form, 'areas', 'area', {id: props.area?.id, onSuccess: () => emit('close')});
+const save = () => saveResource(form, 'admin.areas', 'area', {id: props.area?.id, onSuccess: () => emit('close')});
 </script>

@@ -33,7 +33,7 @@
                 </TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(broker)"
-                                @delete="confirmDelete('broker.destroy', broker.id, 'broker')"/>
+                                @delete="confirmDelete('admin.brokers.destroy', broker.id, 'broker')"/>
                 </TableCell>
             </tr>
             </tbody>

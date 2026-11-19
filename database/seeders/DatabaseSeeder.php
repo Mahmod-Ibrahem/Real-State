@@ -2,12 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Area;
-use App\Models\City;
-use App\Models\Feature;
-use App\Models\Property;
-use App\Models\PropertyClassifications;
-use App\Models\PropertyType;
+use Modules\Property\Database\Seeders\ClassificationSeeder;
+use Modules\Property\Database\Seeders\PropertyTypeSeeder;
+use Modules\Location\Database\Seeders\LocationSeeder;
+use Modules\Property\Database\Seeders\PropertySeeder;
+use Modules\Property\Database\Seeders\FeatureSeeder;
+use Modules\Content\Database\Seeders\ContentSeeder;
+
+use Modules\Location\Models\Area;
+use Modules\Location\Models\City;
+use Modules\Property\Models\Feature;
+use Modules\Property\Models\Property;
+use Modules\Property\Models\PropertyClassifications;
+use Modules\Property\Models\PropertyType;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -32,7 +39,7 @@ class DatabaseSeeder extends Seeder
             ClassificationSeeder::class,
             FeatureSeeder::class,
             PropertySeeder::class,
-            contentSeeder::class,
+            ContentSeeder::class,
             PermissionSeeder::class,
             UserSeeder::class,
         ]);

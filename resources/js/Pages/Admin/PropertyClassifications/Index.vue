@@ -17,7 +17,7 @@
                 </TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(classification)"
-                                @delete="confirmDelete('propertyClassifications.destroy', classification.id, 'classification')"/>
+                                @delete="confirmDelete('admin.property-classifications.destroy', classification.id, 'classification')"/>
                 </TableCell>
             </tr>
             </tbody>

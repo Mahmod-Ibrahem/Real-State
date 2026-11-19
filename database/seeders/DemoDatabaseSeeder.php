@@ -2,6 +2,14 @@
 
 namespace Database\Seeders;
 
+use Modules\Property\Database\Seeders\ClassificationSeeder;
+use Modules\Property\Database\Seeders\PropertyTypeSeeder;
+use Modules\Location\Database\Seeders\LocationSeeder;
+use Modules\Property\Database\Seeders\PropertySeeder;
+use Modules\Property\Database\Seeders\FeatureSeeder;
+use Modules\Content\Database\Seeders\ContentSeeder;
+use Modules\Content\Database\Seeders\BrokerSeeder;
+
 use Illuminate\Database\Seeder;
 
 /**
@@ -26,7 +34,7 @@ class DemoDatabaseSeeder extends Seeder
             FeatureSeeder::class,
             PropertySeeder::class,
             BrokerSeeder::class,
-            contentSeeder::class,
+            ContentSeeder::class,
             PermissionSeeder::class,
             UserSeeder::class,
         ]);

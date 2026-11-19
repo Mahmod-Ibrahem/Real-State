@@ -2,49 +2,24 @@
 
 namespace App\Providers;
 
-use App\Models\Area;
-use App\Models\BasicContent;
-use App\Models\Broker;
-use App\Models\City;
-use App\Models\Country;
-use App\Models\Property;
-use App\Models\PropertyClassifications;
-use App\Models\PropertyType;
-use App\Observers\AreaObserver;
-use App\Observers\BasicContentObserver;
-use App\Observers\BrokerObserver;
-use App\Observers\CityObserver;
-use App\Observers\CountryObserver;
-use App\Observers\PropertyClassificationObserver;
-use App\Observers\PropertyObserver;
-use App\Observers\PropertyTypeObserver;
+use Illuminate\Routing\RouteRegistrar;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
+        // Route::admin()->group(…): the back-office group every module uses (CLAUDE.md, Routing).
+        // Registered here, not in boot(), because module route files load while providers boot.
+        Route::macro('admin', fn (): RouteRegistrar => Route::middleware(['auth', 'role:Super Admin'])
+            ->prefix('admin')
+            ->name('admin.'));
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
-        Property::observe(PropertyObserver::class);
-        PropertyType::observe(PropertyTypeObserver::class);
-        PropertyClassifications::observe(PropertyClassificationObserver::class);
-        BasicContent::observe(BasicContentObserver::class);
-        Broker::observe(BrokerObserver::class);
-        City::observe(CityObserver::class);
-        Area::observe(AreaObserver::class);
-        Country::observe(CountryObserver::class);
-        Broker::observe(BrokerObserver::class);
     }
 }

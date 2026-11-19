@@ -16,8 +16,8 @@ weight, spacing and a single accent colour, not decoration.
   separate asset version for `/admin/*`, so crossing between site and admin is always a full page load and
   the bundles never mix.
 - **URLs are kebab-case and plural**: `/admin/property-types`, `/admin/faqs`, never `/admin/propertyTypes`.
-  Route **names** stay camelCase so pages keep calling `route('propertyTypes.index')`; register with
-  `Route::resource('property-types', …)->names('propertyTypes')`. Admin resources have no `show` route, and
+  Route **names** follow the URL with an `admin.` prefix: `route('admin.property-types.index')` (see
+  CLAUDE.md, Routing; each module registers them inside `Route::admin()`). Admin resources have no `show` route, and
   modal-edited resources (§5) have no `create`/`edit` routes either: declare them with `->only([...])`.
 - Consequence: the Bootstrap-collision rules in `CLAUDE.md` do **not** apply to admin code. Use any Tailwind
   utility (`py-3`, `gap-4`, `shadow-sm`, `border`, …) normally. Still no `!` important hacks.
@@ -94,7 +94,7 @@ component (and this table), don't fork the styles.
 | Gallery | The property gallery lives **inside the property form** (`Properties/PropertyGallery.vue`, Media section), mirroring Mr Egypt Tours' `TourGalleryManager`. It has **no controller or routes of its own**: everything is saved by `PropertyController` with the property. New cropped photos go as `propertyImages[]`; removing a saved photo hides its tile and adds its id to `removed_image_ids[]` (“N to remove on save”, with Undo), and the server deletes those files on update. While saving, an indigo progress bar shows the upload (`form.progress`). |
 | `ui/Toast.vue` + `Composables/useToast.js` | Top-right, white, `rounded-xl border shadow-lg`, green/red left icon. Every create/update/delete shows one. |
 | PrimeVue `MultiSelect`, `Editor` | Only where a native control can't do the job (multi-choice features, rich-text description). Themed in `admin.js` with `primary` = Tailwind indigo so they match; wrap them in the same label/error frame as `TextField`. No other PrimeVue widgets. |
-| `Composables/useResourceForm.js` | `saveResource(form, 'cities', 'city', {id, multipart, onSuccess})`: `post` to `.store` or `put` to `.update` (multipart updates are sent as POST + `_method=put` so files upload), then toasts “City created/updated”; server `errors.database` → error toast. Forms send `locale: page.props.locale` (the content language chosen in the top bar), never a hard-coded `'en'`. `resetFormOnOpen(form, () => props.open, () => fields)` refills a modal form with the record being edited (or blanks) and clears errors each time it opens. |
+| `Composables/useResourceForm.js` | `saveResource(form, 'admin.cities', 'city', {id, multipart, onSuccess})`: `post` to `.store` or `put` to `.update` (multipart updates are sent as POST + `_method=put` so files upload), then toasts “City created/updated”; server `errors.database` → error toast. Forms send `locale: page.props.locale` (the content language chosen in the top bar), never a hard-coded `'en'`. `resetFormOnOpen(form, () => props.open, () => fields)` refills a modal form with the record being edited (or blanks) and clears errors each time it opens. |
 | `Composables/useResourceModal.js` | List-page modal state: `{isOpen, record, openCreate(), openEdit(row), close()}`. `record` is `null` when creating. |
 | `Composables/useConfirmDelete.js` | `confirmDelete(routeName, id, noun)`: confirm dialog → `router.delete` → success or error toast (server errors come back as `errors.database`). Tables never re-implement this. |
 

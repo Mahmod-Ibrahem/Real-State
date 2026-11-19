@@ -1,0 +1,11 @@
+{
+    "name": "Property",
+    "alias": "property",
+    "description": "Listings, their gallery, types, classifications and features",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Property\\Providers\\PropertyServiceProvider"
+    ],
+    "files": []
+}

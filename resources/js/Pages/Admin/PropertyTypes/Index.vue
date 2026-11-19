@@ -20,7 +20,7 @@
                 </TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(type)"
-                                @delete="confirmDelete('propertyTypes.destroy', type.id, 'property type')"/>
+                                @delete="confirmDelete('admin.property-types.destroy', type.id, 'property type')"/>
                 </TableCell>
             </tr>
             </tbody>

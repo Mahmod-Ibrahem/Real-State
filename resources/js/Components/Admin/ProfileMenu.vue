@@ -16,7 +16,7 @@
                     <p class="truncate text-sm font-medium text-slate-900">{{ user.name }}</p>
                     <p class="truncate text-xs text-slate-500">{{ user.email }}</p>
                 </div>
-                <Link :href="route('profile.edit')" role="menuitem" @click="open = false"
+                <Link :href="route('admin.profile.edit')" role="menuitem" @click="open = false"
                       class="mt-1 flex h-8 items-center gap-2 rounded-md px-2.5 text-sm text-slate-700 hover:bg-slate-100">
                     <UserCircleIcon class="h-4 w-4 text-slate-400" aria-hidden="true"/> Profile
                 </Link>
