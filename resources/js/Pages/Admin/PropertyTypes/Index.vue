@@ -6,19 +6,18 @@
                    creatable create-label="Add type" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
-                <TableHeadingCell>ID</TableHeadingCell>
-                <TableHeadingCell>Image</TableHeadingCell>
                 <TableHeadingCell>Name</TableHeadingCell>
                 <TableHeadingCell align="right"><span class="sr-only">Actions</span></TableHeadingCell>
             </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
             <tr v-for="type in filtered" :key="type.id" class="transition-colors hover:bg-slate-50">
-                <TableCell variant="muted">#{{ type.id }}</TableCell>
                 <TableCell>
-                    <img :src="type.image" alt="" class="h-10 w-14 rounded-md border border-slate-200 object-cover"/>
+                    <div class="flex items-center gap-3">
+                        <img :src="type.image" alt="" class="h-10 w-14 shrink-0 rounded-md border border-slate-200 object-cover"/>
+                        <RowTitle @click="modal.openEdit(type)">{{ type.name }}</RowTitle>
+                    </div>
                 </TableCell>
-                <TableCell variant="primary">{{ type.name }}</TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(type)"
                                 @delete="confirmDelete('propertyTypes.destroy', type.id, 'property type')"/>
@@ -37,6 +36,7 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
+import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useClientSearch} from '@/Composables/useClientSearch.js';
 import {useResourceModal} from '@/Composables/useResourceModal.js';

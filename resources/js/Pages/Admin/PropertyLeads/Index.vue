@@ -15,14 +15,16 @@
             <tbody class="divide-y divide-slate-100">
             <tr v-for="lead in propertyLeads.data" :key="lead.id" class="transition-colors hover:bg-slate-50">
                 <TableCell>
-                    <p class="font-medium text-slate-900">{{ lead.full_name }}</p>
+                    <RowTitle :href="route('propertyLeads.edit', lead.id)" title="Open enquiry">{{ lead.full_name }}</RowTitle>
                     <p class="text-xs text-slate-500">{{ lead.email }}</p>
                 </TableCell>
                 <TableCell class="whitespace-nowrap tabular-nums">{{ lead.phone }}</TableCell>
                 <TableCell>
-                    <Link :href="route('properties.edit', lead.property_id)" class="font-medium text-indigo-600 hover:text-indigo-700">
-                        #{{ lead.property_id }}
+                    <Link v-if="lead.property_name" :href="route('properties.edit', lead.property_id)" :title="lead.property_name"
+                          class="block max-w-[14rem] truncate font-medium text-indigo-600 hover:text-indigo-700">
+                        {{ lead.property_name }}
                     </Link>
+                    <span v-else class="text-slate-400">Deleted property</span>
                 </TableCell>
                 <TableCell>
                     <p class="max-w-xs truncate" :title="lead.message">{{ lead.message }}</p>
@@ -48,6 +50,7 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
+import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {formatDate} from '@/Composables/useFormatters.js';
 

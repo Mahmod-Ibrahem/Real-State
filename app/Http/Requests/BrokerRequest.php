@@ -27,7 +27,8 @@ class BrokerRequest extends FormRequest
             'facebook' => ['nullable', 'string'],
             'instagram' => ['nullable', 'string'],
             'twitter' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,avif', 'max:2048'],
+            // Required when adding a broker; editing keeps the saved photo unless a new one is sent
+            'image' => [$this->isMethod('POST') ? 'required' : 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,avif,webp', 'max:2048'],
         ];
     }
 }

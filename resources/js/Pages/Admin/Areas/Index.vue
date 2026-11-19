@@ -5,7 +5,6 @@
                    creatable create-label="Add area" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
-                <TableHeadingCell>ID</TableHeadingCell>
                 <TableHeadingCell>Name</TableHeadingCell>
                 <TableHeadingCell>City</TableHeadingCell>
                 <TableHeadingCell align="right"><span class="sr-only">Actions</span></TableHeadingCell>
@@ -13,8 +12,9 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
             <tr v-for="area in areas.data" :key="area.id" class="transition-colors hover:bg-slate-50">
-                <TableCell variant="muted">#{{ area.id }}</TableCell>
-                <TableCell variant="primary">{{ area.name }}</TableCell>
+                <TableCell>
+                    <RowTitle @click="modal.openEdit(area)">{{ area.name }}</RowTitle>
+                </TableCell>
                 <TableCell>{{ area.city }}</TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(area)"
@@ -34,6 +34,7 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
+import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useResourceModal} from '@/Composables/useResourceModal.js';
 import AreaForm from './AreaForm.vue';

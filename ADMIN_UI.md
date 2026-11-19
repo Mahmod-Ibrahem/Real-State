@@ -77,6 +77,9 @@ component (and this table), don't fork the styles.
 | `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil) and delete (trash, red hover). Edit is a `Link` when given `edit-href`, or a button emitting `edit` when given `editable` (modal resources). Always with `aria-label`/`title`. |
 | `ui/Pagination.vue` | “Showing X–Y of Z” + prev/numbered/next buttons from a Laravel paginator `meta`. Hidden when there is one page. |
 | `ui/StatusBadge.vue` | `tone`: `success`·`warning`·`danger`·`info`·`neutral`. `rounded-full px-2 py-0.5 text-xs font-medium`. |
+| `ui/RowTitle.vue` | The name in a table's first column: `font-medium text-slate-900`, `hover:text-indigo-600`. `href` → Inertia `Link` to the edit page; otherwise a `<button>` emitting `click` (opens the edit modal). |
+| `ui/ToggleButton.vue` | Inline two-value field in a table: looks like a `StatusBadge` of the current value plus a swap icon; clicking emits `toggle`. `loading` shows a spinner; `aria-pressed` and a `title` say what a click changes it to. Never a switch. |
+| `ui/InlineSelect.vue` | Inline 3+-value field in a table: native `<select>` `h-7 rounded-full text-xs font-medium` tinted by `tone`; emits the new value; `loading` disables it. |
 | `ui/FormCard.vue` | Form screens: `Panel` with the fields in a `space-y-5` body and a footer bar (`border-t bg-slate-50/80`): Cancel (ghost, left) · submit (primary, right, “Saving…” while processing). |
 | `ui/Modal.vue` | The only dialog shell (Headless UI `Dialog`: focus trap, Esc/backdrop close, nested dialogs). Backdrop `bg-slate-900/50`, panel `bg-white rounded-xl shadow-lg`, header title `text-base font-semibold` + optional description + close (×). `size`: `sm` (max-w-md) · `md` (max-w-lg) · `lg` (max-w-2xl) · `xl` (max-w-3xl). Fade + slight scale, 150–200ms. |
 | `ui/FormModal.vue` | `Modal` + `<form>`: fields in a `space-y-5` body, footer bar identical to `FormCard` (Cancel · submit). Used by every modal-edited resource. Closing is blocked while saving. |
@@ -98,18 +101,27 @@ component (and this table), don't fork the styles.
 ## 5. Page recipes
 
 - **List page** = `AuthenticatedLayout title="Cities"` → `TableCard` → table rows:
-  `divide-y divide-slate-100`, rows `hover:bg-slate-50`, cells `px-4 py-3 text-sm`; the primary column
-  `font-medium text-slate-900`, others `text-slate-600`; ids as `#12 text-slate-500`; images as
-  `h-10 w-14 rounded-md object-cover`; last column `RowActions`. Empty state text says what to do
-  (“No cities yet. Add your first city.” / “No cities match ‘x’.”).
+  `divide-y divide-slate-100`, rows `hover:bg-slate-50`, cells `px-4 py-3 text-sm`; others `text-slate-600`;
+  images as `h-10 w-14 rounded-md object-cover` (portraits `h-10 w-10 rounded-full`); last column
+  `RowActions`. Empty state text says what to do (“No cities yet. Add your first city.” / “No cities match ‘x’.”).
+  - **No id columns or `#12` labels** anywhere in admin tables: ids are internal. Refer to related records by
+    name (a lead shows its property's title, not `#5`).
+  - **The first column is the row's name**, rendered with `ui/RowTitle.vue`: it opens the row's edit page
+    (`href`) or its edit modal (`@click`). A thumbnail may sit to its left inside the same cell; a secondary
+    line (type, job title, email) sits under it in `text-xs text-slate-500`.
+  - **Quick edits in the table**: a field with **two** values (visibility Published/Draft, purpose Sale/Rent)
+    is a `ui/ToggleButton.vue` (a badge-styled button that flips to the other value on click, never a
+    switch); a field with **three or more** values (property status) is a `ui/InlineSelect.vue` (compact
+    native select). Both save immediately through a small `PATCH` endpoint, show a spinner while saving and
+    toast the result.
 - **Modal create/edit** for small resources: property types, classifications, features, feature types,
-  countries, cities, areas, FAQs. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
+  countries, cities, areas, FAQs, brokers. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
   (`TableCard creatable @create`) calls `openCreate()`, `RowActions editable @edit` calls `openEdit(row)`; one
   `XForm.vue` renders `FormModal` (title “New city” / “Edit Cairo”). On success the modal closes and the list
   refreshes in place; on validation errors it stays open with the errors under the fields. The list
   controller passes the select options the form needs (e.g. `countries` for cities), and `store`/`update`
   `redirect()->back()` so page and search survive. The row resource must carry every field the form edits.
-- **Form page** for big forms (properties, brokers, site content): layout with `title="New property"` /
+- **Form page** for big forms (properties, lead details): layout with `title="New property"` /
   `"Edit …"` → `FormCard` (fills the content width, no `max-w-*` cap on forms or their wrappers) → fields.
   Related fields sit in a `grid gap-5 sm:grid-cols-2`. Cancel returns to the list. Validation errors render
   under each field from `form.errors`.

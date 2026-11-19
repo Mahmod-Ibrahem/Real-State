@@ -13,8 +13,10 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
             <tr v-for="faq in faqs.data" :key="faq.id" class="transition-colors hover:bg-slate-50">
-                <TableCell variant="primary">
-                    <p class="max-w-xs truncate" :title="faq.question">{{ faq.question }}</p>
+                <TableCell>
+                    <div class="max-w-xs">
+                        <RowTitle :title="faq.question" @click="modal.openEdit(faq)">{{ faq.question }}</RowTitle>
+                    </div>
                 </TableCell>
                 <TableCell>
                     <p class="max-w-md truncate" :title="faq.answer">{{ faq.answer }}</p>
@@ -39,6 +41,7 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
+import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
 import StatusBadge from '@/Components/Admin/ui/StatusBadge.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useResourceModal} from '@/Composables/useResourceModal.js';

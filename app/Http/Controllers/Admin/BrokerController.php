@@ -7,57 +7,48 @@ use App\Http\Requests\BrokerRequest;
 use App\Http\Resources\BrokerResource;
 use App\Models\Broker;
 use App\Traits\ImagesUtility;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class BrokerController extends Controller
 {
     use ImagesUtility;
 
     public function index()
     {
-        $brokers = Broker::all();
         return Inertia::render('Admin/Brokers/Index', [
-            'brokers' => BrokerResource::collection($brokers)
+            'brokers' => BrokerResource::collection(Broker::all()),
         ]);
-    }
-
-    public function create()
-    {
-        return Inertia::render('Admin/Brokers/Create');
     }
 
     public function store(BrokerRequest $request)
     {
         $validatedData = $request->validated();
-        $validatedData['image'] = $this->storeImage($validatedData['image'], 'property');
+        $validatedData['image'] = $this->storeImage($validatedData['image'], 'broker');
         Broker::create($validatedData);
-        return redirect()->route('broker.index');
-    }
 
-    public function edit(Broker $broker)
-    {
-        return Inertia::render('Admin/Brokers/Edit', [
-            'broker' => BrokerResource::make($broker)
-        ]);
+        return back();
     }
 
     public function update(BrokerRequest $request, Broker $broker)
     {
         $validatedData = $request->validated();
-        if (isset($validatedData['image'])) {
-            $relativePath = $this->getRelativePath($broker->image);
-            $validatedData['image'] = $this->storeImage($validatedData['image'], 'broker'); //path data
+
+        if ($validatedData['image'] ?? false) {
+            $validatedData['image'] = $this->storeImage($validatedData['image'], 'broker');
         } else {
-            $validatedData['image'] = $broker->image;
+            unset($validatedData['image']);
         }
+
         $broker->update($validatedData);
-        return redirect()->route('broker.index');
+
+        return back();
     }
 
     public function destroy(Broker $broker)
     {
         $broker->delete();
-        return redirect()->route('broker.index');
+
+        return back();
     }
 }

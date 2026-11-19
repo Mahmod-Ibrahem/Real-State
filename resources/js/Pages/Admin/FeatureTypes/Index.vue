@@ -6,7 +6,6 @@
                    creatable create-label="Add feature type" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
-                <TableHeadingCell>ID</TableHeadingCell>
                 <TableHeadingCell>Name</TableHeadingCell>
                 <TableHeadingCell>Features</TableHeadingCell>
                 <TableHeadingCell align="right"><span class="sr-only">Actions</span></TableHeadingCell>
@@ -14,8 +13,9 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
             <tr v-for="featureType in filtered" :key="featureType.id" class="transition-colors hover:bg-slate-50">
-                <TableCell variant="muted">#{{ featureType.id }}</TableCell>
-                <TableCell variant="primary">{{ featureType.name }}</TableCell>
+                <TableCell>
+                    <RowTitle @click="modal.openEdit(featureType)">{{ featureType.name }}</RowTitle>
+                </TableCell>
                 <TableCell>{{ featureType.featuresCount }}</TableCell>
                 <TableCell align="right">
                     <RowActions editable @edit="modal.openEdit(featureType)"
@@ -35,6 +35,7 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
+import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useClientSearch} from '@/Composables/useClientSearch.js';
 import {useResourceModal} from '@/Composables/useResourceModal.js';

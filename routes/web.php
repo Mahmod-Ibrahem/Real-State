@@ -34,6 +34,8 @@ Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->group(function
     Route::get('/dashboard', \App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
 
     Route::resource('properties', PropertyController::class)->except('show');
+    Route::patch('properties/{property}/listing', \App\Http\Controllers\Admin\PropertyListingStateController::class)
+        ->name('properties.listing');
     Route::resource('property-types', \App\Http\Controllers\Admin\PropertyTypeController::class)->names('propertyTypes')
         ->only($modalResource);
     Route::resource('property-classifications', \App\Http\Controllers\Admin\PropertyClassificationController::class)
@@ -52,8 +54,7 @@ Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->group(function
         ->only(['index', 'edit', 'update', 'destroy']);
 
     Route::resource('faqs', \App\Http\Controllers\Admin\FaqController::class)->names('faq')->only($modalResource);
-    Route::resource('content', \App\Http\Controllers\Admin\BasicContentController::class)->only(['index', 'edit', 'update']);
-    Route::resource('brokers', \App\Http\Controllers\Admin\BrokerController::class)->names('broker')->except('show');
+    Route::resource('brokers', \App\Http\Controllers\Admin\BrokerController::class)->names('broker')->only($modalResource);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

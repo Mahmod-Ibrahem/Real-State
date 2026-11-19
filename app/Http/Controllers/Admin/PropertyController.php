@@ -52,7 +52,12 @@ class PropertyController extends Controller
         $properties = $properties->with(['city', 'propertyType', 'area'])
             ->paginate(10)->withQueryString();
 
-        return Inertia::render('Admin/Properties/Index', ['properties' => PropertyListResource::collection($properties)]);
+        return Inertia::render('Admin/Properties/Index', [
+            'properties' => PropertyListResource::collection($properties),
+            // Options for the table's purpose toggle and status dropdown
+            'purposes' => ListingPurpose::options(),
+            'statuses' => PropertyStatus::options(),
+        ]);
     }
 
     /**

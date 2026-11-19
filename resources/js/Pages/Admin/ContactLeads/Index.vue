@@ -15,7 +15,7 @@
             <tbody class="divide-y divide-slate-100">
             <tr v-for="lead in contactLeads.data" :key="lead.id" class="transition-colors hover:bg-slate-50">
                 <TableCell>
-                    <p class="font-medium text-slate-900">{{ lead.full_name }}</p>
+                    <RowTitle :href="route('contactLeads.edit', lead.id)" title="Open message">{{ lead.full_name }}</RowTitle>
                     <p class="text-xs text-slate-500">{{ lead.email }}</p>
                 </TableCell>
                 <TableCell class="whitespace-nowrap tabular-nums">{{ lead.phone }}</TableCell>
@@ -43,6 +43,7 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
+import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {formatDate} from '@/Composables/useFormatters.js';
 

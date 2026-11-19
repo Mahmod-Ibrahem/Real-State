@@ -3,7 +3,7 @@
         <template #actions>
             <ContactActions :phone="propertyLead.phone" :email="propertyLead.email"/>
         </template>
-        <PropertyLeadForm :lead="propertyLead"/>
+        <PropertyLeadForm :lead="propertyLead" :properties="properties"/>
     </AuthenticatedLayout>
 </template>
 
@@ -14,5 +14,7 @@ import PropertyLeadForm from './PropertyLeadForm.vue';
 
 defineProps({
     propertyLead: {type: Object, required: true},
+    // [{id, name}] for the property select
+    properties: {type: Array, required: true},
 });
 </script>

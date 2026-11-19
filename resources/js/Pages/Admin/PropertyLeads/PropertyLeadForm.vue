@@ -5,8 +5,8 @@
             <TextField v-model="form.full_name" label="Name" required :error="form.errors.full_name"/>
             <TextField v-model="form.email" label="Email" type="email" required :error="form.errors.email"/>
             <TextField v-model="form.phone" label="Phone" type="tel" required :error="form.errors.phone"/>
-            <TextField v-model="form.property_id" label="Property ID" type="number" min="1" required
-                       :error="form.errors.property_id"/>
+            <SelectField v-model="form.property_id" label="Property" :options="properties" placeholder="Select a property"
+                         required :error="form.errors.property_id"/>
         </div>
         <TextField v-model="form.message" label="Message" type="textarea" :rows="5" required :error="form.errors.message"/>
     </FormCard>
@@ -15,11 +15,14 @@
 <script setup>
 import {useForm} from '@inertiajs/vue3';
 import FormCard from '@/Components/Admin/ui/FormCard.vue';
+import SelectField from '@/Components/Admin/ui/SelectField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import {saveResource} from '@/Composables/useResourceForm.js';
 
 const props = defineProps({
     lead: {type: Object, required: true},
+    // [{id, name}]
+    properties: {type: Array, required: true},
 });
 
 const form = useForm({

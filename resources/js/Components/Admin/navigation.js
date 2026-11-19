@@ -4,7 +4,6 @@ import {
     BuildingOffice2Icon,
     BuildingLibraryIcon,
     ChatBubbleLeftRightIcon,
-    DocumentTextIcon,
     GlobeAltIcon,
     InboxIcon,
     ListBulletIcon,
@@ -53,7 +52,6 @@ export const NAV_GROUPS = [
         label: 'Content',
         items: [
             {label: 'FAQs', route: 'faq.index', icon: QuestionMarkCircleIcon},
-            {label: 'Site content', route: 'content.index', icon: DocumentTextIcon},
             {label: 'Brokers', route: 'broker.index', icon: UserGroupIcon},
         ],
     },
