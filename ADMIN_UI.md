@@ -15,6 +15,10 @@ weight, spacing and a single accent colour, not decoration.
 - All admin routes live under the `/admin` prefix. `HandleInertiaRequests` picks the `admin` root view and a
   separate asset version for `/admin/*`, so crossing between site and admin is always a full page load and
   the bundles never mix.
+- **URLs are kebab-case and plural**: `/admin/property-types`, `/admin/faqs`, never `/admin/propertyTypes`.
+  Route **names** stay camelCase so pages keep calling `route('propertyTypes.index')`; register with
+  `Route::resource('property-types', …)->names('propertyTypes')`. Admin resources have no `show` route, and
+  modal-edited resources (§5) have no `create`/`edit` routes either: declare them with `->only([...])`.
 - Consequence: the Bootstrap-collision rules in `CLAUDE.md` do **not** apply to admin code. Use any Tailwind
   utility (`py-3`, `gap-4`, `shadow-sm`, `border`, …) normally. Still no `!` important hacks.
 - Admin-only components live in `resources/js/Components/Admin/`. Never import them from public pages, and
@@ -54,7 +58,7 @@ weight, spacing and a single accent colour, not decoration.
 - Navigation is data, not markup: `Components/Admin/navigation.js` exports `NAV_GROUPS`
   (`{label, items:[{label, route, icon}]}`) and `findNavItem(routeName)`. Sidebar, active state and the
   breadcrumb all read from it. A new admin section = one entry there.
-- An item is active on all of its resource routes (`cities.index`, `cities.create`, `cities.edit`).
+- An item is active on all of its resource routes (`properties.index`, `properties.create`, `properties.edit`).
 - Every page passes `title` (and optionally `description`) to the layout; the layout renders `<Head>`,
   the breadcrumb and the `PageHeader`. Page-level buttons go in the layout's `#actions` slot.
 
@@ -67,22 +71,28 @@ component (and this table), don't fork the styles.
 |---|---|
 | `ui/Button.vue` | `variant`: `primary` (indigo, shadow-sm) · `secondary` (white, slate-300 border) · `ghost` (no border) · `danger`. `size`: `sm` (h-8) · `md` (h-9). `href` renders an Inertia `Link`. `icon` prop for a leading heroicon. `loading` disables and shows a spinner. |
 | `ui/Panel.vue` | White `rounded-xl border` card with optional header (`title`, `hint`, `#action` slot). Dashboard sections and form sections. |
-| `ui/TableCard.vue` | List screens: toolbar (“Found **N** cities”, search box, create button) + `<table>` slot + empty state + `Pagination`. Paginated lists search on the server (reloads with `?search=`); unpaginated lists pass `client-search` + `v-model:search` and filter their rows with `Composables/useClientSearch.js`. `meta` accepts a resource's `meta` or a raw Laravel paginator (both have `links`, `from`, `to`, `total`). |
+| `ui/TableCard.vue` | List screens: toolbar (“Found **N** cities”, search box, create button: a link with `create-href`, or with `creatable` a button emitting `create` for modal resources) + `<table>` slot + empty state + `Pagination`. Paginated lists search on the server (reloads with `?search=`); unpaginated lists pass `client-search` + `v-model:search` and filter their rows with `Composables/useClientSearch.js`. `meta` accepts a resource's `meta` or a raw Laravel paginator (both have `links`, `from`, `to`, `total`). |
 | `ui/TableHeadingCell.vue` | `<th>`: `px-4 py-2.5 text-xs font-medium text-slate-500 text-left whitespace-nowrap`. |
 | `ui/TableCell.vue` | `<td>` with the recipe built in: `px-4 py-3 text-sm`; `variant`: `default` (slate-600) · `primary` (font-medium slate-900, the row's name) · `muted` (slate-500, ids/dates); `align="right"` for actions. |
-| `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil, `Link`) and delete (trash, red hover). Always with `aria-label`/`title`. |
+| `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil) and delete (trash, red hover). Edit is a `Link` when given `edit-href`, or a button emitting `edit` when given `editable` (modal resources). Always with `aria-label`/`title`. |
 | `ui/Pagination.vue` | “Showing X–Y of Z” + prev/numbered/next buttons from a Laravel paginator `meta`. Hidden when there is one page. |
 | `ui/StatusBadge.vue` | `tone`: `success`·`warning`·`danger`·`info`·`neutral`. `rounded-full px-2 py-0.5 text-xs font-medium`. |
 | `ui/FormCard.vue` | Form screens: `Panel` with the fields in a `space-y-5` body and a footer bar (`border-t bg-slate-50/80`): Cancel (ghost, left) · submit (primary, right, “Saving…” while processing). |
+| `ui/Modal.vue` | The only dialog shell (Headless UI `Dialog`: focus trap, Esc/backdrop close, nested dialogs). Backdrop `bg-slate-900/50`, panel `bg-white rounded-xl shadow-lg`, header title `text-base font-semibold` + optional description + close (×). `size`: `sm` (max-w-md) · `md` (max-w-lg) · `lg` (max-w-2xl) · `xl` (max-w-3xl). Fade + slight scale, 150–200ms. |
+| `ui/FormModal.vue` | `Modal` + `<form>`: fields in a `space-y-5` body, footer bar identical to `FormCard` (Cancel · submit). Used by every modal-edited resource. Closing is blocked while saving. |
 | `ui/FormSection.vue` | Groups fields in long forms (property): title `text-sm font-semibold text-slate-900` + optional description, fields in `grid gap-5 sm:grid-cols-2`; sections after the first are separated by `border-t border-slate-200 pt-6`. Use when a form has more than ~6 fields. |
 | `ui/TextField.vue` | Label above (`text-sm font-medium text-slate-700`), input `h-10 rounded-lg border-slate-300 px-3 text-sm`, hint `text-xs text-slate-500`, error `text-xs text-red-600` + red border. `type="textarea"` for multi-line. |
 | `ui/SelectField.vue` | Same frame as `TextField` for a native `<select>`; `options` are `{id, name}`; `placeholder` is the disabled first option. Use for every single-choice field (cascading location selects included). |
 | `ui/ToggleField.vue` | Switch for booleans (`is_published`), label to the right. |
-| `ui/ImageField.vue` | File input with current-image preview (`rounded-lg border`, object-cover) and “Replace” affordance. |
-| `ui/ImagesField.vue` | Multi-file variant: dashed drop area (`border-dashed border-slate-300 rounded-xl`) + removable `h-20 w-20 rounded-lg` thumbnails of the files picked so far. Property gallery uploads. |
+| `ui/ImageField.vue` | Single image, Mr Egypt Tours style: a dashed `rounded-xl` box at the image's real `aspect-ratio` (“Click to upload · you can crop it next”); picking a file opens `ImageCropDialog`; the cropped result fills the box with a “Change image” hover overlay and an “Adjust crop” link. Emits the cropped `File` (JPEG). `aspect-ratio`: 4/3 for property and type covers, 1 for broker photos. |
+| `ui/ImagesField.vue` | Gallery grid: `aspect-[4/3] rounded-lg` tiles + a dashed “Add photos” tile. Picked photos go through a crop queue (“Crop & next”, “Skip”, “Cancel all”, “2 of 5”); cropped ones show as dashed-indigo “New” tiles, removable before upload. `v-model` is the cropped `File[]`; `saved` (`[{id, url}]`) renders already-saved tiles first with a remove button (`@remove`). Thumbnails open `ImageLightbox`. |
+| `ui/ImageCropDialog.vue` | `Modal` around `vue-advanced-cropper`: fixed aspect frame, rotate left/right, output capped at 1600px, JPEG 0.9. Only used through `ImageField`/`ImagesField`. |
+| `ui/ImageLightbox.vue` | Full-screen preview (`bg-slate-900/85`, `object-contain`), closes on click or Esc. |
+| Gallery | The property gallery lives **inside the property form** (`Properties/PropertyGallery.vue`, Media section), mirroring Mr Egypt Tours' `TourGalleryManager`. It has **no controller or routes of its own**: everything is saved by `PropertyController` with the property. New cropped photos go as `propertyImages[]`; removing a saved photo hides its tile and adds its id to `removed_image_ids[]` (“N to remove on save”, with Undo), and the server deletes those files on update. While saving, an indigo progress bar shows the upload (`form.progress`). |
 | `ui/Toast.vue` + `Composables/useToast.js` | Top-right, white, `rounded-xl border shadow-lg`, green/red left icon. Every create/update/delete shows one. |
 | PrimeVue `MultiSelect`, `Editor` | Only where a native control can't do the job (multi-choice features, rich-text description). Themed in `admin.js` with `primary` = Tailwind indigo so they match; wrap them in the same label/error frame as `TextField`. No other PrimeVue widgets. |
-| `Composables/useResourceForm.js` | `saveResource(form, 'cities', 'city', {id, multipart})`: `post` to `.store` or `put` to `.update` (multipart updates are sent as POST + `_method=put` so files upload), then toasts “City created/updated”; server `errors.database` → error toast. Forms send `locale: page.props.locale` (the content language chosen in the top bar), never a hard-coded `'en'`. |
+| `Composables/useResourceForm.js` | `saveResource(form, 'cities', 'city', {id, multipart, onSuccess})`: `post` to `.store` or `put` to `.update` (multipart updates are sent as POST + `_method=put` so files upload), then toasts “City created/updated”; server `errors.database` → error toast. Forms send `locale: page.props.locale` (the content language chosen in the top bar), never a hard-coded `'en'`. `resetFormOnOpen(form, () => props.open, () => fields)` refills a modal form with the record being edited (or blanks) and clears errors each time it opens. |
+| `Composables/useResourceModal.js` | List-page modal state: `{isOpen, record, openCreate(), openEdit(row), close()}`. `record` is `null` when creating. |
 | `Composables/useConfirmDelete.js` | `confirmDelete(routeName, id, noun)`: confirm dialog → `router.delete` → success or error toast (server errors come back as `errors.database`). Tables never re-implement this. |
 
 ## 5. Page recipes
@@ -92,9 +102,17 @@ component (and this table), don't fork the styles.
   `font-medium text-slate-900`, others `text-slate-600`; ids as `#12 text-slate-500`; images as
   `h-10 w-14 rounded-md object-cover`; last column `RowActions`. Empty state text says what to do
   (“No cities yet. Add your first city.” / “No cities match ‘x’.”).
-- **Form page** (create & edit share one `XForm.vue`) = layout with `title="New city"` / `"Edit city"` →
-  `FormCard` (fills the content width, no `max-w-*` cap on forms or their wrappers) → fields. Related fields sit in a `grid gap-5 sm:grid-cols-2`.
-  Cancel returns to the list. Validation errors render under each field from `form.errors`.
+- **Modal create/edit** for small resources: property types, classifications, features, feature types,
+  countries, cities, areas, FAQs. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
+  (`TableCard creatable @create`) calls `openCreate()`, `RowActions editable @edit` calls `openEdit(row)`; one
+  `XForm.vue` renders `FormModal` (title “New city” / “Edit Cairo”). On success the modal closes and the list
+  refreshes in place; on validation errors it stays open with the errors under the fields. The list
+  controller passes the select options the form needs (e.g. `countries` for cities), and `store`/`update`
+  `redirect()->back()` so page and search survive. The row resource must carry every field the form edits.
+- **Form page** for big forms (properties, brokers, site content): layout with `title="New property"` /
+  `"Edit …"` → `FormCard` (fills the content width, no `max-w-*` cap on forms or their wrappers) → fields.
+  Related fields sit in a `grid gap-5 sm:grid-cols-2`. Cancel returns to the list. Validation errors render
+  under each field from `form.errors`.
 - **Dashboard** = `grid gap-4` of `Panel`s; numbers use the metric style; each metric links to its list.
 - **Auth pages** (`GuestLayout`) = centered `max-w-sm` white card, logo above, same fields and buttons.
 - **Logo** (`@/assets/images/logo.jpg`) is a wide wordmark: set a height only (`h-8 w-auto object-contain`);

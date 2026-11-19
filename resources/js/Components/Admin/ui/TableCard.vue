@@ -14,6 +14,7 @@
                 </div>
                 <slot name="actions"/>
                 <Button v-if="createHref" :href="createHref" :icon="PlusIcon">{{ createLabel }}</Button>
+                <Button v-else-if="creatable" :icon="PlusIcon" @click="emit('create')">{{ createLabel }}</Button>
             </div>
         </div>
 
@@ -46,13 +47,16 @@ const props = defineProps({
     count: {type: Number, default: null},
     empty: {type: Boolean, default: false},
     emptyText: {type: String, default: 'Nothing here yet.'},
+    // Create on its own page
     createHref: {type: String, default: null},
+    // Create in a modal: the button emits `create`
+    creatable: {type: Boolean, default: false},
     createLabel: {type: String, default: 'Add new'},
     searchable: {type: Boolean, default: true},
     // Unpaginated lists filter their own rows: bind v-model:search instead of hitting the server
     clientSearch: {type: Boolean, default: false},
 });
-const emit = defineEmits(['update:search']);
+const emit = defineEmits(['update:search', 'create']);
 
 const total = computed(() => props.count ?? props.meta?.total ?? 0);
 

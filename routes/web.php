@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\PropertyController;
-use App\Http\Controllers\Admin\PropertyImagesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -30,25 +29,35 @@ Route::fallback(function () {
 });
 Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->group(function () {
     Route::redirect('/', '/admin/dashboard');
-    // Admin has no detail pages: lists link straight to edit, so every resource skips `show`
-    Route::resource('areas', AreaController::class)->except('show');
-    Route::resource('countries', \App\Http\Controllers\Admin\CountryController::class)->except('show');
-    Route::resource('cities', \App\Http\Controllers\Admin\CityController::class)->except('show');
+    $modalResource = ['index', 'store', 'update', 'destroy'];
+
+    Route::get('/dashboard', \App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
+
     Route::resource('properties', PropertyController::class)->except('show');
-    Route::resource('propertyImages', PropertyImagesController::class)->only(['index', 'store', 'destroy']);
-    Route::resource('propertyTypes', \App\Http\Controllers\Admin\PropertyTypeController::class)->except('show');
-    Route::resource('propertyFeatures', \App\Http\Controllers\Admin\PropertyFeatureController::class)->except('show');
-    Route::resource('propertyClassifications', \App\Http\Controllers\Admin\PropertyClassificationController::class)->except('show');
-    route::get('/dashboard', \App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
+    Route::resource('property-types', \App\Http\Controllers\Admin\PropertyTypeController::class)->names('propertyTypes')
+        ->only($modalResource);
+    Route::resource('property-classifications', \App\Http\Controllers\Admin\PropertyClassificationController::class)
+        ->names('propertyClassifications')->only($modalResource);
+    Route::resource('property-features', \App\Http\Controllers\Admin\PropertyFeatureController::class)
+        ->names('propertyFeatures')->only($modalResource);
+    Route::resource('feature-types', \App\Http\Controllers\Admin\FeatureTypeController::class)->only($modalResource);
+
+    Route::resource('countries', \App\Http\Controllers\Admin\CountryController::class)->only($modalResource);
+    Route::resource('cities', \App\Http\Controllers\Admin\CityController::class)->only($modalResource);
+    Route::resource('areas', AreaController::class)->only($modalResource);
+
+    Route::resource('property-leads', \App\Http\Controllers\Admin\PropertyLeadController::class)->names('propertyLeads')
+        ->only(['index', 'edit', 'update', 'destroy']);
+    Route::resource('contact-leads', \App\Http\Controllers\Admin\ContactLeadController::class)->names('contactLeads')
+        ->only(['index', 'edit', 'update', 'destroy']);
+
+    Route::resource('faqs', \App\Http\Controllers\Admin\FaqController::class)->names('faq')->only($modalResource);
+    Route::resource('content', \App\Http\Controllers\Admin\BasicContentController::class)->only(['index', 'edit', 'update']);
+    Route::resource('brokers', \App\Http\Controllers\Admin\BrokerController::class)->names('broker')->except('show');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('/faq', \App\Http\Controllers\Admin\FaqController::class)->except('show');
-    Route::resource('/content', \App\Http\Controllers\Admin\BasicContentController::class)->only(['index', 'edit', 'update']);
-    Route::resource('/propertyLeads', \App\Http\Controllers\Admin\PropertyLeadController::class)->except('show');
-    Route::resource('/contactLeads', \App\Http\Controllers\Admin\ContactLeadController::class)->except('show');
-    Route::resource('/broker', \App\Http\Controllers\Admin\BrokerController::class)->except('show');
-    Route::resource('feature-types', \App\Http\Controllers\Admin\FeatureTypeController::class)->except('show');
 });
 
 require __DIR__ . '/auth.php';

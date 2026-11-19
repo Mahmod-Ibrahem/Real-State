@@ -18,5 +18,7 @@ defineProps({
     purposes: {type: Array, required: true},
     statuses: {type: Array, required: true},
     features: {type: Object, required: true},
+    // Saved gallery photos: [{id, url}]
+    gallery: {type: Array, required: true},
 });
 </script>

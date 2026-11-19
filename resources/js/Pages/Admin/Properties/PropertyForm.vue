@@ -62,14 +62,11 @@
 
         <FormSection title="Media">
             <ImageField v-model="form.image" label="Cover image" :current-url="property?.image ?? ''"
-                        :required="!property" :error="form.errors.image"/>
-            <ImagesField v-if="!property" v-model="form.propertyImages" label="Gallery" required
-                         :error="form.errors.propertyImages"/>
-            <div v-else class="flex items-end">
-                <Button variant="secondary" :href="route('propertyImages.index', {propertyId: property.id})" :icon="PhotoIcon">
-                    Manage gallery
-                </Button>
-            </div>
+                        hint="The main photo on cards and the property page." :required="!property"
+                        :error="form.errors.image" class="sm:col-span-2"/>
+            <PropertyGallery v-model="form.propertyImages" v-model:removed-ids="form.removed_image_ids" :saved="gallery"
+                             :saving="form.processing" :progress="form.progress" :required="!property"
+                             :error="galleryError" class="sm:col-span-2"/>
         </FormSection>
     </FormCard>
 </template>
@@ -79,13 +76,11 @@ import {computed, watch} from 'vue';
 import {useForm} from '@inertiajs/vue3';
 import MultiSelect from 'primevue/multiselect';
 import Editor from 'primevue/editor';
-import {PhotoIcon} from '@heroicons/vue/24/outline';
-import Button from '@/Components/Admin/ui/Button.vue';
 import FieldFrame from '@/Components/Admin/ui/FieldFrame.vue';
 import FormCard from '@/Components/Admin/ui/FormCard.vue';
 import FormSection from '@/Components/Admin/ui/FormSection.vue';
 import ImageField from '@/Components/Admin/ui/ImageField.vue';
-import ImagesField from '@/Components/Admin/ui/ImagesField.vue';
+import PropertyGallery from './PropertyGallery.vue';
 import SelectField from '@/Components/Admin/ui/SelectField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import ToggleField from '@/Components/Admin/ui/ToggleField.vue';
@@ -104,6 +99,8 @@ const props = defineProps({
     purposes: {type: Array, required: true},
     statuses: {type: Array, required: true},
     features: {type: Object, required: true},
+    // Saved gallery photos when editing: [{id, url}]
+    gallery: {type: Array, default: () => []},
 });
 
 const form = useForm({
@@ -128,7 +125,9 @@ const form = useForm({
     year_built: props.property?.year_built ?? '',
     feature_ids: props.property?.featureIds ?? [],
     image: null,
+    // Gallery changes, saved with the property
     propertyImages: [],
+    removed_image_ids: [],
     locale: currentLocale(),
 });
 
@@ -149,6 +148,10 @@ const allowedStatuses = computed(() =>
 watch(() => form.purpose, () => {
     if (!allowedStatuses.value.some((status) => status.id === form.status)) form.status = 'available';
 });
+
+// First gallery error: the array itself ("required") or one of its photos ("propertyImages.2")
+const galleryError = computed(() => form.errors.propertyImages
+    ?? Object.entries(form.errors).find(([key]) => key.startsWith('propertyImages.'))?.[1] ?? '');
 
 const save = () => saveResource(form, 'properties', 'property', {id: props.property?.id, multipart: true});
 </script>

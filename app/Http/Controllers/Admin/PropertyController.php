@@ -90,13 +90,7 @@ class PropertyController extends Controller
             $validatedData['image'] = $this->storeImage($validatedData['image'], 'property');
             $property = Property::create($validatedData);
 
-            // Store Property Images
-            foreach ($validatedData['propertyImages'] as $image) {
-                PropertyImages::create([
-                    'property_id' => $property->id,
-                    'image' => $this->storeImage($image, 'property'),
-                ]);
-            }
+            $this->addGalleryImages($property, $validatedData['propertyImages']);
 
             // Store Property Features
             $this->setPropertyFeatures($property, $validatedData['feature_ids']);
@@ -128,7 +122,11 @@ class PropertyController extends Controller
             $countries = CountryResource::collection(Country::all());
             return Inertia::render('Admin/Properties/Edit',
                 ['cities' => $cities, 'areas' => $areas, 'purposes' => ListingPurpose::options(), 'statuses' => PropertyStatus::options(), 'features' => $features, 'propertyClassification' => $propertyClassification
-                    , 'propertyTypes' => $propertyTypes, 'property' => PropertyResource::make($property), 'countries' => $countries]);
+                    , 'propertyTypes' => $propertyTypes, 'property' => PropertyResource::make($property), 'countries' => $countries,
+                    // Saved gallery photos for the form's gallery manager
+                    'gallery' => $property->propertyImages()->get(['id', 'image'])
+                        ->map(fn ($image) => ['id' => $image->id, 'url' => $image->image]),
+                ]);
         }
     }
 
@@ -155,6 +153,9 @@ class PropertyController extends Controller
             }
             //Update Property Features
             $this->setPropertyFeatures($property, $validatedData['feature_ids']);
+            // Gallery changes made in the form
+            $this->removeGalleryImages($property, $validatedData['removed_image_ids'] ?? []);
+            $this->addGalleryImages($property, $validatedData['propertyImages'] ?? []);
             //Update Property
             $property->update($validatedData);
 
@@ -183,5 +184,22 @@ class PropertyController extends Controller
     {
         $property->features()->detach();
         $property->features()->attach($validatedData);
+    }
+
+    /** Stores newly cropped gallery photos (the gallery has no controller of its own; see ADMIN_UI.md §4). */
+    private function addGalleryImages(Property $property, array $images): void
+    {
+        foreach ($images as $image) {
+            $property->propertyImages()->create(['image' => $this->storeImage($image, 'property')]);
+        }
+    }
+
+    /** Deletes the gallery photos removed in the form; scoped to this property so other ids are ignored. */
+    private function removeGalleryImages(Property $property, array $imageIds): void
+    {
+        $property->propertyImages()->whereIn('id', $imageIds)->get()->each(function (PropertyImages $image) {
+            Storage::delete($this->getRelativePath($image->image));
+            $image->delete();
+        });
     }
 }

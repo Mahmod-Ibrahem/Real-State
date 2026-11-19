@@ -3,7 +3,7 @@
         <TableCard noun="classifications" :count="propertyClassifications.data.length" :empty="!filtered.length"
                    empty-text="No classifications yet. Add your first classification."
                    client-search v-model:search="search"
-                   :create-href="route('propertyClassifications.create')" create-label="Add classification">
+                   creatable create-label="Add classification" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>ID</TableHeadingCell>
@@ -16,12 +16,14 @@
                 <TableCell variant="muted">#{{ classification.id }}</TableCell>
                 <TableCell variant="primary">{{ classification.name }}</TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('propertyClassifications.edit', classification.id)"
+                    <RowActions editable @edit="modal.openEdit(classification)"
                                 @delete="confirmDelete('propertyClassifications.destroy', classification.id, 'classification')"/>
                 </TableCell>
             </tr>
             </tbody>
         </TableCard>
+
+        <ClassificationForm :open="modal.isOpen.value" :classification="modal.record.value" @close="modal.close()"/>
     </AuthenticatedLayout>
 </template>
 
@@ -33,10 +35,13 @@ import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useClientSearch} from '@/Composables/useClientSearch.js';
+import {useResourceModal} from '@/Composables/useResourceModal.js';
+import ClassificationForm from './ClassificationForm.vue';
 
 const props = defineProps({
     propertyClassifications: {type: Object, required: true},
 });
 
 const {search, filtered} = useClientSearch(() => props.propertyClassifications.data, ['name']);
+const modal = useResourceModal();
 </script>

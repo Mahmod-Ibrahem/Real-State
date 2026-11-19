@@ -3,53 +3,43 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\FeatureType;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class FeatureTypeController extends Controller
 {
+    private const RULES = ['name' => ['required', 'string', 'max:255']];
+
     public function index()
     {
-        $featureTypes = \App\Models\FeatureType::all()->map(function ($featureType) {
-            return [
+        return Inertia::render('Admin/FeatureTypes/Index', [
+            'featureTypes' => FeatureType::all()->map(fn (FeatureType $featureType) => [
                 'id' => $featureType->id,
                 'name' => $featureType->name,
-                'featureTypeName' => $featureType->name
-            ];
-        });
-        return Inertia::render('Admin/FeatureTypes/Index', ['featureTypes' => $featureTypes]);
+            ]),
+        ]);
     }
 
-    public function create()
+    public function store(Request $request)
     {
-        return Inertia::render('Admin/FeatureTypes/Create');
+        FeatureType::create($request->validate(self::RULES));
+
+        return back();
     }
 
-    public function store()
+    public function update(Request $request, FeatureType $featureType)
     {
-        $featureType = \App\Models\FeatureType::create(request()->all());
-        return redirect()->route('feature-types.index');
+        $featureType->update($request->validate(self::RULES));
+
+        return back();
     }
 
-    public function edit(string $featureType)
+    public function destroy(FeatureType $featureType)
     {
-        $featureType = \App\Models\FeatureType::findOrFail($featureType);
-        return Inertia::render('Admin/FeatureTypes/Edit', ['featureType' => [
-            'id' => $featureType->id,
-            'name' => $featureType->name
-        ]]);
-    }
-
-    public function update(string $featureType)
-    {
-        $featureType = \App\Models\FeatureType::findOrFail($featureType);
-        $featureType->update(request()->all());
-        return redirect()->route('feature-types.index');
-    }
-
-    public function destroy(string $featureType)
-    {
-        $featureType = \App\Models\FeatureType::findOrFail($featureType);
         $featureType->delete();
-        return redirect()->route('feature-types.index');
+
+        return back();
     }
 }

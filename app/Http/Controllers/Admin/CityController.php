@@ -8,76 +8,53 @@ use App\Http\Resources\CityResource;
 use App\Http\Resources\CountryResource;
 use App\Models\City;
 use App\Models\Country;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class CityController extends Controller
 {
     public function index()
     {
-        $cities = City::query()->with('country');
-        $search = request('search');
-        if ($search) {
-            $cities = $cities->where('name', 'like', '%' . $search . '%');
-        }
+        $cities = City::query()->with('country')
+            ->when(request('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"));
+
         return Inertia::render('Admin/Cities/Index', [
-            'cities' => CityResource::collection($cities->paginate(10)->withQueryString())
-        ]);
-    }
-
-    public function create()
-    {
-        return Inertia::render('Admin/Cities/Create', ['countries' => CountryResource::collection(Country::all())]);
-    }
-
-    public function store(CityRequest $request)
-    {
-
-        $validatedData = $request->validated();
-
-        try {
-            City::create($validatedData);
-        } catch (\Exception $e) {
-            $errorMessage = $this->handleDbErrors($e);
-            return back()->withErrors(['database' => $errorMessage]);
-        }
-
-        return redirect()->route('cities.index', ['locale' => 'en'])->with('success', 'City created successfully.');
-    }
-
-    public function edit(City $city)
-    {
-        if (!$city->exists()) {
-            return Inertia::render('404');
-        }
-        return Inertia::render('Admin/Cities/Edit', [
-            'city' => new CityResource($city),
+            'cities' => CityResource::collection($cities->paginate(10)->withQueryString()),
+            // Options for the modal's country select
             'countries' => CountryResource::collection(Country::all()),
         ]);
     }
 
+    public function store(CityRequest $request)
+    {
+        try {
+            City::create($request->validated());
+        } catch (\Exception $e) {
+            return back()->withErrors(['database' => $this->handleDbErrors($e)]);
+        }
+
+        return back();
+    }
+
     public function update(CityRequest $request, City $city)
     {
-        $validatedData = $request->validated();
+        try {
+            $city->update($request->validated());
+        } catch (\Exception $e) {
+            return back()->withErrors(['database' => $this->handleDbErrors($e)]);
+        }
 
-        $city->update($validatedData);
-        $city->save();
-        return redirect()->route('cities.index')->with('success', 'City updated successfully.');
+        return back();
     }
 
     public function destroy(City $city)
     {
-        if (!$city->exists()) {
-            return Inertia::render('404');
-        }
-
         if ($city->areas()->exists() || $city->properties()->exists()) {
             return back()->withErrors(['database' => 'This city still has areas or properties. Move or delete them first.']);
         }
 
         $city->delete();
 
-        return redirect()->route('cities.index')->with('success', 'City deleted successfully.');
+        return back();
     }
 }

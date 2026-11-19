@@ -6,66 +6,44 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PropertyClassificationRequest;
 use App\Http\Resources\PropertyClassificationeResource;
 use App\Models\PropertyClassifications;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class PropertyClassificationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $propertyClassifications = PropertyClassificationeResource::collection(PropertyClassifications::all());
-        return Inertia::render('Admin/PropertyClassifications/Index', ['propertyClassifications' => $propertyClassifications]);
-    }
-
-    public function create()
-    {
-        return Inertia::render('Admin/PropertyClassifications/Create');
+        return Inertia::render('Admin/PropertyClassifications/Index', [
+            'propertyClassifications' => PropertyClassificationeResource::collection(PropertyClassifications::all()),
+        ]);
     }
 
     public function store(PropertyClassificationRequest $request)
     {
-        $validatedData = $request->validated();
-
         try {
-            PropertyClassifications::create($validatedData);
+            PropertyClassifications::create($request->validated());
         } catch (\Exception $e) {
-            $errorMessage = $this->handleDbErrors($e);
-            return back()->withErrors(['database' => $errorMessage]);
+            return back()->withErrors(['database' => $this->handleDbErrors($e)]);
         }
 
-        return redirect()->route('propertyClassifications.index')->with('success', 'Property Classification created successfully.');
-    }
-
-    public function edit(PropertyClassifications $propertyClassification)
-    {
-        if (!$propertyClassification->exists()) {
-            return Inertia::render('404');
-        }
-        return Inertia::render('Admin/PropertyClassifications/Edit', ['propertyClassification' => new PropertyClassificationeResource($propertyClassification)]);
+        return back();
     }
 
     public function update(PropertyClassificationRequest $request, PropertyClassifications $propertyClassification)
     {
-
-        $validatedData = $request->validated();
-
-        if (!$propertyClassification->exists()) {
-            return Inertia::render('404');
+        try {
+            $propertyClassification->update($request->validated());
+        } catch (\Exception $e) {
+            return back()->withErrors(['database' => $this->handleDbErrors($e)]);
         }
-        $propertyClassification->update($validatedData);
 
-        return redirect()->route('propertyClassifications.index')->with('success', 'Property Classification updated successfully.');
+        return back();
     }
 
     public function destroy(PropertyClassifications $propertyClassification)
     {
-        if (!$propertyClassification->exists()) {
-            return Inertia::render('404');
-        }
         $propertyClassification->delete();
-        return redirect()->route('propertyClassifications.index')->with('success', 'Property Classification deleted successfully.');
+
+        return back();
     }
 }

@@ -6,73 +6,42 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FeatureRequest;
 use App\Http\Resources\FeatureResource;
 use App\Models\Feature;
-use Illuminate\Http\Request;
+use App\Models\FeatureType;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class PropertyFeatureController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $features = FeatureResource::collection(Feature::with('featureType')->get());
-        return Inertia::render('Admin/Features/Index', ['features' => $features]);
-    }
-
-    public function create()
-    {
-        // Same {id, name} shape as edit(); name is translated to the current locale
-        $featureTypes = \App\Models\FeatureType::all()->map(fn ($featureType) => [
-            'id' => $featureType->id,
-            'name' => $featureType->name,
+        return Inertia::render('Admin/Features/Index', [
+            'features' => FeatureResource::collection(Feature::with('featureType')->get()),
+            // Options for the modal's type select; names are in the current locale
+            'featureTypes' => FeatureType::all()->map(fn (FeatureType $featureType) => [
+                'id' => $featureType->id,
+                'name' => $featureType->name,
+            ]),
         ]);
-        return Inertia::render('Admin/Features/Create',
-            ['featureTypes' => $featureTypes]);
     }
 
     public function store(FeatureRequest $request)
     {
-        $validatedData = $request->validated();
+        Feature::create($request->validated());
 
-        Feature::create($validatedData);
-
-        return redirect()->route('propertyFeatures.index')->with('success', 'Features created successfully.');
-    }
-
-    public function edit(Feature $propertyFeature)
-    {
-        if (!$propertyFeature->exists()) {
-            return Inertia::render('404');
-        }
-        $featureTypes = \App\Models\FeatureType::all()->map(function ($featureType) {
-            return [
-                'id' => $featureType->id,
-                'name' => $featureType->name,
-            ];
-        });
-        return Inertia::render('Admin/Features/Edit', ['feature' => new FeatureResource($propertyFeature),
-            'featureTypes' => $featureTypes]);
+        return back();
     }
 
     public function update(FeatureRequest $request, Feature $propertyFeature)
     {
+        $propertyFeature->update($request->validated());
 
-        if (!$propertyFeature) {
-            return Inertia::render('404');
-        }
-        $validatedData = $request->validated();
-        $propertyFeature->update($validatedData);
-
-        return redirect()->route('propertyFeatures.index')->with('success', 'Features updated successfully.');
+        return back();
     }
 
     public function destroy(Feature $propertyFeature)
     {
-        if (!$propertyFeature->exists()) {
-            return Inertia::render('404');
-        }
         $propertyFeature->delete();
-        return redirect()->route('propertyFeatures.index')->with('success', 'Features deleted successfully.');
+
+        return back();
     }
 }

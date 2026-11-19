@@ -7,8 +7,8 @@
             <TextField v-model="form.job_title" label="Job title" placeholder="e.g. Senior Agent" required
                        :error="form.errors.job_title"/>
         </div>
-        <ImageField v-model="form.image" label="Photo" :current-url="broker?.image ?? ''"
-                    hint="A square portrait works best. Up to 2 MB." :error="form.errors.image"/>
+        <ImageField v-model="form.image" label="Photo" :current-url="broker?.image ?? ''" :aspect-ratio="1"
+                    hint="Cropped to a square portrait after picking." :error="form.errors.image" class="max-w-xs"/>
         <div class="grid gap-5 sm:grid-cols-3">
             <TextField v-model="form.facebook" label="Facebook" type="url" placeholder="https://facebook.com/…"
                        :error="form.errors.facebook"/>

@@ -1,23 +1,32 @@
 <template>
-    <FormCard :submit-label="country ? 'Save changes' : 'Add country'" :cancel-href="route('countries.index')"
-              :processing="form.processing" @submit="saveResource(form, 'countries', 'country', {id: country?.id})">
-        <TextField v-model="form.name" label="Name" placeholder="e.g. Egypt" required autofocus :error="form.errors.name"/>
-    </FormCard>
+    <FormModal :open="open" :title="country ? `Edit ${country.name}` : 'New country'" size="sm"
+               :submit-label="country ? 'Save changes' : 'Add country'" :processing="form.processing"
+               @close="emit('close')" @submit="save">
+        <TextField v-model="form.name" label="Name" placeholder="e.g. Egypt" required :error="form.errors.name"/>
+    </FormModal>
 </template>
 
 <script setup>
 import {useForm} from '@inertiajs/vue3';
-import FormCard from '@/Components/Admin/ui/FormCard.vue';
+import FormModal from '@/Components/Admin/ui/FormModal.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
-import {currentLocale, saveResource} from '@/Composables/useResourceForm.js';
+import {currentLocale, resetFormOnOpen, saveResource} from '@/Composables/useResourceForm.js';
 
 const props = defineProps({
+    open: {type: Boolean, default: false},
     // null when creating
     country: {type: Object, default: null},
 });
+const emit = defineEmits(['close']);
 
-const form = useForm({
+const locale = currentLocale();
+const fields = () => ({
     name: props.country?.name ?? '',
-    locale: currentLocale(),
+    locale,
 });
+
+const form = useForm(fields());
+resetFormOnOpen(form, () => props.open, fields);
+
+const save = () => saveResource(form, 'countries', 'country', {id: props.country?.id, onSuccess: () => emit('close')});
 </script>

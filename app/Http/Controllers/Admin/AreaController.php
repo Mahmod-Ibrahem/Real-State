@@ -10,31 +10,18 @@ use App\Models\Area;
 use App\Models\City;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class AreaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $areas = Area::query()->with('city');
-        $search = request('search');
-        if ($search) {
-            $areas = $areas->where('name', 'like', '%' . $search . '%');
-        }
-        return Inertia::render('Admin/Areas/Index', ['areas' => AreaResource::collection($areas->paginate(10)->withQueryString())]);
-    }
+        $areas = Area::query()->with('city')
+            ->when(request('search'), fn ($query, $search) => $query->where('name', 'like', "%{$search}%"));
 
-    public function create()
-    {
-        return Inertia::render('Admin/Areas/Create', ['cities' => $this->cityOptions()]);
-    }
-
-    public function edit(Area $area)
-    {
-        return Inertia::render('Admin/Areas/Edit', [
-            'area' => new AreaResource($area),
-            'cities' => $this->cityOptions(),
+        return Inertia::render('Admin/Areas/Index', [
+            'areas' => AreaResource::collection($areas->paginate(10)->withQueryString()),
+            // Options for the modal's city select, with their country for "Cairo (Egypt)" labels
+            'cities' => CityResource::collection(City::with('country')->get()),
         ]);
     }
 
@@ -46,7 +33,7 @@ class AreaController extends Controller
             return back()->withErrors(['database' => $this->handleDbErrors($e)]);
         }
 
-        return redirect()->route('areas.index');
+        return back();
     }
 
     public function update(AreaRequest $request, Area $area)
@@ -61,7 +48,7 @@ class AreaController extends Controller
             return back()->withErrors(['database' => $this->handleDbErrors($e)]);
         }
 
-        return redirect()->route('areas.index');
+        return back();
     }
 
     public function destroy(Area $area)
@@ -71,12 +58,7 @@ class AreaController extends Controller
         }
 
         $area->delete();
-        return redirect()->route('areas.index');
-    }
 
-    /** Cities with their country name, e.g. "Cairo (Egypt)", for the parent select. */
-    private function cityOptions()
-    {
-        return CityResource::collection(City::with('country')->get());
+        return back();
     }
 }

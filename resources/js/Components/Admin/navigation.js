@@ -27,8 +27,7 @@ export const NAV_GROUPS = [
     {
         label: 'Listings',
         items: [
-            // Property images are managed from a property, so they keep "Properties" highlighted.
-            {label: 'Properties', route: 'properties.index', icon: BuildingOffice2Icon, also: ['propertyImages']},
+            {label: 'Properties', route: 'properties.index', icon: BuildingOffice2Icon},
             {label: 'Property types', route: 'propertyTypes.index', icon: SwatchIcon},
             {label: 'Classifications', route: 'propertyClassifications.index', icon: TagIcon},
             {label: 'Features', route: 'propertyFeatures.index', icon: ListBulletIcon},
@@ -67,14 +66,14 @@ export function findNavItem(routeName) {
     const resource = resourceOf(routeName);
     for (const group of NAV_GROUPS) {
         const item = group.items.find(
-            (entry) => resourceOf(entry.route) === resource || entry.also?.includes(resource)
+            (entry) => resourceOf(entry.route) === resource
         );
         if (item) return {group, item};
     }
     return null;
 }
 
-const ACTIONS = {create: 'New', edit: 'Edit', show: 'Details'};
+const ACTIONS = {create: 'New', edit: 'Edit'};
 
 /** Breadcrumb action label for a route name; 'cities.create' → 'New'. */
 export const actionOf = (routeName) => ACTIONS[String(routeName || '').split('.')[1]] ?? '';

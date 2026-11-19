@@ -7,53 +7,33 @@ use App\Http\Requests\PropertyTypeRequest;
 use App\Http\Resources\PropertyTypeResource;
 use App\Models\PropertyType;
 use App\Traits\ImagesUtility;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
+/** Created and edited in a modal on the list page (ADMIN_UI.md §5). */
 class PropertyTypeController extends Controller
 {
-
     use ImagesUtility;
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $propertyTypes = PropertyTypeResource::collection(PropertyType::all());
-        return Inertia::render('Admin/PropertyTypes/Index', ['propertyTypes' => $propertyTypes]);
-    }
-
-    public function create()
-    {
-        return Inertia::render('Admin/PropertyTypes/Create');
+        return Inertia::render('Admin/PropertyTypes/Index', [
+            'propertyTypes' => PropertyTypeResource::collection(PropertyType::all()),
+        ]);
     }
 
     public function store(PropertyTypeRequest $request)
     {
         $validatedData = $request->validated();
-
-        $validatedData['image'] = $this->storeImage($validatedData['image'], 'propertyType'); // Store the image path
+        $validatedData['image'] = $this->storeImage($validatedData['image'], 'propertyType');
 
         try {
             PropertyType::create($validatedData);
         } catch (\Exception $e) {
-            $errorMessage = $this->handleDbErrors($e);
-            return back()->withErrors(['database' => $errorMessage]);
+            return back()->withErrors(['database' => $this->handleDbErrors($e)]);
         }
 
-        return redirect()->route('propertyTypes.index')->with('success', 'Property Type created successfully.');
-    }
-
-    public function edit(PropertyType $propertyType)
-    {
-        if (!$propertyType->exists()) {
-            return Inertia::render('404');
-        }
-
-        return Inertia::render('Admin/PropertyTypes/Edit', ['propertyType' => new PropertyTypeResource($propertyType)]);
+        return back();
     }
 
     public function update(PropertyTypeRequest $request, PropertyType $propertyType)
@@ -61,27 +41,28 @@ class PropertyTypeController extends Controller
         $validatedData = $request->validated();
 
         if ($validatedData['image'] ?? false) {
-            if ($propertyType->image ?? false) {
-                $relativePath = $this->getRelativePath($propertyType->image);
-                Storage::delete($relativePath);
+            if ($propertyType->image) {
+                Storage::delete($this->getRelativePath($propertyType->image));
             }
-            $newStoredImage = $this->storeImage($validatedData['image'], 'propertyType'); //path data
-            $validatedData['image'] = $newStoredImage;
+            $validatedData['image'] = $this->storeImage($validatedData['image'], 'propertyType');
         } else {
-            $validatedData['image'] = $propertyType->image;
+            unset($validatedData['image']);
         }
-        $propertyType->image = $validatedData['image'];
-        $propertyType->update($validatedData);
-        $propertyType->save();
 
-        return redirect()->route('propertyTypes.index')->with('success', 'Property Type updated successfully.');
+        try {
+            $propertyType->update($validatedData);
+        } catch (\Exception $e) {
+            return back()->withErrors(['database' => $this->handleDbErrors($e)]);
+        }
+
+        return back();
     }
 
     public function destroy(PropertyType $propertyType)
     {
-        $relativePath = $this->getRelativePath($propertyType->image);
-        Storage::delete($relativePath);
+        Storage::delete($this->getRelativePath($propertyType->image));
         $propertyType->delete();
-        return redirect()->route('propertyTypes.index')->with('success', 'Property Type deleted successfully.');
+
+        return back();
     }
 }

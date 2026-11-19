@@ -2,7 +2,7 @@
     <AuthenticatedLayout title="Countries" description="Top level of the location tree: Country → City → Area.">
         <TableCard noun="countries" :meta="countries.meta" :empty="!countries.data.length"
                    empty-text="No countries yet. Add your first country."
-                   :create-href="route('countries.create')" create-label="Add country">
+                   creatable create-label="Add country" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>ID</TableHeadingCell>
@@ -15,12 +15,14 @@
                 <TableCell variant="muted">#{{ country.id }}</TableCell>
                 <TableCell variant="primary">{{ country.name }}</TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('countries.edit', country.id)"
+                    <RowActions editable @edit="modal.openEdit(country)"
                                 @delete="confirmDelete('countries.destroy', country.id, 'country')"/>
                 </TableCell>
             </tr>
             </tbody>
         </TableCard>
+
+        <CountryForm :open="modal.isOpen.value" :country="modal.record.value" @close="modal.close()"/>
     </AuthenticatedLayout>
 </template>
 
@@ -31,8 +33,12 @@ import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
+import {useResourceModal} from '@/Composables/useResourceModal.js';
+import CountryForm from './CountryForm.vue';
 
 defineProps({
     countries: {type: Object, required: true},
 });
+
+const modal = useResourceModal();
 </script>

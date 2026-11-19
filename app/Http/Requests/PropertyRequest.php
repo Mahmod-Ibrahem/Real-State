@@ -51,12 +51,16 @@ class PropertyRequest extends FormRequest
             )],
             'feature_ids' => 'required|exists:features,id',
         ];
+        // The gallery is saved with the property: new photos in propertyImages[], removed ones in removed_image_ids[]
+        $rules['propertyImages.*'] = 'image|mimes:jpg,png,jpeg,gif,svg,webp|max:4096';
         if ($this->isMethod('POST')) {
             $rules['image'] = 'required|image|mimes:jpg,png,jpeg,gif,svg,webp|max:2048';
             $rules['propertyImages'] = 'required|array';
-            $rules['propertyImages.*'] = 'required|image';
         } else {
             $rules['image'] = 'nullable|image';
+            $rules['propertyImages'] = 'nullable|array';
+            $rules['removed_image_ids'] = 'nullable|array';
+            $rules['removed_image_ids.*'] = 'integer';
         }
         return $rules;
     }

@@ -3,7 +3,7 @@
         <TableCard noun="property types" :count="propertyTypes.data.length" :empty="!filtered.length"
                    empty-text="No property types yet. Add your first type."
                    client-search v-model:search="search"
-                   :create-href="route('propertyTypes.create')" create-label="Add type">
+                   creatable create-label="Add type" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>ID</TableHeadingCell>
@@ -20,12 +20,14 @@
                 </TableCell>
                 <TableCell variant="primary">{{ type.name }}</TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('propertyTypes.edit', type.id)"
+                    <RowActions editable @edit="modal.openEdit(type)"
                                 @delete="confirmDelete('propertyTypes.destroy', type.id, 'property type')"/>
                 </TableCell>
             </tr>
             </tbody>
         </TableCard>
+
+        <PropertyTypeForm :open="modal.isOpen.value" :property-type="modal.record.value" @close="modal.close()"/>
     </AuthenticatedLayout>
 </template>
 
@@ -37,10 +39,13 @@ import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useClientSearch} from '@/Composables/useClientSearch.js';
+import {useResourceModal} from '@/Composables/useResourceModal.js';
+import PropertyTypeForm from './PropertyTypeForm.vue';
 
 const props = defineProps({
     propertyTypes: {type: Object, required: true},
 });
 
 const {search, filtered} = useClientSearch(() => props.propertyTypes.data, ['name']);
+const modal = useResourceModal();
 </script>

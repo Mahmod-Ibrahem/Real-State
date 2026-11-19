@@ -39,12 +39,7 @@
                 </TableCell>
                 <TableCell align="right">
                     <RowActions :edit-href="route('properties.edit', property.id)"
-                                @delete="confirmDelete('properties.destroy', property.id, 'property')">
-                        <Link :href="route('propertyImages.index', {propertyId: property.id})" title="Gallery" aria-label="Gallery"
-                              class="grid h-8 w-8 place-content-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900">
-                            <PhotoIcon class="h-[18px] w-[18px]" aria-hidden="true"/>
-                        </Link>
-                    </RowActions>
+                                @delete="confirmDelete('properties.destroy', property.id, 'property')"/>
                 </TableCell>
             </tr>
             </tbody>
@@ -53,8 +48,6 @@
 </template>
 
 <script setup>
-import {Link} from '@inertiajs/vue3';
-import {PhotoIcon} from '@heroicons/vue/24/outline';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';

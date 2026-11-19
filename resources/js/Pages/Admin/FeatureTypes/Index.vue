@@ -3,7 +3,7 @@
         <TableCard noun="feature types" :count="featureTypes.length" :empty="!filtered.length"
                    empty-text="No feature types yet. Add your first type."
                    client-search v-model:search="search"
-                   :create-href="route('feature-types.create')" create-label="Add feature type">
+                   creatable create-label="Add feature type" @create="modal.openCreate()">
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>ID</TableHeadingCell>
@@ -16,12 +16,14 @@
                 <TableCell variant="muted">#{{ featureType.id }}</TableCell>
                 <TableCell variant="primary">{{ featureType.name }}</TableCell>
                 <TableCell align="right">
-                    <RowActions :edit-href="route('feature-types.edit', featureType.id)"
+                    <RowActions editable @edit="modal.openEdit(featureType)"
                                 @delete="confirmDelete('feature-types.destroy', featureType.id, 'feature type')"/>
                 </TableCell>
             </tr>
             </tbody>
         </TableCard>
+
+        <FeatureTypeForm :open="modal.isOpen.value" :feature-type="modal.record.value" @close="modal.close()"/>
     </AuthenticatedLayout>
 </template>
 
@@ -33,6 +35,8 @@ import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {useClientSearch} from '@/Composables/useClientSearch.js';
+import {useResourceModal} from '@/Composables/useResourceModal.js';
+import FeatureTypeForm from './FeatureTypeForm.vue';
 
 const props = defineProps({
     // Plain array of {id, name}
@@ -40,4 +44,5 @@ const props = defineProps({
 });
 
 const {search, filtered} = useClientSearch(() => props.featureTypes, ['name']);
+const modal = useResourceModal();
 </script>
