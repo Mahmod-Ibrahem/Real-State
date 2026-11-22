@@ -3,5 +3,22 @@
     "For Rent": "للإيجار",
     "Available": "متاح",
     "Sold": "تم البيع",
-    "Rented": "تم التأجير"
+    "Rented": "تم التأجير",
+    "Under review": "قيد المراجعة",
+    "Approved": "مقبول",
+    "Rejected": "مرفوض",
+    "Property owner login": "تسجيل دخول المالك",
+    "Only approved properties can be published.": "لا يمكن نشر العقار إلا بعد قبوله.",
+    ":name is already approved.": ":name مقبول بالفعل.",
+    "The selected city is not in the selected country.": "المدينة المختارة ليست في الدولة المختارة.",
+    "The selected area is not in the selected city.": "المنطقة المختارة ليست في المدينة المختارة.",
+    "This status does not match the listing purpose (Sold is for sale listings, Rented is for rent listings).": "هذه الحالة لا تتوافق مع غرض الإعلان (تم البيع لعقارات البيع، وتم التأجير لعقارات الإيجار).",
+    "New property to review: :name": "عقار جديد للمراجعة: :name",
+    "Hello :name,": "مرحبًا :name،",
+    ":owner submitted “:property” for review.": "أرسل :owner العقار «:property» للمراجعة.",
+    "Review property": "مراجعة العقار",
+    "It stays hidden from the website until it is approved.": "سيظل مخفيًا عن الموقع حتى تتم الموافقة عليه.",
+    "Your property “:name” was approved": "تمت الموافقة على عقارك «:name»",
+    "“:name” was approved. You can publish it now.": "تمت الموافقة على «:name». يمكنك نشره الآن.",
+    "Go to my properties": "الانتقال إلى عقاراتي"
 }

@@ -100,7 +100,7 @@ return [
         | app folder name
         | for example can change it to 'src' or 'App'
         */
-        'app_folder' => '', // lean layout: no app/ level inside a module (CLAUDE.md, Modules)
+        'app_folder' => '', // lean layout: no app/ level inside a module (ARCHITECTURE.md, Module layout)
 
         /*
         |--------------------------------------------------------------------------

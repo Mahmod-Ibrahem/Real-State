@@ -1,5 +1,5 @@
 <template>
-    <FormCard :submit-label="property ? 'Save changes' : 'Add property'" :cancel-href="route('admin.properties.index')"
+    <FormCard :submit-label="property ? 'Save changes' : submitLabel" :cancel-href="route(`${routeBase}.index`)"
               :processing="form.processing" @submit="save">
         <FormSection title="Basics" description="What visitors see first.">
             <TextField v-model="form.name" label="Title" placeholder="e.g. Modern 3-Bedroom Villa" required
@@ -7,10 +7,10 @@
             <RichTextField v-model="form.description" label="Description" required class="sm:col-span-2"
                            placeholder="Describe the property, its surroundings and what makes it stand out"
                            :error="form.errors.description"/>
-            <SelectField v-model="form.property_type_id" label="Property type" :options="propertyTypes.data"
+            <SelectField v-model="form.property_type_id" label="Property type" :options="property_types.data"
                          placeholder="Select a type" required :error="form.errors.property_type_id"/>
             <SelectField v-model="form.property_classification_id" label="Classification"
-                         :options="propertyClassification.data" placeholder="Select a classification" required
+                         :options="classifications.data" placeholder="Select a classification" required
                          :error="form.errors.property_classification_id"/>
         </FormSection>
 
@@ -39,7 +39,7 @@
                          :error="form.errors.status"/>
             <TextField v-model="form.price" label="Price (EGP)" type="number" min="0" step="1000" required
                        :error="form.errors.price"/>
-            <ToggleField v-model="form.is_published" label="Published"
+            <ToggleField v-if="publishable" v-model="form.is_published" label="Published"
                          description="Unpublished properties are hidden from the website." class="self-end pb-1"/>
         </FormSection>
 
@@ -60,7 +60,7 @@
             <ImageField v-model="form.image" label="Cover image" :current-url="property?.image ?? ''"
                         hint="The main photo on cards and the property page." :required="!property"
                         :error="form.errors.image" class="sm:col-span-2"/>
-            <PropertyGallery v-model="form.propertyImages" v-model:removed-ids="form.removed_image_ids" :saved="gallery"
+            <PropertyGallery v-model="form.gallery_images" v-model:removed-ids="form.removed_image_ids" :saved="gallery"
                              :saving="form.processing" :progress="form.progress" :required="!property"
                              :error="galleryError" class="sm:col-span-2"/>
         </FormSection>
@@ -73,61 +73,56 @@ import {useForm} from '@inertiajs/vue3';
 import FormCard from '@/Components/Admin/ui/FormCard.vue';
 import FormSection from '@/Components/Admin/ui/FormSection.vue';
 import ImageField from '@/Components/Admin/ui/ImageField.vue';
-import PropertyGallery from './PropertyGallery.vue';
 import RichTextField from '@/Components/Admin/ui/RichTextField.vue';
 import SelectField from '@/Components/Admin/ui/SelectField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import ToggleField from '@/Components/Admin/ui/ToggleField.vue';
+import PropertyGallery from './PropertyGallery.vue';
+import {PROPERTY_FORM_PROPS} from './formProps.js';
 import {currentLocale, saveResource} from '@/Composables/useResourceForm.js';
+
+defineOptions({inheritAttrs: false});
 
 const CURRENT_YEAR = new Date().getFullYear();
 
 const props = defineProps({
-    // null when creating
+    ...PROPERTY_FORM_PROPS,
+    routeBase: {type: String, required: true},
+    publishable: {type: Boolean, default: false},
+    submitLabel: {type: String, default: 'Add property'},
     property: {type: Object, default: null},
-    propertyTypes: {type: Object, required: true},
-    propertyClassification: {type: Object, required: true},
-    countries: {type: Object, required: true},
-    cities: {type: Object, required: true},
-    areas: {type: Object, required: true},
-    purposes: {type: Array, required: true},
-    statuses: {type: Array, required: true},
-    features: {type: Object, required: true},
-    // Saved gallery photos when editing: [{id, url}]
     gallery: {type: Array, default: () => []},
 });
 
 const form = useForm({
     name: props.property?.name ?? '',
     description: props.property?.description ?? '',
-    property_type_id: props.property?.propertyTypeId ?? '',
-    property_classification_id: props.property?.classificationId ?? '',
-    country_id: props.property?.countryId ?? '',
-    city_id: props.property?.cityId ?? '',
-    area_id: props.property?.areaId ?? '',
+    property_type_id: props.property?.property_type_id ?? '',
+    property_classification_id: props.property?.property_classification_id ?? '',
+    country_id: props.property?.country_id ?? '',
+    city_id: props.property?.city_id ?? '',
+    area_id: props.property?.area_id ?? '',
     address: props.property?.address ?? '',
     google_map: props.property?.google_map ?? '',
     purpose: props.property?.purpose ?? '',
     status: props.property?.status ?? 'available',
     price: props.property?.price ?? '',
-    is_published: Boolean(props.property?.is_published ?? false),
+    ...(props.publishable && {is_published: Boolean(props.property?.is_published ?? false)}),
     bedrooms: props.property?.bedrooms ?? '',
     bathrooms: props.property?.bathrooms ?? '',
     garages: props.property?.garages ?? '',
     floor: props.property?.floor ?? '',
     sqft: props.property?.sqft ?? '',
     year_built: props.property?.year_built ?? '',
-    feature_ids: props.property?.featureIds ?? [],
+    feature_ids: props.property?.feature_ids ?? [],
     image: null,
-    // Gallery changes, saved with the property
-    propertyImages: [],
+    gallery_images: [],
     removed_image_ids: [],
     locale: currentLocale(),
 });
 
-// Country → City → Area: each list only offers children of the chosen parent.
-const countryCities = computed(() => props.cities.data.filter((city) => city.countryId === form.country_id));
-const cityAreas = computed(() => props.areas.data.filter((area) => area.cityId === form.city_id));
+const countryCities = computed(() => props.cities.data.filter((city) => city.country_id === form.country_id));
+const cityAreas = computed(() => props.areas.data.filter((area) => area.city_id === form.city_id));
 watch(() => form.country_id, () => {
     if (!countryCities.value.some((city) => city.id === form.city_id)) form.city_id = '';
 });
@@ -135,7 +130,6 @@ watch(() => form.city_id, () => {
     if (!cityAreas.value.some((area) => area.id === form.area_id)) form.area_id = '';
 });
 
-// Sold only applies to sale listings, Rented only to rent listings.
 const allowedStatuses = computed(() =>
     props.statuses.filter((status) => !form.purpose || status.purposes.includes(form.purpose))
 );
@@ -143,9 +137,8 @@ watch(() => form.purpose, () => {
     if (!allowedStatuses.value.some((status) => status.id === form.status)) form.status = 'available';
 });
 
-// First gallery error: the array itself ("required") or one of its photos ("propertyImages.2")
-const galleryError = computed(() => form.errors.propertyImages
-    ?? Object.entries(form.errors).find(([key]) => key.startsWith('propertyImages.'))?.[1] ?? '');
+const galleryError = computed(() => form.errors.gallery_images
+    ?? Object.entries(form.errors).find(([key]) => key.startsWith('gallery_images.'))?.[1] ?? '');
 
-const save = () => saveResource(form, 'admin.properties', 'property', {id: props.property?.id, multipart: true});
+const save = () => saveResource(form, props.routeBase, 'property', {id: props.property?.id, multipart: true});
 </script>

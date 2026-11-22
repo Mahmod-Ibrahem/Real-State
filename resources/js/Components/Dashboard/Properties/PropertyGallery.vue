@@ -37,7 +37,7 @@ import {computed} from 'vue';
 import ImagesField from '@/Components/Admin/ui/ImagesField.vue';
 
 const props = defineProps({
-    // New cropped photos (File[]), sent as propertyImages[]
+    // New cropped photos (File[]), sent as gallery_images[]
     modelValue: {type: Array, default: () => []},
     // Saved photos: [{id, url}]
     saved: {type: Array, default: () => []},

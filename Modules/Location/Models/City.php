@@ -43,7 +43,7 @@ class City extends Model
         ];
     }
 
-    // Factories outside Database\Factories aren't found by convention (CLAUDE.md, Modules)
+    // Factories outside Database\Factories aren't found by convention (ARCHITECTURE.md, Adding a module)
     protected static function newFactory(): CityFactory
     {
         return CityFactory::new();

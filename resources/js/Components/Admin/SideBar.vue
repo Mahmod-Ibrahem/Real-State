@@ -1,12 +1,12 @@
 <template>
     <aside class="flex h-full w-60 flex-col bg-white">
-        <Link :href="route('admin.dashboard')" class="flex h-14 shrink-0 items-center gap-2.5 border-b border-slate-100 px-4">
+        <Link :href="route(nav.home)" class="flex h-14 shrink-0 items-center gap-2.5 border-b border-slate-100 px-4">
             <img :src="logo" alt="Qeima" class="h-8 w-auto object-contain"/>
-            <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Admin</span>
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-400">{{ nav.label }}</span>
         </Link>
 
         <nav class="flex-1 overflow-y-auto px-2 py-3" aria-label="Main">
-            <div v-for="group in NAV_GROUPS" :key="group.label" class="mt-4 first:mt-0">
+            <div v-for="group in nav.groups" :key="group.label" class="mt-4 first:mt-0">
                 <p class="mb-1 flex h-7 items-center px-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     {{ group.label }}
                 </p>
@@ -23,6 +23,7 @@
                                        :class="item === activeItem ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-500'"
                                        aria-hidden="true"/>
                             <span class="truncate">{{ item.label }}</span>
+                            <span v-if="badgeOf(item)" class="ms-auto rounded-full bg-indigo-600 px-1.5 text-[11px] font-semibold leading-5 text-white">{{ badgeOf(item) }}</span>
                         </Link>
                     </li>
                 </ul>
@@ -45,11 +46,15 @@ import {computed} from 'vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import {ArrowTopRightOnSquareIcon} from '@heroicons/vue/24/outline';
 import logo from '@/assets/images/logo.jpg';
-import {NAV_GROUPS, findNavItem} from './navigation.js';
+import {findNavItem} from './navigation.js';
 
+const props = defineProps({
+    nav: {type: Object, required: true},
+});
 const emit = defineEmits(['navigate']);
 const page = usePage();
 
 // Recomputed on every visit (page.url changes), so create/edit screens keep their section highlighted.
-const activeItem = computed(() => (page.url, findNavItem(route().current())?.item));
+const activeItem = computed(() => (page.url, findNavItem(props.nav.groups, route().current())?.item));
+const badgeOf = (item) => (item.badge ? page.props.auth?.[item.badge] : 0) || 0;
 </script>

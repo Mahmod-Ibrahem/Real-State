@@ -1,5 +1,5 @@
 <template>
-    <Head title="Login"/>
+    <Head :title="title"/>
 
     <!-- Original template look kept on purpose; see ADMIN_UI.md §5 "Login is the exception" -->
     <section class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-16">
@@ -11,7 +11,7 @@
             <Link :href="route('home')" class="block">
                 <img :src="logo" alt="Qeima" class="mx-auto h-16 w-auto object-contain"/>
             </Link>
-            <h1 class="my-6 text-xl font-semibold text-slate-900">Login</h1>
+            <h1 class="my-6 text-xl font-semibold text-slate-900">{{ title }}</h1>
 
             <p v-if="status" class="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{{ status }}</p>
 
@@ -33,9 +33,9 @@
 
                 <Button type="submit" class="w-full" :loading="form.processing">Login / Sign in</Button>
 
-                <p class="text-center text-sm">
+                <p v-if="registerRoute" class="text-center text-sm">
                     <span class="me-2 text-slate-400">Don't have an account ?</span>
-                    <Link :href="route('register')" class="font-bold text-slate-900">Sign Up</Link>
+                    <Link :href="route(registerRoute)" class="font-bold text-slate-900">Sign Up</Link>
                 </p>
             </form>
         </div>
@@ -50,7 +50,10 @@ import TextField from '@/Components/Admin/ui/TextField.vue';
 import background from '@/assets/images/bg/01.jpg';
 import logo from '@/assets/images/logo.jpg';
 
-defineProps({
+const props = defineProps({
+    title: {type: String, default: 'Login'},
+    loginRoute: {type: String, default: 'login'},
+    registerRoute: {type: String, default: null},
     canResetPassword: {type: Boolean, default: false},
     status: {type: String, default: ''},
 });
@@ -61,5 +64,5 @@ const form = useForm({
     remember: false,
 });
 
-const submit = () => form.post(route('login'), {onFinish: () => form.reset('password')});
+const submit = () => form.post(route(props.loginRoute), {onFinish: () => form.reset('password')});
 </script>

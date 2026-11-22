@@ -17,7 +17,7 @@
 
         <div class="flex shrink-0 items-center gap-1.5">
             <LanguageSwitch/>
-            <ProfileMenu/>
+            <ProfileMenu :profile-route="nav.profileRoute"/>
         </div>
     </header>
 </template>
@@ -33,17 +33,18 @@ import {actionOf, findNavItem} from './navigation.js';
 const props = defineProps({
     // Fallback when the page isn't in the navigation (e.g. Profile)
     title: {type: String, default: ''},
+    nav: {type: Object, required: true},
 });
 const emit = defineEmits(['toggle-sidebar']);
 const page = usePage();
 
 const routeName = computed(() => (page.url, route().current()));
-const nav = computed(() => findNavItem(routeName.value));
+const navEntry = computed(() => findNavItem(props.nav.groups, routeName.value));
 
 // "Listings › Properties · Edit"; the group is skipped when it would repeat the page (Overview › Dashboard is fine).
-const section = computed(() => nav.value?.group.label ?? '');
+const section = computed(() => navEntry.value?.group.label ?? '');
 const crumb = computed(() => {
-    const label = nav.value?.item.label ?? props.title;
+    const label = navEntry.value?.item.label ?? props.title;
     const action = actionOf(routeName.value);
     return action ? `${label} · ${action}` : label;
 });

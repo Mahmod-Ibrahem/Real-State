@@ -5,6 +5,8 @@ namespace Modules\Property\Database\Factories;
 use Modules\Property\Models\Property;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
+use Modules\Property\Enums\ReviewStatus;
+use App\Models\User;
 use Modules\Location\Models\Area;
 use Modules\Property\Models\PropertyClassifications;
 use Modules\Property\Models\PropertyType;
@@ -62,6 +64,27 @@ class PropertyFactory extends Factory
             'purpose' => $purpose,
             // ~25% of demo listings are already closed, so the Sold/Rented ribbons show up.
             'status' => $this->faker->boolean(75) ? PropertyStatus::Available : PropertyStatus::closedFor($purpose),
+            'owner_id' => fn () => User::query()->orderBy('id')->value('id') ?? User::factory()->create()->id,
+            'review_status' => ReviewStatus::Approved,
         ];
+    }
+
+    public function ownedBy(User $owner): static
+    {
+        return $this->state(['owner_id' => $owner->id]);
+    }
+
+    public function pending(): static
+    {
+        return $this->state(['review_status' => ReviewStatus::Pending, 'is_published' => false]);
+    }
+
+    public function rejected(string $reason): static
+    {
+        return $this->state([
+            'review_status' => ReviewStatus::Rejected,
+            'rejection_reason' => $reason,
+            'is_published' => false,
+        ]);
     }
 }

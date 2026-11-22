@@ -17,12 +17,16 @@ weight, spacing and a single accent colour, not decoration.
   the bundles never mix.
 - **URLs are kebab-case and plural**: `/admin/property-types`, `/admin/faqs`, never `/admin/propertyTypes`.
   Route **names** follow the URL with an `admin.` prefix: `route('admin.property-types.index')` (see
-  CLAUDE.md, Routing; each module registers them inside `Route::admin()`). Admin resources have no `show` route, and
-  modal-edited resources (§5) have no `create`/`edit` routes either: declare them with `->only([...])`.
-- Consequence: the Bootstrap-collision rules in `CLAUDE.md` do **not** apply to admin code. Use any Tailwind
+  LARAVEL_CONVENTIONS.md, Routes: one line per route, each with its own middleware). Admin resources have no `show`
+  route, and modal-edited resources (§5) have no `create`/`edit` routes either: register only the routes they use.
+- Consequence: the Bootstrap-collision rules in `FRONTEND.md` do **not** apply to admin code. Use any Tailwind
   utility (`py-3`, `gap-4`, `shadow-sm`, `border`, …) normally. Still no `!` important hacks.
 - Admin-only components live in `resources/js/Components/Admin/`. Never import them from public pages, and
   never import public (`Components/Users/*`) components into admin pages.
+- **The owner dashboard (`/owner/*`) is part of this bundle** (`HandleInertiaRequests` sends it to the `admin`
+  root view) and follows this guide. It uses the same `AuthenticatedLayout` with its own nav
+  (`Components/Owner/navigation.js`, passed as the layout's `nav` prop). Pages live in `Pages/Owner/`, and forms
+  shared by admin and owner pages live in `Components/Dashboard/`.
 
 ## 2. Tokens
 
@@ -85,6 +89,9 @@ inside the dialog.
 | `ui/TableCell.vue` | `<td>` with the recipe built in: `px-4 py-3 text-sm`; `variant`: `default` (slate-600) · `primary` (font-medium slate-900, the row's name) · `muted` (slate-500, ids/dates); `align="right"` for actions. |
 | `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil) and delete (trash, red hover). Edit is a `Link` when given `edit-href`, or a button emitting `edit` when given `editable` (modal resources). Always with `aria-label`/`title`. |
 | `ui/Pagination.vue` | “Showing X–Y of Z” + prev/numbered/next buttons from a Laravel paginator `meta`. Hidden when there is one page. |
+| `ui/FilterTabs.vue` | Segmented filter for a list toolbar (`TableCard #actions`): “All” + one tab per option, each a `Link` that sets one query param (`param="review"`), keeps the others and drops `page`. The active tab is white with `shadow-sm` on a `bg-slate-100` track. |
+| `PropertyReviewActions.vue` | Approve (primary, `sm`) and Reject (secondary, `sm`) for a property. Reject opens a `FormModal` asking for the reason the owner will see. Hidden when the property already has that status. Used on the properties list and the edit page header. |
+| `Dashboard/Properties/ReviewStatusBadge.vue` | `StatusBadge` for a review status, taking label and tone from the `review_statuses` options. Shared by admin and owner pages. |
 | `ui/StatusBadge.vue` | `tone`: `success`·`warning`·`danger`·`info`·`neutral`. `rounded-full px-2 py-0.5 text-xs font-medium`. |
 | `ui/RowTitle.vue` | The name in a table's first column: `font-medium text-slate-900`, `hover:text-indigo-600`. `href` → Inertia `Link` to the edit page; otherwise a `<button>` emitting `click` (opens the edit modal). |
 | `ui/ToggleButton.vue` | Inline two-value field in a table: looks like a `StatusBadge` of the current value plus a swap icon; clicking emits `toggle`. `loading` shows a spinner; `aria-pressed` and a `title` say what a click changes it to. Never a switch. |
@@ -102,7 +109,7 @@ inside the dialog.
 | `ui/ImagesField.vue` | Gallery grid: `aspect-[4/3] rounded-lg` tiles + a dashed “Add photos” tile. Picked photos go through a crop queue (“Crop & next”, “Skip”, “Cancel all”, “2 of 5”); cropped ones show as dashed-indigo “New” tiles, removable before upload. `v-model` is the cropped `File[]`; `saved` (`[{id, url}]`) renders already-saved tiles first with a remove button (`@remove`). Thumbnails open `ImageLightbox`. |
 | `ui/ImageCropDialog.vue` | `Modal` around `vue-advanced-cropper`: fixed aspect frame, rotate left/right, output capped at 1600px, JPEG 0.9. Only used through `ImageField`/`ImagesField`. |
 | `ui/ImageLightbox.vue` | Full-screen preview (`bg-slate-900/85`, `object-contain`), closes on click or Esc. |
-| Gallery | The property gallery lives **inside the property form** (`Properties/PropertyGallery.vue`, Media section), mirroring Mr Egypt Tours' `TourGalleryManager`. It has **no controller or routes of its own**: everything is saved by `PropertyController` with the property. New cropped photos go as `propertyImages[]`; removing a saved photo hides its tile and adds its id to `removed_image_ids[]` (“N to remove on save”, with Undo), and the server deletes those files on update. While saving, an indigo progress bar shows the upload (`form.progress`). |
+| Gallery | The property gallery lives **inside the property form** (`Components/Dashboard/Properties/PropertyGallery.vue`, Media section), mirroring Mr Egypt Tours' `TourGalleryManager`. It has **no controller or routes of its own**: everything is saved with the property by the admin or owner `PropertyController`. New cropped photos go as `gallery_images[]`; removing a saved photo hides its tile and adds its id to `removed_image_ids[]` (“N to remove on save”, with Undo), and the server deletes those files on update. While saving, an indigo progress bar shows the upload (`form.progress`). |
 | `ui/Toast.vue` + `Composables/useToast.js` | Top-right, white, `rounded-xl border shadow-lg`, green/red left icon. Every create/update/delete shows one. |
 | `Composables/useResourceForm.js` | `saveResource(form, 'admin.cities', 'city', {id, multipart, onSuccess})`: `post` to `.store` or `put` to `.update` (multipart updates are sent as POST + `_method=put` so files upload), then toasts “City created/updated”; server `errors.database` → error toast. Forms send `locale: page.props.locale` (the content language chosen in the top bar), never a hard-coded `'en'`. `resetFormOnOpen(form, () => props.open, () => fields)` refills a modal form with the record being edited (or blanks) and clears errors each time it opens. |
 | `Composables/useResourceModal.js` | List-page modal state: `{isOpen, record, openCreate(), openEdit(row), close()}`. `record` is `null` when creating. |

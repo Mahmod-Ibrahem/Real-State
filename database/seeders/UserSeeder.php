@@ -3,23 +3,24 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use GuzzleHttp\Promise\Create;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Services\OwnerRegistrationService;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    public const ADMIN_EMAIL = 'test@example.com';
+    public const DEMO_OWNER_EMAIL = 'owner@example.com';
+
     public function run(): void
     {
-        $user=User::factory()->create([
+        User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'test@example.com',
-        ]);
-        $user->assignRole('Super Admin');
+            'email' => self::ADMIN_EMAIL,
+        ])->assignRole(PermissionSeeder::SUPER_ADMIN);
 
-
+        User::factory()->create([
+            'name' => 'Demo Owner',
+            'email' => self::DEMO_OWNER_EMAIL,
+        ])->assignRole(OwnerRegistrationService::ROLE);
     }
 }

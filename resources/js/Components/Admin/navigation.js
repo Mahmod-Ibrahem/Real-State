@@ -1,5 +1,3 @@
-// Admin navigation as data: the sidebar, the active state and the breadcrumb all read from here.
-// A new admin section is one entry below. See ADMIN_UI.md §3.
 import {
     BuildingOffice2Icon,
     BuildingLibraryIcon,
@@ -16,7 +14,7 @@ import {
     UserGroupIcon,
 } from '@heroicons/vue/24/outline';
 
-export const NAV_GROUPS = [
+const ADMIN_GROUPS = [
     {
         label: 'Overview',
         items: [
@@ -57,17 +55,15 @@ export const NAV_GROUPS = [
     },
 ];
 
-// Admin route names are "admin.<resource>.<action>" (CLAUDE.md, Routing)
-const segmentsOf = (routeName) => String(routeName || '').replace(/^admin\./, '').split('.');
+export const ADMIN_NAV = {home: 'admin.dashboard', label: 'Admin', profileRoute: 'admin.profile.edit', groups: ADMIN_GROUPS};
+
+const segmentsOf = (routeName) => String(routeName || '').split('.').slice(1);
 const resourceOf = (routeName) => segmentsOf(routeName)[0];
 
-/** The nav item (and its group) for a route name; 'admin.cities.edit' → Cities. */
-export function findNavItem(routeName) {
+export function findNavItem(groups, routeName) {
     const resource = resourceOf(routeName);
-    for (const group of NAV_GROUPS) {
-        const item = group.items.find(
-            (entry) => resourceOf(entry.route) === resource
-        );
+    for (const group of groups) {
+        const item = group.items.find((entry) => resourceOf(entry.route) === resource);
         if (item) return {group, item};
     }
     return null;
@@ -75,5 +71,4 @@ export function findNavItem(routeName) {
 
 const ACTIONS = {create: 'New', edit: 'Edit'};
 
-/** Breadcrumb action label for a route name; 'admin.cities.create' → 'New'. */
 export const actionOf = (routeName) => ACTIONS[segmentsOf(routeName)[1]] ?? '';

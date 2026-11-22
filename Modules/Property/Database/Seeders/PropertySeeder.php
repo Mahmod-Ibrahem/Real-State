@@ -4,7 +4,9 @@ namespace Modules\Property\Database\Seeders;
 
 use Modules\Property\Models\Feature;
 use Modules\Property\Models\Property;
+use App\Models\User;
 use Database\Seeders\Support\DemoImages;
+use Database\Seeders\UserSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 
@@ -25,6 +27,7 @@ class PropertySeeder extends Seeder
 
         Property::factory()
             ->count(self::PROPERTIES)
+            ->ownedBy(User::firstWhere('email', UserSeeder::ADMIN_EMAIL))
             ->state(fn () => ['image' => $mainImages ? Arr::random($mainImages) : DemoImages::placeholder()])
             ->create()
             ->each(function (Property $property) use ($galleryImages, $featureIds) {
@@ -41,5 +44,22 @@ class PropertySeeder extends Seeder
                     );
                 }
             });
+
+        $this->seedDemoOwnerListings($mainImages);
+    }
+
+    private function seedDemoOwnerListings(array $mainImages): void
+    {
+        $owner = User::firstWhere('email', UserSeeder::DEMO_OWNER_EMAIL);
+        if (!$owner) {
+            return;
+        }
+
+        $listings = Property::factory()->ownedBy($owner)
+            ->state(fn () => ['image' => $mainImages ? Arr::random($mainImages) : DemoImages::placeholder()]);
+
+        $listings->create(['is_published' => true]);
+        $listings->pending()->create();
+        $listings->rejected('The cover photo is blurry. Please upload a clearer one.')->create();
     }
 }

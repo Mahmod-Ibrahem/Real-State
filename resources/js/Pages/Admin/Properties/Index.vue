@@ -1,12 +1,17 @@
 <template>
     <AuthenticatedLayout title="Properties" description="Every listing on the site, published or not.">
         <TableCard noun="properties" :meta="properties.meta" :empty="!properties.data.length"
-                   empty-text="No properties yet. Add your first property."
+                   :empty-text="review_filter ? 'No properties with this review status.' : 'No properties yet. Add your first property.'"
                    :create-href="route('admin.properties.create')" create-label="Add property">
+            <template #actions>
+                <FilterTabs :options="review_statuses" :model-value="review_filter" param="review" label="Review status"/>
+            </template>
+
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>Property</TableHeadingCell>
                 <TableHeadingCell>Location</TableHeadingCell>
+                <TableHeadingCell>Review</TableHeadingCell>
                 <TableHeadingCell>Purpose</TableHeadingCell>
                 <TableHeadingCell>Status</TableHeadingCell>
                 <TableHeadingCell>Visibility</TableHeadingCell>
@@ -19,14 +24,21 @@
             <tr v-for="property in properties.data" :key="property.id" class="transition-colors hover:bg-slate-50">
                 <TableCell>
                     <div class="flex min-w-[16rem] items-center gap-3">
-                        <img :src="property.image_url" alt="" class="h-10 w-14 shrink-0 rounded-md border border-slate-200 object-cover"/>
+                        <img :src="property.image" alt="" class="h-10 w-14 shrink-0 rounded-md border border-slate-200 object-cover"/>
                         <div class="min-w-0">
                             <RowTitle :href="route('admin.properties.edit', property.id)" :title="property.name">{{ property.name }}</RowTitle>
-                            <p class="text-xs text-slate-500">{{ property.propertyType }}</p>
+                            <p class="text-xs text-slate-500">{{ property.property_type }} · {{ property.owner }}</p>
                         </div>
                     </div>
                 </TableCell>
                 <TableCell class="whitespace-nowrap">{{ property.area }}, {{ property.city }}</TableCell>
+                <TableCell>
+                    <div class="flex min-w-[12rem] flex-col items-start gap-1.5">
+                        <ReviewStatusBadge :status="property.review_status" :statuses="review_statuses"
+                                           :title="property.rejection_reason ?? undefined"/>
+                        <PropertyReviewActions :property="property"/>
+                    </div>
+                </TableCell>
                 <TableCell>
                     <ToggleButton :label="labelOf(purposes, property.purpose)" :next-label="labelOf(purposes, otherPurpose(property))"
                                   :tone="property.purpose === 'sale' ? 'info' : 'neutral'" :pressed="property.purpose === 'sale'"
@@ -64,32 +76,33 @@
 import {reactive} from 'vue';
 import {router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
-import TableCard from '@/Components/Admin/ui/TableCard.vue';
-import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
-import TableCell from '@/Components/Admin/ui/TableCell.vue';
+import PropertyReviewActions from '@/Components/Admin/PropertyReviewActions.vue';
+import FilterTabs from '@/Components/Admin/ui/FilterTabs.vue';
+import InlineSelect from '@/Components/Admin/ui/InlineSelect.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
 import RowTitle from '@/Components/Admin/ui/RowTitle.vue';
+import TableCard from '@/Components/Admin/ui/TableCard.vue';
+import TableCell from '@/Components/Admin/ui/TableCell.vue';
+import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import ToggleButton from '@/Components/Admin/ui/ToggleButton.vue';
-import InlineSelect from '@/Components/Admin/ui/InlineSelect.vue';
+import ReviewStatusBadge from '@/Components/Dashboard/Properties/ReviewStatusBadge.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {formatNumber} from '@/Composables/useFormatters.js';
 import {showToast} from '@/Composables/useToast.js';
 
 const props = defineProps({
     properties: {type: Object, required: true},
-    // [{id: 'sale', name: 'For Sale'}, …]
+    review_filter: {type: String, default: null},
     purposes: {type: Array, required: true},
-    // [{id: 'sold', name: 'Sold', purposes: ['sale']}, …]
     statuses: {type: Array, required: true},
+    review_statuses: {type: Array, required: true},
 });
 
 const labelOf = (options, value) => options.find((option) => option.id === value)?.name ?? value;
 const otherPurpose = (property) => props.purposes.find((purpose) => purpose.id !== property.purpose)?.id;
-// Sold only applies to sale listings, Rented only to rent listings
 const statusesFor = (property) => props.statuses.filter((status) => status.purposes.includes(property.purpose));
 
-// ---------------------------------------------------------------- quick edits (ADMIN_UI.md §5)
-const saving = reactive({}); // "12.status" → true while that cell saves
+const saving = reactive({});
 const isSaving = (property, field) => Boolean(saving[`${property.id}.${field}`]);
 
 function quickUpdate(property, field, value) {

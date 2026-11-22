@@ -31,7 +31,7 @@ class Feature extends Model
         return $this->belongsTo(FeatureType::class);
     }
 
-    // Factories outside Database\Factories aren't found by convention (CLAUDE.md, Modules)
+    // Factories outside Database\Factories aren't found by convention (ARCHITECTURE.md, Adding a module)
     protected static function newFactory(): FeatureFactory
     {
         return FeatureFactory::new();

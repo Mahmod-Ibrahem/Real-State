@@ -2,24 +2,21 @@
 
 namespace Modules\Property\Http\Controllers\Admin;
 
-use Modules\Property\Enums\PropertyStatus;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Modules\Property\Http\Requests\PropertyListingStateRequest;
 use Modules\Property\Models\Property;
+use Modules\Property\Services\PropertyService;
 
-/** Saves the quick edits made in the properties table: visibility, purpose and status (ADMIN_UI.md §5). */
-class PropertyListingStateController extends Controller
+final class PropertyListingStateController extends Controller
 {
-    public function __invoke(PropertyListingStateRequest $request, Property $property)
+    public function __construct(private readonly PropertyService $properties)
     {
-        $property->fill($request->validated());
+    }
 
-        // Switching purpose can leave an impossible status (a "Sold" rental): fall back to Available
-        if (!in_array($property->status, PropertyStatus::allowedFor($property->purpose), true)) {
-            $property->status = PropertyStatus::Available;
-        }
-
-        $property->save();
+    public function __invoke(PropertyListingStateRequest $request, Property $property): RedirectResponse
+    {
+        $this->properties->updateListingState($property, $request->validated());
 
         return back();
     }

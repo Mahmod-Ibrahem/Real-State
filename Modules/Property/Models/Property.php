@@ -8,9 +8,13 @@ use Modules\Location\Models\Area;
 use Modules\Location\Models\City;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
+use Modules\Property\Enums\ReviewStatus;
+use App\Models\User;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
 class Property extends Model
@@ -25,11 +29,30 @@ class Property extends Model
     protected $casts = [
         'purpose' => ListingPurpose::class,
         'status' => PropertyStatus::class,
+        'review_status' => ReviewStatus::class,
+        'reviewed_at' => 'datetime',
+        'is_published' => 'boolean',
     ];
 
     protected $attributes = [
         'status' => 'available',
+        'review_status' => 'pending',
     ];
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->review_status === ReviewStatus::Approved;
+    }
 
     public function propertyType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -71,9 +94,14 @@ class Property extends Model
         return $this->hasMany(Favourite::class);
     }
 
-    public function scopeActive($query)
+    public function scopeActive(Builder $query): Builder
     {
-        return $query->where('is_published', 1);
+        return $query->where('is_published', true)->where('review_status', ReviewStatus::Approved);
+    }
+
+    public function scopeOwnedBy(Builder $query, User $owner): Builder
+    {
+        return $query->where('owner_id', $owner->id);
     }
 
 
@@ -86,7 +114,7 @@ class Property extends Model
         ];
     }
 
-    // Factories outside Database\Factories aren't found by convention (CLAUDE.md, Modules)
+    // Factories outside Database\Factories aren't found by convention (ARCHITECTURE.md, Adding a module)
     protected static function newFactory(): PropertyFactory
     {
         return PropertyFactory::new();

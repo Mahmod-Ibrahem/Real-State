@@ -70,7 +70,8 @@ watch(search, (value) => {
     }
     clearTimeout(timer);
     timer = setTimeout(() => {
-        router.get(window.location.pathname, value ? {search: value} : {}, {
+        const {page, search: previous, ...filters} = Object.fromEntries(new URLSearchParams(window.location.search));
+        router.get(window.location.pathname, value ? {...filters, search: value} : filters, {
             preserveState: true,
             preserveScroll: true,
             replace: true,

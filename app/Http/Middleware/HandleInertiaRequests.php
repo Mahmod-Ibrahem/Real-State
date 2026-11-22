@@ -8,46 +8,32 @@ use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
-    /**
-     * The root template that is loaded on the first page visit.
-     *
-     * @var string
-     */
     protected $rootView = 'app';
 
-    /**
-     * The admin (/admin/*) has its own Vite bundle without Bootstrap; see ADMIN_UI.md.
-     */
     public function rootView(Request $request): string
     {
-        return $this->isAdmin($request) ? 'admin' : 'app';
+        return $this->usesDashboardBundle($request) ? 'admin' : 'app';
     }
 
-    /**
-     * A different version per bundle forces a full page load when navigating between the site and the
-     * admin, so the two bundles (and their CSS) never mix in one page.
-     */
+    // A different version per bundle forces a full page load between the site and the dashboards
     public function version(Request $request): ?string
     {
-        return ($this->isAdmin($request) ? 'admin-' : 'site-') . parent::version($request);
+        return ($this->usesDashboardBundle($request) ? 'admin-' : 'site-') . parent::version($request);
     }
 
-    private function isAdmin(Request $request): bool
+    private function usesDashboardBundle(Request $request): bool
     {
-        return $request->is('admin', 'admin/*');
+        return $request->is('admin', 'admin/*', 'owner', 'owner/*');
     }
 
-    /**
-     * Define the props that are shared by default.
-     *
-     * @return array<string, mixed>
-     */
     public function share(Request $request): array
     {
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'permissions' => fn () => $request->user()?->getAllPermissions()->pluck('name') ?? [],
+                'unread_notifications' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
             ],
             'flash' => [
                 'message' => fn() => $request->session()->get('message'),

@@ -24,7 +24,7 @@ class PropertyClassifications extends Model
         return $this->hasMany(Property::class, 'property_classification_id');
     }
 
-    // Factories outside Database\Factories aren't found by convention (CLAUDE.md, Modules)
+    // Factories outside Database\Factories aren't found by convention (ARCHITECTURE.md, Adding a module)
     protected static function newFactory(): PropertyClassificationsFactory
     {
         return PropertyClassificationsFactory::new();

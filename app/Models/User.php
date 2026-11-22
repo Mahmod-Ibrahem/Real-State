@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Modules\Dashboard\Enums\DashboardPermission;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -50,5 +51,10 @@ class User extends Authenticatable
     public function favourites()
     {
         return $this->hasMany(Favourite::class);
+    }
+
+    public function dashboardRoute(): string
+    {
+        return $this->can(DashboardPermission::View->value) ? 'admin.dashboard' : 'owner.dashboard';
     }
 }

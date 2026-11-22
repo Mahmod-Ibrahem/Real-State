@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Middleware\HandleInertiaRequests;
+use App\Exceptions\BusinessRuleException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,19 +17,19 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\LocaleMiddleware::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-
         ]);
-        // Signed-in users opening a guest page (e.g. /admin/login) go to the admin; Laravel's default looks for a
-        // route named "dashboard", which is "admin.dashboard" here (CLAUDE.md, Routing)
-        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+
+        $middleware->redirectUsersTo(fn (Request $request) => route($request->user()->dashboardRoute()));
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => $request->is('owner', 'owner/*') ? route('owner.login') : route('login')
+        );
 
         $middleware->alias([
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
-
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(
+            fn (BusinessRuleException $exception) => back()->withErrors(['database' => $exception->getMessage()])
+        );
     })->create();

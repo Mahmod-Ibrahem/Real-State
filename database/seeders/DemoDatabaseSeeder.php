@@ -29,6 +29,8 @@ class DemoDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            PermissionSeeder::class,
+            UserSeeder::class,
             LocationSeeder::class,
             PropertyTypeSeeder::class,
             ClassificationSeeder::class,
@@ -37,8 +39,6 @@ class DemoDatabaseSeeder extends Seeder
             BrokerSeeder::class,
             ContentSeeder::class,
             FaqSeeder::class,
-            PermissionSeeder::class,
-            UserSeeder::class,
         ]);
     }
 }

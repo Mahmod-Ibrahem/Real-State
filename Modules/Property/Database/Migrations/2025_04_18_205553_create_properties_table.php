@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->string('garages')->nullable();
             $table->integer('year_built')->nullable();
             $table->integer('sqft');
-            $table->mediumText('google_map');
+            $table->mediumText('google_map')->nullable();
             $table->boolean('is_published')->default(0);
             $table->foreignId('property_type_id')->constrained('property_types')->onDelete('cascade');
             $table->foreignId('area_id')->constrained('areas');
@@ -31,6 +31,11 @@ return new class extends Migration {
             $table->string('purpose')->index(); // Modules\Property\Enums\ListingPurpose
             $table->string('status')->default('available')->index(); // Modules\Property\Enums\PropertyStatus
             $table->foreignId('property_classification_id')->nullable()->constrained('property_classifications')->onDelete('set null');
+            $table->foreignId('owner_id')->constrained('users')->restrictOnDelete();
+            $table->string('review_status')->default('pending')->index();
+            $table->text('rejection_reason')->nullable();
+            $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
         });
     }

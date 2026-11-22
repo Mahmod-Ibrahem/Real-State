@@ -19,8 +19,8 @@
                     <template #action>
                         <Link :href="route('admin.property-leads.index')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">View all</Link>
                     </template>
-                    <ul v-if="recentPropertyLeads.length" class="-mx-6 divide-y divide-slate-100">
-                        <li v-for="lead in recentPropertyLeads" :key="lead.id">
+                    <ul v-if="recent_property_leads.data.length" class="-mx-6 divide-y divide-slate-100">
+                        <li v-for="lead in recent_property_leads.data" :key="lead.id">
                             <Link :href="route('admin.property-leads.edit', lead.id)"
                                   class="flex items-center justify-between gap-3 px-6 py-3 transition-colors hover:bg-slate-50">
                                 <span class="min-w-0">
@@ -38,8 +38,8 @@
                     <template #action>
                         <Link :href="route('admin.contact-leads.index')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">View all</Link>
                     </template>
-                    <ul v-if="recentContactLeads.length" class="-mx-6 divide-y divide-slate-100">
-                        <li v-for="lead in recentContactLeads" :key="lead.id">
+                    <ul v-if="recent_contact_leads.data.length" class="-mx-6 divide-y divide-slate-100">
+                        <li v-for="lead in recent_contact_leads.data" :key="lead.id">
                             <Link :href="route('admin.contact-leads.edit', lead.id)"
                                   class="flex items-center justify-between gap-3 px-6 py-3 transition-colors hover:bg-slate-50">
                                 <span class="min-w-0">
@@ -69,28 +69,29 @@ const props = defineProps({
     listings: {type: Object, required: true},
     leads: {type: Object, required: true},
     catalog: {type: Object, required: true},
-    recentPropertyLeads: {type: Array, required: true},
-    recentContactLeads: {type: Array, required: true},
+    recent_property_leads: {type: Object, required: true},
+    recent_contact_leads: {type: Object, required: true},
 });
 
 const monthLabel = new Date().toLocaleDateString('en-GB', {month: 'long', year: 'numeric'});
 
 const listingMetrics = computed(() => [
     {label: 'Total', value: props.listings.total, href: route('admin.properties.index')},
-    {label: 'Published', value: props.listings.published, hint: `${props.listings.total - props.listings.published} drafts`},
-    {label: 'Available for sale', value: props.listings.forSale},
-    {label: 'Available for rent', value: props.listings.forRent},
+    {label: 'Published', value: props.listings.published, hint: `${props.listings.total - props.listings.published} not live`},
+    {label: 'Pending review', value: props.listings.pending_review, href: route('admin.properties.index', {review: 'pending'})},
+    {label: 'Available for sale', value: props.listings.for_sale},
+    {label: 'Available for rent', value: props.listings.for_rent},
     {label: 'Sold', value: props.listings.sold},
     {label: 'Rented', value: props.listings.rented},
 ]);
 
 const leadMetrics = computed(() => [
-    {label: 'Property leads', value: props.leads.propertyLeads, href: route('admin.property-leads.index')},
-    {label: 'Contact messages', value: props.leads.contactLeads, href: route('admin.contact-leads.index')},
+    {label: 'Property leads', value: props.leads.property_leads, href: route('admin.property-leads.index')},
+    {label: 'Contact messages', value: props.leads.contact_leads, href: route('admin.contact-leads.index')},
 ]);
 
 const catalogMetrics = computed(() => [
-    {label: 'Property types', value: props.catalog.propertyTypes, href: route('admin.property-types.index')},
+    {label: 'Property types', value: props.catalog.property_types, href: route('admin.property-types.index')},
     {label: 'Countries', value: props.catalog.countries, href: route('admin.countries.index')},
     {label: 'Cities', value: props.catalog.cities, href: route('admin.cities.index')},
     {label: 'Areas', value: props.catalog.areas, href: route('admin.areas.index')},
