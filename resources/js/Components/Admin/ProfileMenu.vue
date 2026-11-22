@@ -30,9 +30,10 @@
 </template>
 
 <script setup>
-import {computed, onBeforeUnmount, onMounted, ref} from 'vue';
+import {computed, ref} from 'vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import {ArrowRightStartOnRectangleIcon, ChevronDownIcon, UserCircleIcon} from '@heroicons/vue/24/outline';
+import {useDismissible} from '@/Composables/useDismissible.js';
 
 defineProps({
     profileRoute: {type: String, default: null},
@@ -46,20 +47,5 @@ const initials = computed(() =>
 
 const open = ref(false);
 const root = ref(null);
-
-// Close on outside click or Escape
-const onDocumentClick = (event) => {
-    if (open.value && !root.value?.contains(event.target)) open.value = false;
-};
-const onKeydown = (event) => {
-    if (event.key === 'Escape') open.value = false;
-};
-onMounted(() => {
-    document.addEventListener('click', onDocumentClick);
-    document.addEventListener('keydown', onKeydown);
-});
-onBeforeUnmount(() => {
-    document.removeEventListener('click', onDocumentClick);
-    document.removeEventListener('keydown', onKeydown);
-});
+useDismissible(root, open);
 </script>

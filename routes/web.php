@@ -4,6 +4,8 @@ use App\Enums\NotificationPermission;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MarkNotificationsReadController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OpenNotificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,7 +26,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware(['auth', DashboardPermission::View->middleware()]);
 });
 
-Route::patch('supplier/notifications/read', MarkNotificationsReadController::class)->name('supplier.notifications.read')
+Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index')
+    ->middleware(['auth', NotificationPermission::Receive->middleware()]);
+Route::get('notifications/{notification}',OpenNotificationController::class)->name('notifications.open')
+    ->middleware(['auth', NotificationPermission::Receive->middleware()]);
+Route::patch('notifications/read-all', MarkNotificationsReadController::class)->name('notifications.read-all')
     ->middleware(['auth', NotificationPermission::Receive->middleware()]);
 
 Route::fallback(fn () => Inertia::render('404'));

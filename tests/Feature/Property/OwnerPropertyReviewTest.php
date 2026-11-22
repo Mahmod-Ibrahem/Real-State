@@ -73,7 +73,11 @@ class OwnerPropertyReviewTest extends TestCase
         $this->assertTrue($property->owner()->is($owner));
         $this->assertSame(ReviewStatus::Pending, $property->review_status);
         $this->assertFalse($property->is_published);
-        Notification::assertSentTo($admin, PropertySubmittedNotification::class);
+        Notification::assertSentTo(
+            $admin,
+            PropertySubmittedNotification::class,
+            fn (PropertySubmittedNotification $notification, array $channels) => $channels === ['mail', 'database'],
+        );
         Notification::assertNotSentTo($reviewerWithoutAlerts, PropertySubmittedNotification::class);
     }
 

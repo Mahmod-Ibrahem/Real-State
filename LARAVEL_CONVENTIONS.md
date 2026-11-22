@@ -221,16 +221,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 - A service dispatches an **event** after a successful write. Events carry the model and nothing else:
   `final class PropertySubmitted { use Dispatchable, SerializesModels; public function __construct(public Property $property) {} }`.
-- **Listeners** do one thing each (`NotifyAdminsOfSubmittedProperty`), implement `ShouldQueue`, and are registered in
-  the module's service provider (`Event::listen(...)`).
+- **Listeners** do one thing each (`NotifyAdminsOfSubmittedProperty`), implement `ShouldHandleEventsAfterCommit`
+  (not `ShouldQueue`), and are registered in the module's service provider (`Event::listen(...)`). They only pick the
+  recipients and hand off to the notification, which owns the queueing.
 - Listeners send **notifications** (`Illuminate\Notifications\Notification`, `via()` → `['mail']` or
-  `['mail', 'database']`). **Recipients are chosen by a `receive … notifications` permission**, never by role and
+  `['mail', 'database']`). Notifications implement `ShouldQueue` and route the `database` channel to the `sync`
+  connection in `viaConnections()`, so the bell row is written instantly while mail waits for the queue worker:
+  `return ['mail' => config('queue.default'), 'database' => 'sync'];`. **Recipients are chosen by a `receive … notifications` permission**, never by role and
   never by reusing an action permission:
   `User::permission(NotificationPermission::PropertySubmissions->value)->get()`. A listener that notifies one user
   (the owner) skips them unless they `can(NotificationPermission::Receive->value)`. Admins can then opt out of a mail
   without losing the right to act on it.
+- **Database notifications feed the top-bar bell** (admin and supplier). Their `toArray()` returns `message` (one
+  translated sentence) and `url` (the page opening it should go to). Pages share nothing about notifications. The bell
+  fetches the list and unread count from its own JSON endpoint, `notifications.index` (`NotificationResource`
+  collection + `meta.unread`), with `axios` every 60 seconds. Opening one goes through `notifications.open`,
+  which marks it read and redirects to its `url`. `notifications.read-all` (also `axios`) marks everything read and
+  returns `204`.
 - Notification text goes through `__()` with Arabic strings in `lang/ar.json`. Mail links use `route()`.
-- Run mail locally with `MAIL_MAILER=log`. Queued listeners need a queue worker (`composer dev` starts one).
+- Run mail locally with `MAIL_MAILER=log`. Queued mail needs a queue worker (`composer dev` starts one); database
+  notifications don't.
 
 ## Errors
 

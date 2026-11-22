@@ -51,7 +51,8 @@ aggregates, interfaces with a single implementation, abstract base classes creat
 ## Vue
 
 - **Components do one thing.** Extract a component when markup repeats (e.g. `navbar/FavouritesLink.vue`) or a file
-  mixes unrelated concerns. Pages compose components. Components don't fetch data.
+  mixes unrelated concerns. Pages compose components. Components don't fetch data (the one exception is the
+  notification bell, which polls through `Composables/useNotificationFeed.js`).
 - **Derive, don't duplicate.** Use `computed` for derived state, and `watch` only to reset dependent fields.
 
 ## Hygiene

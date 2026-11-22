@@ -23,7 +23,6 @@
                                        :class="item === activeItem ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-500'"
                                        aria-hidden="true"/>
                             <span class="truncate">{{ item.label }}</span>
-                            <span v-if="badgeOf(item)" class="ms-auto rounded-full bg-indigo-600 px-1.5 text-[11px] font-semibold leading-5 text-white">{{ badgeOf(item) }}</span>
                         </Link>
                     </li>
                 </ul>
@@ -56,5 +55,4 @@ const page = usePage();
 
 // Recomputed on every visit (page.url changes), so create/edit screens keep their section highlighted.
 const activeItem = computed(() => (page.url, findNavItem(props.nav.groups, route().current())?.item));
-const badgeOf = (item) => (item.badge ? page.props.auth?.[item.badge] : 0) || 0;
 </script>

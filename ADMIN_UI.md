@@ -13,7 +13,7 @@ weight, spacing and a single accent colour, not decoration.
 - Admin pages use their own entry, `resources/js/admin.js` + `resources/css/admin.css`, rendered by
   `resources/views/admin.blade.php`. Bootstrap and the public theme SCSS are **never** imported there.
 - All admin routes live under the `/admin` prefix. `HandleInertiaRequests` picks the `admin` root view and a
-  separate asset version for `/admin/*`, so crossing between site and admin is always a full page load and
+  separate asset version for `/admin/*` (plus `/supplier/*` and the shared bell routes `/notifications/*`), so crossing between site and admin is always a full page load and
   the bundles never mix.
 - **URLs are kebab-case and plural**: `/admin/property-types`, `/admin/faqs`, never `/admin/propertyTypes`.
   Route **names** follow the URL with an `admin.` prefix: `route('admin.property-types.index')` (see
@@ -49,7 +49,7 @@ weight, spacing and a single accent colour, not decoration.
 ## 3. Layout anatomy (`Layouts/Admin/AuthenticatedLayout.vue`)
 
 ```
-┌ TopBar h-14: [☰ toggle] │ Group › Page · Action ............ [Language] [Profile ▾] ┐
+┌ TopBar h-14: [☰ toggle] │ Group › Page · Action ....... [Bell] [Language] [Profile ▾] ┐
 ├ SideBar w-60 white card (rounded-xl border, ml-3 mb-3)  │ main (px-4 md:px-6, scrolls) ┤
 │  GROUP LABEL                                            │  PageHeader: title + desc    │
 │  ▸ nav item (h-9, icon 18px slate-400)                  │              + #actions      │
@@ -90,6 +90,7 @@ inside the dialog.
 | `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil) and delete (trash, red hover). Edit is a `Link` when given `edit-href`, or a button emitting `edit` when given `editable` (modal resources). Always with `aria-label`/`title`. |
 | `ui/Pagination.vue` | “Showing X–Y of Z” + prev/numbered/next buttons from a Laravel paginator `meta`. Hidden when there is one page. |
 | `ui/FilterTabs.vue` | Segmented filter for a list toolbar (`TableCard #actions`): “All” + one tab per option, each a `Link` that sets one query param (`param="review"`), keeps the others and drops `page`. The active tab is white with `shadow-sm` on a `bg-slate-100` track. |
+| `NotificationBell.vue` | Top-bar bell for every dashboard user who can `receive notifications`. It's an icon button (`h-9 w-9 rounded-lg`) with an indigo count pill for unread notifications (`meta.unread` from the feed, "9+" above 9). It opens a `w-80` floating panel like `ProfileMenu`: header "Notifications" + "Mark all as read", then the latest notifications (unread ones get an indigo dot and `font-medium`), each a `Link` to `notifications.open`. Data comes from `Composables/useNotificationFeed.js` (the one component-level fetch in the admin): `GET notifications.index` loads the list and count once when the bell first mounts, then **every 60 seconds** while the tab is visible. Nothing else fetches: opening the bell shows what was last loaded. The list has an empty state. It closes on outside click or Esc. |
 | `PropertyReviewActions.vue` | Approve (primary, `sm`) and Reject (secondary, `sm`) for a property. Reject opens a `FormModal` asking for the reason the owner will see. Hidden when the property already has that status. Used on the properties list and the edit page header. |
 | `Dashboard/Properties/ReviewStatusBadge.vue` | `StatusBadge` for a review status, taking label and tone from the `review_statuses` options. Shared by admin and owner pages. |
 | `ui/StatusBadge.vue` | `tone`: `success`·`warning`·`danger`·`info`·`neutral`. `rounded-full px-2 py-0.5 text-xs font-medium`. |

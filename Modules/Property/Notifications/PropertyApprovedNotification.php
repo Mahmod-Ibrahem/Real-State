@@ -3,11 +3,12 @@
 namespace Modules\Property\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Modules\Property\Models\Property;
 
-final class PropertyApprovedNotification extends Notification
+final class PropertyApprovedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -18,6 +19,11 @@ final class PropertyApprovedNotification extends Notification
     public function via(object $notifiable): array
     {
         return ['mail', 'database'];
+    }
+
+    public function viaConnections(): array
+    {
+        return ['mail' => config('queue.default'), 'database' => 'sync'];
     }
 
     public function toMail(object $notifiable): MailMessage

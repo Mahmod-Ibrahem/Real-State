@@ -8,7 +8,7 @@ export const OWNER_NAV = {
         {
             label: 'My listings',
             items: [
-                {label: 'Dashboard', route: 'supplier.dashboard', icon: Squares2X2Icon, badge: 'unread_notifications'},
+                {label: 'Dashboard', route: 'supplier.dashboard', icon: Squares2X2Icon},
                 {label: 'My properties', route: 'supplier.properties.index', icon: BuildingOffice2Icon},
             ],
         },

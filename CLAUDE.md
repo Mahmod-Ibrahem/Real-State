@@ -82,7 +82,7 @@ and `Support/DemoImages`, which call into the modules' seeders.
 - **Every property has an owner** (`owner_id`, required) and a **review status** (`ReviewStatus`: pending /
   approved / rejected):
   - Owners add properties from `/supplier`. A new property is **pending** and unpublished, and `PropertySubmitted`
-    mails every user with `receive property submission notifications`. That permission controls who gets the
+    mails and notifies (dashboard bell) every user with `receive property submission notifications`. That permission controls who gets the
     mail; it is separate from `review properties` (who may approve or reject).
   - Admins approve (`PropertyApproved` notifies the owner by mail + database) or reject with a required reason
     (shown on the owner's dashboard, no notification). Properties an admin creates are approved at once.

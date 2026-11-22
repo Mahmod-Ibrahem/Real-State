@@ -18,7 +18,7 @@
                 </template>
                 <ul v-if="notifications.data.length" class="-mx-6 divide-y divide-slate-100">
                     <li v-for="notification in notifications.data" :key="notification.id">
-                        <Link :href="notification.url ?? route('supplier.properties.index')"
+                        <Link :href="route('notifications.open', notification.id)"
                               class="flex items-center justify-between gap-3 px-6 py-3 transition-colors hover:bg-slate-50">
                             <span class="flex min-w-0 items-center gap-2.5">
                                 <span class="h-2 w-2 shrink-0 rounded-full" :class="notification.is_read ? 'bg-transparent' : 'bg-indigo-600'"
@@ -65,7 +65,7 @@ const markingRead = ref(false);
 
 function markAllRead() {
     markingRead.value = true;
-    router.patch(route('supplier.notifications.read'), {}, {
+    router.patch(route('notifications.read-all'), {}, {
         preserveScroll: true,
         onFinish: () => (markingRead.value = false),
     });

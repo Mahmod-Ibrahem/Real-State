@@ -16,6 +16,7 @@
         </div>
 
         <div class="flex shrink-0 items-center gap-1.5">
+            <NotificationBell v-if="can(RECEIVE_NOTIFICATIONS)"/>
             <LanguageSwitch/>
             <ProfileMenu :profile-route="nav.profileRoute"/>
         </div>
@@ -27,8 +28,12 @@ import {computed} from 'vue';
 import {usePage} from '@inertiajs/vue3';
 import {Bars3Icon, ChevronRightIcon} from '@heroicons/vue/24/outline';
 import LanguageSwitch from './LanguageSwitch.vue';
+import NotificationBell from './NotificationBell.vue';
 import ProfileMenu from './ProfileMenu.vue';
 import {actionOf, findNavItem} from './navigation.js';
+import {can} from '@/Composables/usePermissions.js';
+
+const RECEIVE_NOTIFICATIONS = 'receive notifications';
 
 const props = defineProps({
     // Fallback when the page isn't in the navigation (e.g. Profile)

@@ -23,7 +23,7 @@ class HandleInertiaRequests extends Middleware
 
     private function usesDashboardBundle(Request $request): bool
     {
-        return $request->is('admin', 'admin/*', 'supplier', 'supplier/*');
+        return $request->is('admin', 'admin/*', 'supplier', 'supplier/*', 'notifications/*');
     }
 
     public function share(Request $request): array
@@ -33,7 +33,6 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'permissions' => fn () => $request->user()?->getAllPermissions()->pluck('name') ?? [],
-                'unread_notifications' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
             ],
             'flash' => [
                 'message' => fn() => $request->session()->get('message'),

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\NotificationService;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 final class MarkNotificationsReadController extends Controller
 {
@@ -12,10 +12,10 @@ final class MarkNotificationsReadController extends Controller
     {
     }
 
-    public function __invoke(Request $request): RedirectResponse
+    public function __invoke(Request $request): Response
     {
         $this->notifications->markAllRead($request->user());
 
-        return back();
+        return response()->noContent();
     }
 }
