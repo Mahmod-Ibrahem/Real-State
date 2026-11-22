@@ -84,7 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware(['auth', PropertyPermission::DeleteFeatureTypes->middleware()]);
 });
 
-Route::prefix('owner')->name('owner.')->group(function () {
+Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('dashboard', OwnerDashboardController::class)->name('dashboard')
         ->middleware(['auth', PropertyPermission::ViewOwn->middleware()]);
     Route::get('properties', [OwnerPropertyController::class, 'index'])->name('properties.index')

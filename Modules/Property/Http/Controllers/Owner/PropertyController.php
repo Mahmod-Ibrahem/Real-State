@@ -45,7 +45,7 @@ final class PropertyController extends Controller
     {
         $this->ownerProperties->submit($request->user(), $request->validated());
 
-        return to_route('owner.properties.index');
+        return to_route('supplier.properties.index');
     }
 
     public function edit(Request $request, Property $property): Response
@@ -64,7 +64,7 @@ final class PropertyController extends Controller
     {
         $this->ownerProperties->update($property, $request->validated());
 
-        return to_route('owner.properties.index');
+        return to_route('supplier.properties.index');
     }
 
     private function formProps(Request $request): array

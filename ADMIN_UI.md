@@ -23,7 +23,7 @@ weight, spacing and a single accent colour, not decoration.
   utility (`py-3`, `gap-4`, `shadow-sm`, `border`, …) normally. Still no `!` important hacks.
 - Admin-only components live in `resources/js/Components/Admin/`. Never import them from public pages, and
   never import public (`Components/Users/*`) components into admin pages.
-- **The owner dashboard (`/owner/*`) is part of this bundle** (`HandleInertiaRequests` sends it to the `admin`
+- **The owner dashboard (`/supplier/*`) is part of this bundle** (`HandleInertiaRequests` sends it to the `admin`
   root view) and follows this guide. It uses the same `AuthenticatedLayout` with its own nav
   (`Components/Owner/navigation.js`, passed as the layout's `nav` prop). Pages live in `Pages/Owner/`, and forms
   shared by admin and owner pages live in `Components/Dashboard/`.

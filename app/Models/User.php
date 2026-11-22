@@ -55,6 +55,6 @@ class User extends Authenticatable
 
     public function dashboardRoute(): string
     {
-        return $this->can(DashboardPermission::View->value) ? 'admin.dashboard' : 'owner.dashboard';
+        return $this->can(DashboardPermission::View->value) ? 'admin.dashboard' : 'supplier.dashboard';
     }
 }

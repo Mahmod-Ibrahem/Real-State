@@ -25,6 +25,6 @@ final class OwnerRegistrationController extends Controller
     {
         Auth::login($this->registration->register($request->validated()));
 
-        return to_route('owner.dashboard');
+        return to_route('supplier.dashboard');
     }
 }

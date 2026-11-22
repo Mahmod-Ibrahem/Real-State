@@ -1,7 +1,7 @@
 <template>
     <AuthenticatedLayout :nav="OWNER_NAV" title="Dashboard" description="Your listings and their review status.">
         <template #actions>
-            <Button :href="route('owner.properties.create')" :icon="PlusIcon">Add property</Button>
+            <Button :href="route('supplier.properties.create')" :icon="PlusIcon">Add property</Button>
         </template>
 
         <div class="grid gap-4">
@@ -18,7 +18,7 @@
                 </template>
                 <ul v-if="notifications.data.length" class="-mx-6 divide-y divide-slate-100">
                     <li v-for="notification in notifications.data" :key="notification.id">
-                        <Link :href="notification.url ?? route('owner.properties.index')"
+                        <Link :href="notification.url ?? route('supplier.properties.index')"
                               class="flex items-center justify-between gap-3 px-6 py-3 transition-colors hover:bg-slate-50">
                             <span class="flex min-w-0 items-center gap-2.5">
                                 <span class="h-2 w-2 shrink-0 rounded-full" :class="notification.is_read ? 'bg-transparent' : 'bg-indigo-600'"
@@ -54,9 +54,9 @@ const props = defineProps({
 });
 
 const listingMetrics = computed(() => [
-    {label: 'Under review', value: props.counts.pending, href: route('owner.properties.index')},
-    {label: 'Approved', value: props.counts.approved, href: route('owner.properties.index')},
-    {label: 'Rejected', value: props.counts.rejected, href: route('owner.properties.index')},
+    {label: 'Under review', value: props.counts.pending, href: route('supplier.properties.index')},
+    {label: 'Approved', value: props.counts.approved, href: route('supplier.properties.index')},
+    {label: 'Rejected', value: props.counts.rejected, href: route('supplier.properties.index')},
     {label: 'Live on the site', value: props.counts.published},
 ]);
 
@@ -65,7 +65,7 @@ const markingRead = ref(false);
 
 function markAllRead() {
     markingRead.value = true;
-    router.patch(route('owner.notifications.read'), {}, {
+    router.patch(route('supplier.notifications.read'), {}, {
         preserveScroll: true,
         onFinish: () => (markingRead.value = false),
     });

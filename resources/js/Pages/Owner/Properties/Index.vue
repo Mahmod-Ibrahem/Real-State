@@ -3,7 +3,7 @@
                          description="Approved listings can be published. Editing one sends it back to review.">
         <TableCard noun="properties" :meta="properties.meta" :empty="!properties.data.length" :searchable="false"
                    empty-text="You haven't listed a property yet. Add your first one."
-                   :create-href="route('owner.properties.create')" create-label="Add property">
+                   :create-href="route('supplier.properties.create')" create-label="Add property">
             <thead class="border-b border-slate-200">
             <tr>
                 <TableHeadingCell>Property</TableHeadingCell>
@@ -19,7 +19,7 @@
                     <div class="flex min-w-[16rem] items-center gap-3">
                         <img :src="property.image" alt="" class="h-10 w-14 shrink-0 rounded-md border border-slate-200 object-cover"/>
                         <div class="min-w-0">
-                            <RowTitle :href="route('owner.properties.edit', property.id)" :title="property.name">{{ property.name }}</RowTitle>
+                            <RowTitle :href="route('supplier.properties.edit', property.id)" :title="property.name">{{ property.name }}</RowTitle>
                             <p class="text-xs text-slate-500">{{ property.property_type }}</p>
                         </div>
                     </div>
@@ -71,7 +71,7 @@ const publishing = ref(null);
 function togglePublished(property) {
     publishing.value = property.id;
     const action = property.is_published ? 'unpublish' : 'publish';
-    router.patch(route(`owner.properties.${action}`, property.id), {}, {
+    router.patch(route(`supplier.properties.${action}`, property.id), {}, {
         preserveScroll: true,
         onSuccess: () => showToast(`${property.name} ${property.is_published ? 'unpublished' : 'published'}`),
         onError: (errors) => showToast(errors.database ?? 'The property could not be updated.', 'error'),

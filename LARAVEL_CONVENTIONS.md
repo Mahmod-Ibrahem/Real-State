@@ -175,7 +175,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
   needs its own permission. Names and URLs still follow resource conventions (`properties.index`,
   `properties.store`, …).
 - **Route names are dot-separated, each segment kebab-case**, matching the URL (`/admin/property-types` →
-  `admin.property-types.index`). Admin routes are named `admin.…` and owner-dashboard routes `owner.…`.
+  `admin.property-types.index`). Admin routes are named `admin.…` and owner-dashboard routes `supplier.…`.
 - A public route without middleware is public at a glance. Don't add the `web` group by hand (the module's
   `RouteServiceProvider` already applies it).
 - Ownership-scoped routes add the policy check on the route: `->middleware(['auth', 'can:update,property'])`.

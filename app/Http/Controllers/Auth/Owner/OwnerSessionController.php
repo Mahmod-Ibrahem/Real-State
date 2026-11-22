@@ -12,9 +12,9 @@ final class OwnerSessionController extends AuthenticatedSessionController
     public function create(): Response
     {
         return Inertia::render('Auth/Login', [
-            'title' => __('Property owner login'),
-            'loginRoute' => 'owner.login',
-            'registerRoute' => 'owner.register',
+            'title' => __('Supplier login'),
+            'loginRoute' => 'supplier.login',
+            'registerRoute' => 'supplier.register',
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
         ]);

@@ -42,7 +42,7 @@ Route::prefix('admin')->group(function () {
         ->middleware('auth');
 });
 
-Route::prefix('owner')->name('owner.')->group(function () {
+Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('login', [OwnerSessionController::class, 'create'])->name('login')
         ->middleware('guest');
     Route::post('login', [OwnerSessionController::class, 'store'])

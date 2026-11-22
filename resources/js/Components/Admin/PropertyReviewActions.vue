@@ -6,7 +6,7 @@
                 @click="rejecting = true">Reject</Button>
 
         <FormModal :open="rejecting" :title="`Reject ${property.name}`" size="sm" submit-label="Reject"
-                   description="The owner sees this reason on their dashboard and can fix the listing and resubmit."
+                   description="The supplier sees this reason on their dashboard and can fix the listing and resubmit."
                    :processing="form.processing" @close="rejecting = false" @submit="reject">
             <TextField v-model="form.reason" label="Reason" type="textarea" :rows="4" required
                        placeholder="e.g. The cover photo is blurry. Please upload a clearer one."

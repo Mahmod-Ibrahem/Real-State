@@ -23,7 +23,7 @@ class HandleInertiaRequests extends Middleware
 
     private function usesDashboardBundle(Request $request): bool
     {
-        return $request->is('admin', 'admin/*', 'owner', 'owner/*');
+        return $request->is('admin', 'admin/*', 'supplier', 'supplier/*');
     }
 
     public function share(Request $request): array

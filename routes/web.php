@@ -13,7 +13,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
 
 Route::redirect('/admin', '/admin/dashboard');
-Route::redirect('/owner', '/owner/dashboard');
+Route::redirect('/supplier', '/supplier/dashboard');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit')
@@ -24,7 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware(['auth', DashboardPermission::View->middleware()]);
 });
 
-Route::patch('owner/notifications/read', MarkNotificationsReadController::class)->name('owner.notifications.read')
+Route::patch('supplier/notifications/read', MarkNotificationsReadController::class)->name('supplier.notifications.read')
     ->middleware(['auth', NotificationPermission::Receive->middleware()]);
 
 Route::fallback(fn () => Inertia::render('404'));

@@ -1,7 +1,7 @@
 <template>
     <AuthenticatedLayout :nav="OWNER_NAV" title="New property"
                          description="We'll review your listing before it goes live.">
-        <PropertyForm v-bind="$props" route-base="owner.properties" submit-label="Submit for review"/>
+        <PropertyForm v-bind="$props" route-base="supplier.properties" submit-label="Submit for review"/>
     </AuthenticatedLayout>
 </template>
 

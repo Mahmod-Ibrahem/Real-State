@@ -12,7 +12,7 @@
             Saving changes sends this listing back to review and hides it until it's approved again.
         </p>
 
-        <PropertyForm v-bind="$props" route-base="owner.properties"/>
+        <PropertyForm v-bind="$props" route-base="supplier.properties"/>
     </AuthenticatedLayout>
 </template>
 

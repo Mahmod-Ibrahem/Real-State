@@ -26,7 +26,7 @@ final class PropertyApprovedNotification extends Notification
             ->subject(__('Your property “:name” was approved', ['name' => $this->property->name]))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line($this->message())
-            ->action(__('Go to my properties'), route('owner.properties.index'));
+            ->action(__('Go to my properties'), route('supplier.properties.index'));
     }
 
     public function toArray(object $notifiable): array
@@ -34,7 +34,7 @@ final class PropertyApprovedNotification extends Notification
         return [
             'property_id' => $this->property->id,
             'message' => $this->message(),
-            'url' => route('owner.properties.index'),
+            'url' => route('supplier.properties.index'),
         ];
     }
 

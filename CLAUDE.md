@@ -58,10 +58,10 @@ and `Support/DemoImages`, which call into the modules' seeders.
 ## Auth
 
 - **Two login pages, one `users` table and guard.** Admins log in at `/admin/login` (`login`). Property owners sign
-  up at `/owner/register` (`owner.register`) and log in at `/owner/login` (`owner.login`). Both pages render
+  up at `/supplier/register` (`supplier.register`) and log in at `/supplier/login` (`supplier.login`). Both pages render
   `Pages/Auth/Login.vue`. There is no admin self-registration.
 - After login, and when a signed-in user opens a guest page, users go to `User::dashboardRoute()`: `admin.dashboard`
-  if they can `view dashboard`, else `owner.dashboard`. Guests hitting `/owner/*` are sent to `owner.login`,
+  if they can `view dashboard`, else `supplier.dashboard`. Guests hitting `/supplier/*` are sent to `supplier.login`,
   everything else to `login` (`bootstrap/app.php`).
 - Password reset (`password.*`) stays under `/admin` and is shared by both.
 
@@ -81,7 +81,7 @@ and `Support/DemoImages`, which call into the modules' seeders.
   manages them at `/admin/faqs`.
 - **Every property has an owner** (`owner_id`, required) and a **review status** (`ReviewStatus`: pending /
   approved / rejected):
-  - Owners add properties from `/owner`. A new property is **pending** and unpublished, and `PropertySubmitted`
+  - Owners add properties from `/supplier`. A new property is **pending** and unpublished, and `PropertySubmitted`
     mails every user with `receive property submission notifications`. That permission controls who gets the
     mail; it is separate from `review properties` (who may approve or reject).
   - Admins approve (`PropertyApproved` notifies the owner by mail + database) or reject with a required reason

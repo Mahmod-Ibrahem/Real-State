@@ -47,14 +47,14 @@ class OwnerPropertyReviewTest extends TestCase
 
     public function test_owners_register_on_their_own_page_and_land_on_the_owner_dashboard(): void
     {
-        $response = $this->post(route('owner.register'), [
+        $response = $this->post(route('supplier.register'), [
             'name' => 'Sara Owner',
             'email' => 'sara@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertRedirect(route('owner.dashboard'));
+        $response->assertRedirect(route('supplier.dashboard'));
         $owner = User::firstWhere('email', 'sara@example.com');
         $this->assertTrue($owner->can(PropertyPermission::CreateOwn->value));
         $this->assertFalse($owner->can(PropertyPermission::View->value));
@@ -66,8 +66,8 @@ class OwnerPropertyReviewTest extends TestCase
         $admin = $this->admin();
         $reviewerWithoutAlerts = User::factory()->create()->givePermissionTo(PropertyPermission::Review->value);
 
-        $this->actingAs($owner)->post(route('owner.properties.store'), $this->payload())
-            ->assertRedirect(route('owner.properties.index'));
+        $this->actingAs($owner)->post(route('supplier.properties.store'), $this->payload())
+            ->assertRedirect(route('supplier.properties.index'));
 
         $property = Property::sole();
         $this->assertTrue($property->owner()->is($owner));
@@ -81,8 +81,8 @@ class OwnerPropertyReviewTest extends TestCase
     {
         $property = Property::factory()->ownedBy($this->owner())->create();
 
-        $this->actingAs($this->owner())->get(route('owner.properties.edit', $property))->assertForbidden();
-        $this->actingAs($this->owner())->patch(route('owner.properties.publish', $property))->assertForbidden();
+        $this->actingAs($this->owner())->get(route('supplier.properties.edit', $property))->assertForbidden();
+        $this->actingAs($this->owner())->patch(route('supplier.properties.publish', $property))->assertForbidden();
     }
 
     public function test_only_approved_properties_can_be_published(): void
@@ -91,8 +91,8 @@ class OwnerPropertyReviewTest extends TestCase
         $pending = Property::factory()->ownedBy($owner)->pending()->create();
         $approved = Property::factory()->ownedBy($owner)->create(['is_published' => false]);
 
-        $this->actingAs($owner)->patch(route('owner.properties.publish', $pending))->assertSessionHasErrors('database');
-        $this->actingAs($owner)->patch(route('owner.properties.publish', $approved))->assertSessionHasNoErrors();
+        $this->actingAs($owner)->patch(route('supplier.properties.publish', $pending))->assertSessionHasErrors('database');
+        $this->actingAs($owner)->patch(route('supplier.properties.publish', $approved))->assertSessionHasNoErrors();
 
         $this->assertFalse($pending->fresh()->is_published);
         $this->assertTrue($approved->fresh()->is_published);
@@ -135,8 +135,8 @@ class OwnerPropertyReviewTest extends TestCase
         $property = Property::factory()->ownedBy($owner)->create(['is_published' => true]);
 
         $this->actingAs($owner)
-            ->put(route('owner.properties.update', $property), [...$this->payload(), 'image' => null, 'gallery_images' => []])
-            ->assertRedirect(route('owner.properties.index'));
+            ->put(route('supplier.properties.update', $property), [...$this->payload(), 'image' => null, 'gallery_images' => []])
+            ->assertRedirect(route('supplier.properties.index'));
 
         $property->refresh();
         $this->assertSame(ReviewStatus::Pending, $property->review_status);
@@ -151,7 +151,7 @@ class OwnerPropertyReviewTest extends TestCase
         $property = $this->liveListingOf($owner);
 
         $this->actingAs($owner)
-            ->put(route('owner.properties.update', $property), [...$this->payloadFor($property), 'name' => 'Renamed villa'])
+            ->put(route('supplier.properties.update', $property), [...$this->payloadFor($property), 'name' => 'Renamed villa'])
             ->assertSessionHasNoErrors();
 
         $property->refresh();
@@ -168,7 +168,7 @@ class OwnerPropertyReviewTest extends TestCase
         $property = $this->liveListingOf($owner);
 
         $this->actingAs($owner)
-            ->put(route('owner.properties.update', $property), $this->payloadFor($property))
+            ->put(route('supplier.properties.update', $property), $this->payloadFor($property))
             ->assertSessionHasNoErrors();
 
         $property->refresh();
@@ -182,7 +182,7 @@ class OwnerPropertyReviewTest extends TestCase
         $this->actingAs($this->owner())->get(route('admin.properties.index'))->assertForbidden();
         $this->post(route('logout'));
 
-        $this->get(route('owner.dashboard'))->assertRedirect(route('owner.login'));
+        $this->get(route('supplier.dashboard'))->assertRedirect(route('supplier.login'));
     }
 
     public function test_owner_and_admin_pages_render(): void
@@ -190,14 +190,14 @@ class OwnerPropertyReviewTest extends TestCase
         $owner = $this->owner();
         $property = Property::factory()->ownedBy($owner)->rejected('Blurry photos.')->create();
 
-        $this->get(route('owner.login'))->assertOk();
-        $this->get(route('owner.register'))->assertOk();
+        $this->get(route('supplier.login'))->assertOk();
+        $this->get(route('supplier.register'))->assertOk();
 
         $this->actingAs($owner);
-        $this->get(route('owner.dashboard'))->assertOk();
-        $this->get(route('owner.properties.index'))->assertOk();
-        $this->get(route('owner.properties.create'))->assertOk();
-        $this->get(route('owner.properties.edit', $property))->assertOk();
+        $this->get(route('supplier.dashboard'))->assertOk();
+        $this->get(route('supplier.properties.index'))->assertOk();
+        $this->get(route('supplier.properties.create'))->assertOk();
+        $this->get(route('supplier.properties.edit', $property))->assertOk();
 
         $this->actingAs($this->admin());
         $this->get(route('admin.dashboard'))->assertOk();

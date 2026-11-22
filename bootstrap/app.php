@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->redirectUsersTo(fn (Request $request) => route($request->user()->dashboardRoute()));
         $middleware->redirectGuestsTo(
-            fn (Request $request) => $request->is('owner', 'owner/*') ? route('owner.login') : route('login')
+            fn (Request $request) => $request->is('supplier', 'supplier/*') ? route('supplier.login') : route('login')
         );
 
         $middleware->alias([
