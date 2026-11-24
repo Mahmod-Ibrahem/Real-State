@@ -103,6 +103,16 @@ and `Support/DemoImages`, which call into the modules' seeders.
   (`Components/Owner/VerifyCodeDropdown.vue`, used by both rows) posting to `supplier.email.code` (`throttle:3,10`)
   and `supplier.email.verify` (`throttle:5,10`). An unverified email blocks nothing; the dashboard notice names
   whatever is still unverified.
+- **Impersonation:** users with `impersonate users` can **Log in as** a supplier from `/admin/users`
+  (`admin.users.impersonate`). Only suppliers can be impersonated: never yourself, a Super Admin, a staff account
+  (one that can `view dashboard`) or a disabled account, and never while already impersonating.
+  `App\Services\ImpersonationService` parks the admin's id in the session (`impersonator_id`) and signs the session
+  in as the supplier. Every dashboard page then shows an amber bar with **Return to my account**
+  (`impersonation.leave`), which signs the admin back in without a password. While impersonating, the
+  `not-impersonating` middleware refuses actions taken in the user's name (sending and checking phone or email
+  codes, changing a password or profile). Logging out ends the whole session. Start and stop dispatch
+  `ImpersonationStarted` / `ImpersonationEnded`; for now `LogImpersonation` writes them to the log, and the planned
+  audit log will listen to the same events.
 
 ## Domain rules
 

@@ -41,7 +41,7 @@ Route::prefix('admin')->group(function () {
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store'])
         ->middleware('auth');
     Route::put('password', [PasswordController::class, 'update'])->name('password.update')
-        ->middleware('auth');
+        ->middleware(['auth', 'not-impersonating']);
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout')
         ->middleware('auth');
 });
@@ -57,11 +57,11 @@ Route::prefix('supplier')->name('supplier.')->group(function () {
         ->middleware('guest');
 
     Route::post('phone/code', SendPhoneCodeController::class)->name('phone.code')
-        ->middleware(['auth', 'throttle:3,10']);
+        ->middleware(['auth', 'not-impersonating', 'throttle:3,10']);
     Route::post('phone/verify', VerifyPhoneCodeController::class)->name('phone.verify')
-        ->middleware(['auth', 'throttle:5,10']);
+        ->middleware(['auth', 'not-impersonating', 'throttle:5,10']);
     Route::post('email/code', SendEmailCodeController::class)->name('email.code')
-        ->middleware(['auth', 'throttle:3,10']);
+        ->middleware(['auth', 'not-impersonating', 'throttle:3,10']);
     Route::post('email/verify', VerifyEmailCodeController::class)->name('email.verify')
-        ->middleware(['auth', 'throttle:5,10']);
+        ->middleware(['auth', 'not-impersonating', 'throttle:5,10']);
 });

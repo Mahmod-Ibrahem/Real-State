@@ -72,8 +72,18 @@ class User extends Authenticatable
         return $this->phone_verified_at !== null;
     }
 
+    public function isStaff(): bool
+    {
+        return $this->can(DashboardPermission::View->value);
+    }
+
+    public function canBeImpersonated(): bool
+    {
+        return $this->is_active && ! $this->isStaff();
+    }
+
     public function dashboardRoute(): string
     {
-        return $this->can(DashboardPermission::View->value) ? 'admin.dashboard' : 'supplier.dashboard';
+        return $this->isStaff() ? 'admin.dashboard' : 'supplier.dashboard';
     }
 }

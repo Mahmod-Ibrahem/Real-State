@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Users\Enums\UserPermission;
+use Modules\Users\Http\Controllers\Admin\ImpersonateUserController;
 use Modules\Users\Http\Controllers\Admin\UserAccountStateController;
 use Modules\Users\Http\Controllers\Admin\UserController;
 
@@ -16,4 +17,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware(['auth', UserPermission::Edit->middleware()]);
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')
         ->middleware(['auth', UserPermission::Delete->middleware()]);
+    Route::post('users/{user}/impersonate', ImpersonateUserController::class)->name('users.impersonate')
+        ->middleware(['auth', UserPermission::Impersonate->middleware()]);
 });

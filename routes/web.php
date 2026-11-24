@@ -8,6 +8,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OpenNotificationController;
 use App\Http\Controllers\Owner\OwnerProfileController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StopImpersonationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Modules\Dashboard\Enums\DashboardPermission;
@@ -23,10 +24,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit')
         ->middleware(['auth', DashboardPermission::View->middleware()]);
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update')
-        ->middleware(['auth', DashboardPermission::View->middleware()]);
+        ->middleware(['auth', 'not-impersonating', DashboardPermission::View->middleware()]);
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy')
-        ->middleware(['auth', DashboardPermission::View->middleware()]);
+        ->middleware(['auth', 'not-impersonating', DashboardPermission::View->middleware()]);
 });
+
+Route::post('impersonation/leave', StopImpersonationController::class)->name('impersonation.leave')
+    ->middleware(['auth']);
 
 Route::get('supplier/profile', OwnerProfileController::class)->name('supplier.profile.show')
     ->middleware(['auth', PropertyPermission::ViewOwn->middleware()]);

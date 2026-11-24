@@ -223,7 +223,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 - A service dispatches an **event** after a successful write. Events carry the model and nothing else:
   `final class PropertySubmitted { use Dispatchable, SerializesModels; public function __construct(public Property $property) {} }`.
 - **Listeners** do one thing each (`NotifyAdminsOfSubmittedProperty`), implement `ShouldHandleEventsAfterCommit`
-  (not `ShouldQueue`), and are registered in the module's service provider (`Event::listen(...)`). They only pick the
+  (not `ShouldQueue`), and are registered in the module's service provider (`Event::listen(...)`). Listeners in
+  `app/Listeners` are auto-discovered by Laravel, so they are never registered by hand (they would run twice). They only pick the
   recipients and hand off to the notification, which owns the queueing.
 - Listeners send **notifications** (`Illuminate\Notifications\Notification`, `via()` → `['mail']` or
   `['mail', 'database']`). Notifications implement `ShouldQueue` and route the `database` channel to the `sync`

@@ -12,4 +12,5 @@ enum UserPermission: string
     case Create = 'create users';
     case Edit = 'edit users';
     case Delete = 'delete users';
+    case Impersonate = 'impersonate users';
 }

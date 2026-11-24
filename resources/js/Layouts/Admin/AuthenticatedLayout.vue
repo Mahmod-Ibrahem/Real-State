@@ -2,6 +2,7 @@
     <Head :title="title"/>
 
     <div class="flex h-screen flex-col overflow-hidden bg-[#F7F7F8]">
+        <ImpersonationBar v-if="$page.props.impersonating"/>
         <TopBar :title="title" :nav="nav" @toggle-sidebar="sidebarOpen = !sidebarOpen"/>
 
         <div class="flex min-h-0 flex-1">
@@ -41,6 +42,7 @@
 import {onBeforeUnmount, onMounted, ref, watch} from 'vue';
 import {Head, usePage} from '@inertiajs/vue3';
 import {showToast} from '@/Composables/useToast.js';
+import ImpersonationBar from '@/Components/Admin/ImpersonationBar.vue';
 import SideBar from '@/Components/Admin/SideBar.vue';
 import TopBar from '@/Components/Admin/TopBar.vue';
 import Toast from '@/Components/Admin/ui/Toast.vue';

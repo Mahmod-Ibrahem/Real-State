@@ -35,6 +35,8 @@ Observers          cache invalidation only
   stores a file or sends mail.
 - **Services have no HTTP.** They never use `Request`, `request()`, `Inertia`, `redirect()`, `back()`, the session or
   Resources. They take validated arrays / models / typed values and return models, collections or paginators.
+  The one exception is auth services (`LoginService`, `ImpersonationService`): they use the auth guard and the
+  session, because signing a user in *is* session work.
 - **Side effects go through events.** A service dispatches an event (`PropertySubmitted`). Listeners send the
   notifications. The service doesn't know who is notified.
 

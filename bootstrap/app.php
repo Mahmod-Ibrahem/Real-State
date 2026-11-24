@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'not-impersonating' => \App\Http\Middleware\PreventWhileImpersonating::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

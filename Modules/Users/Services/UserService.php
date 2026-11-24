@@ -25,7 +25,7 @@ final class UserService
         ['search' => $search, 'role_id' => $roleId, 'status' => $status, 'review' => $review] = $filters;
 
         return User::query()
-            ->with('roles')
+            ->with(['roles.permissions', 'permissions'])
             ->withCount('properties')
             ->whereDoesntHave('roles', fn (Builder $query) => $query->where('name', PermissionSeeder::SUPER_ADMIN))
             ->when($search, fn (Builder $query) => $query->where(fn (Builder $query) => $query

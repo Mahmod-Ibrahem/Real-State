@@ -20,6 +20,7 @@ class UserListResource extends JsonResource
             'is_active' => $this->is_active,
             'under_review' => $this->under_review,
             'properties_count' => $this->properties_count,
+            'can_be_impersonated' => $this->canBeImpersonated() && ! $this->resource->is($request->user()),
             'created_at' => $this->created_at,
         ];
     }

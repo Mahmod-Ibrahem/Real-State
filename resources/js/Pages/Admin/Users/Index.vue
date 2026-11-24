@@ -57,7 +57,15 @@
                 <TableCell class="tabular-nums">{{ formatNumber(user.properties_count) }}</TableCell>
                 <TableCell variant="muted" class="whitespace-nowrap">{{ formatDate(user.created_at) }}</TableCell>
                 <TableCell align="right">
-                    <RowActions editable @edit="modal.openEdit(user)" @delete="confirmDelete('admin.users.destroy', user.id, 'user')"/>
+                    <RowActions editable @edit="modal.openEdit(user)" @delete="confirmDelete('admin.users.destroy', user.id, 'user')">
+                        <button v-if="canImpersonate && user.can_be_impersonated" type="button"
+                                :title="`Log in as ${user.name}`" :aria-label="`Log in as ${user.name}`"
+                                :disabled="impersonatingId !== null" @click="impersonate(user)"
+                                class="grid h-8 w-8 place-content-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30 disabled:opacity-50">
+                            <ArrowPathIcon v-if="impersonatingId === user.id" class="h-[18px] w-[18px] animate-spin" aria-hidden="true"/>
+                            <ArrowRightEndOnRectangleIcon v-else class="h-[18px] w-[18px]" aria-hidden="true"/>
+                        </button>
+                    </RowActions>
                 </TableCell>
             </tr>
             </tbody>
@@ -68,9 +76,10 @@
 </template>
 
 <script setup>
-import {computed, reactive} from 'vue';
+import {computed, reactive, ref} from 'vue';
 import {router} from '@inertiajs/vue3';
 import {XMarkIcon} from '@heroicons/vue/20/solid';
+import {ArrowPathIcon, ArrowRightEndOnRectangleIcon} from '@heroicons/vue/24/outline';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
 import FilterSelect from '@/Components/Admin/ui/FilterSelect.vue';
@@ -83,6 +92,7 @@ import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import ToggleButton from '@/Components/Admin/ui/ToggleButton.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {formatDate, formatNumber} from '@/Composables/useFormatters.js';
+import {can} from '@/Composables/usePermissions.js';
 import {useResourceModal} from '@/Composables/useResourceModal.js';
 import {showToast} from '@/Composables/useToast.js';
 import UserForm from './UserForm.vue';
@@ -98,6 +108,17 @@ const props = defineProps({
 });
 
 const modal = useResourceModal();
+
+const canImpersonate = can('impersonate users');
+const impersonatingId = ref(null);
+
+function impersonate(user) {
+    impersonatingId.value = user.id;
+    router.post(route('admin.users.impersonate', user.id), {}, {
+        onError: (errors) => errors.database && showToast(errors.database, 'error'),
+        onFinish: () => (impersonatingId.value = null),
+    });
+}
 
 const isFiltered = computed(() => FILTER_PARAMS.some((param) => props.filters[param] !== null));
 const initialOf = (name) => name.trim().charAt(0).toUpperCase();

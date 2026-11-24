@@ -63,6 +63,10 @@ weight, spacing and a single accent colour, not decoration.
   (`{label, items:[{label, route, icon}]}`) and `findNavItem(routeName)`. Sidebar, active state and the
   breadcrumb all read from it. A new admin section = one entry there.
 - An item is active on all of its resource routes (`properties.index`, `properties.create`, `properties.edit`).
+- **Impersonation bar:** while an admin is impersonating (`$page.props.impersonating`), a full-width bar sits above
+  the TopBar: `border-b border-amber-200 bg-amber-50 text-sm text-amber-800`, "You're viewing as **Name** (email)"
+  of the signed-in (impersonated) user
+  and a "Return to my account" button (`impersonation.leave`, spinner while it switches back).
 - Every page passes `title` (and optionally `description`) to the layout; the layout renders `<Head>`,
   the breadcrumb and the `PageHeader`. Page-level buttons go in the layout's `#actions` slot.
 
@@ -87,7 +91,7 @@ inside the dialog.
 | `ui/TableCard.vue` | List screens: toolbar (“Found **N** cities”, search box, create button: a link with `create-href`, or with `creatable` a button emitting `create` for modal resources) + `<table>` slot + empty state + `Pagination`. Paginated lists search on the server (reloads with `?search=`); unpaginated lists pass `client-search` + `v-model:search` and filter their rows with `Composables/useClientSearch.js`. `meta` accepts a resource's `meta` or a raw Laravel paginator (both have `links`, `from`, `to`, `total`). |
 | `ui/TableHeadingCell.vue` | `<th>`: `px-4 py-2.5 text-xs font-medium text-slate-500 text-left whitespace-nowrap`. |
 | `ui/TableCell.vue` | `<td>` with the recipe built in: `px-4 py-3 text-sm`; `variant`: `default` (slate-600) · `primary` (font-medium slate-900, the row's name) · `muted` (slate-500, ids/dates); `align="right"` for actions. |
-| `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil) and delete (trash, red hover). Edit is a `Link` when given `edit-href`, or a button emitting `edit` when given `editable` (modal resources). Always with `aria-label`/`title`. |
+| `ui/RowActions.vue` | Right-aligned icon buttons (h-8 w-8 `rounded-md`): edit (pencil) and delete (trash, red hover). Edit is a `Link` when given `edit-href`, or a button emitting `edit` when given `editable` (modal resources). Always with `aria-label`/`title`. Extra icon buttons go in the default slot with the same classes (e.g. the users table's "Log in as", `ArrowRightEndOnRectangleIcon`, shown only with `impersonate users`). |
 | `ui/Pagination.vue` | “Showing X–Y of Z” + prev/numbered/next buttons from a Laravel paginator `meta`. Hidden when there is one page. |
 | `ui/FilterTabs.vue` | Segmented filter for a list toolbar (`TableCard #actions`): “All” + one tab per option, each a `Link` that sets one query param (`param="review"`), keeps the others and drops `page`. The active tab is white with `shadow-sm` on a `bg-slate-100` track. |
 | `ui/FilterSelect.vue` | Filter button for a list toolbar, ported from Nercy's Chatwoot-style filter: a Headless UI `Listbox` whose button (`h-9 rounded-lg border-slate-300 text-sm`) reads "Status" while unset and "Status: **Active**" once chosen (then `border-indigo-200 bg-indigo-50 text-indigo-700`). The list is the `SelectField` floating panel, starting with "All" (clears the filter); options are `{id, name, tone?}` and a `tone` adds a coloured dot. Choosing sets one query param (`param="status"`), keeps the others and drops `page`. Use `FilterTabs` for a single filter and `FilterSelect` once a list has two or more; pair them with a ghost "Clear filters" button. |
