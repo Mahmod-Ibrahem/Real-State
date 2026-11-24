@@ -33,11 +33,12 @@
                 </TableCell>
                 <TableCell class="whitespace-nowrap">{{ property.area }}, {{ property.city }}</TableCell>
                 <TableCell>
-                    <div class="flex min-w-[12rem] flex-col items-start gap-1.5">
-                        <ReviewStatusBadge :status="property.review_status" :statuses="review_statuses"
-                                           :title="property.rejection_reason ?? undefined"/>
-                        <PropertyReviewActions :property="property"/>
-                    </div>
+                    <span :title="property.rejection_reason ?? undefined">
+                        <InlineSelect :model-value="property.review_status" :options="reviewOptions"
+                                      :label="`Review status of ${property.name}`" :tone="toneOf(review_statuses, property.review_status)"
+                                      :loading="isSaving(property, 'review_status')"
+                                      @update:model-value="(status) => changeReview(property, status)"/>
+                    </span>
                 </TableCell>
                 <TableCell>
                     <ToggleButton :label="labelOf(purposes, property.purpose)" :next-label="labelOf(purposes, otherPurpose(property))"
@@ -69,14 +70,16 @@
             </tr>
             </tbody>
         </TableCard>
+
+        <PropertyRejectModal :open="Boolean(rejectTarget)" :property="rejectTarget" @close="rejectTarget = null"/>
     </AuthenticatedLayout>
 </template>
 
 <script setup>
-import {reactive} from 'vue';
+import {computed, reactive, ref} from 'vue';
 import {router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
-import PropertyReviewActions from '@/Components/Admin/PropertyReviewActions.vue';
+import PropertyRejectModal from '@/Components/Admin/PropertyRejectModal.vue';
 import FilterTabs from '@/Components/Admin/ui/FilterTabs.vue';
 import InlineSelect from '@/Components/Admin/ui/InlineSelect.vue';
 import RowActions from '@/Components/Admin/ui/RowActions.vue';
@@ -85,10 +88,14 @@ import TableCard from '@/Components/Admin/ui/TableCard.vue';
 import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import ToggleButton from '@/Components/Admin/ui/ToggleButton.vue';
-import ReviewStatusBadge from '@/Components/Dashboard/Properties/ReviewStatusBadge.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {formatNumber} from '@/Composables/useFormatters.js';
+import {approveProperty} from '@/Composables/usePropertyReview.js';
 import {showToast} from '@/Composables/useToast.js';
+
+const PENDING = 'pending';
+const APPROVED = 'approved';
+const REJECTED = 'rejected';
 
 const props = defineProps({
     properties: {type: Object, required: true},
@@ -99,6 +106,7 @@ const props = defineProps({
 });
 
 const labelOf = (options, value) => options.find((option) => option.id === value)?.name ?? value;
+const toneOf = (options, value) => options.find((option) => option.id === value)?.tone ?? 'neutral';
 const otherPurpose = (property) => props.purposes.find((purpose) => purpose.id !== property.purpose)?.id;
 const statusesFor = (property) => props.statuses.filter((status) => status.purposes.includes(property.purpose));
 
@@ -114,5 +122,23 @@ function quickUpdate(property, field, value) {
         onError: (errors) => showToast(Object.values(errors)[0] ?? 'The property could not be updated.', 'error'),
         onFinish: () => delete saving[key],
     });
+}
+
+// Pending is set by submitting or editing a property, never chosen by an admin
+const reviewOptions = computed(() => props.review_statuses.map((status) => ({...status, disabled: status.id === PENDING})));
+const rejectTarget = ref(null);
+
+function changeReview(property, status) {
+    if (status === property.review_status) return;
+
+    if (status === REJECTED) {
+        rejectTarget.value = property;
+        return;
+    }
+    if (status === APPROVED) {
+        const key = `${property.id}.review_status`;
+        saving[key] = true;
+        approveProperty(property, () => delete saving[key]);
+    }
 }
 </script>

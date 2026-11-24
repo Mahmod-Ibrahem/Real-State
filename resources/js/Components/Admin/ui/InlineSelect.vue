@@ -20,9 +20,10 @@
                 <ListboxOptions :style="panelStyle"
                                 class="fixed z-[60] max-h-64 overflow-auto rounded-lg border border-slate-200 bg-white p-1 text-sm shadow-lg focus:outline-none">
                     <ListboxOption v-for="option in options" :key="option[optionValue]" :value="option[optionValue]"
-                                   v-slot="{active, selected}" as="template">
-                        <li class="flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5"
-                            :class="active ? 'bg-slate-100 text-slate-900' : 'text-slate-700'">
+                                   :disabled="option.disabled" v-slot="{active, selected, disabled}" as="template">
+                        <li class="flex select-none items-center gap-2 rounded-md px-2 py-1.5"
+                            :class="disabled ? 'cursor-not-allowed text-slate-400'
+                                             : ['cursor-pointer', active ? 'bg-slate-100 text-slate-900' : 'text-slate-700']">
                             <span class="flex-1 truncate" :class="{'font-medium text-slate-900': selected}">
                                 {{ option[optionLabel] }}
                             </span>
@@ -44,7 +45,7 @@ import {useFloatingPanel} from '@/Composables/useFloatingPanel.js';
 
 const props = defineProps({
     modelValue: {type: [String, Number], required: true},
-    // [{id, name}] by default
+    // [{id, name, disabled?}] by default
     options: {type: Array, required: true},
     optionValue: {type: String, default: 'id'},
     optionLabel: {type: String, default: 'name'},
