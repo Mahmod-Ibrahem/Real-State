@@ -96,7 +96,9 @@ class Property extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('is_published', true)->where('review_status', ReviewStatus::Approved);
+        return $query->where('is_published', true)
+            ->where('review_status', ReviewStatus::Approved)
+            ->whereRelation('owner', 'under_review', false);
     }
 
     public function scopeOwnedBy(Builder $query, User $owner): Builder

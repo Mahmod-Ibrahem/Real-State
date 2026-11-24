@@ -17,6 +17,8 @@ class UserListResource extends JsonResource
             'email' => $this->email,
             'role_id' => $role?->id,
             'role_name' => $role?->name,
+            'is_active' => $this->is_active,
+            'under_review' => $this->under_review,
             'properties_count' => $this->properties_count,
             'created_at' => $this->created_at,
         ];

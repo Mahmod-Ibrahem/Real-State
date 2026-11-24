@@ -7,6 +7,15 @@ export const TONES = {
     neutral: 'bg-slate-100 text-slate-600',
 };
 
+// Small status dots next to an option (FilterSelect)
+export const TONE_DOTS = {
+    success: 'bg-green-500',
+    warning: 'bg-amber-500',
+    danger: 'bg-red-500',
+    info: 'bg-blue-500',
+    neutral: 'bg-slate-400',
+};
+
 // Hover tints for the clickable variants
 export const TONE_HOVERS = {
     success: 'hover:bg-green-100',

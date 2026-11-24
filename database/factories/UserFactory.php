@@ -32,6 +32,16 @@ class UserFactory extends Factory
         ];
     }
 
+    public function inactive(): static
+    {
+        return $this->state(['is_active' => false]);
+    }
+
+    public function underReview(): static
+    {
+        return $this->state(['under_review' => true]);
+    }
+
     /**
      * Indicate that the model's email address should be unverified.
      */

@@ -12,7 +12,7 @@ final class OwnerRegistrationService
     /** @param array{name: string, email: string, password: string} $data */
     public function register(array $data): User
     {
-        $user = User::create($data);
+        $user = User::create([...$data, 'under_review' => true]);
         $user->assignRole(self::ROLE);
 
         event(new Registered($user));

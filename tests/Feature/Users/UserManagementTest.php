@@ -41,7 +41,49 @@ class UserManagementTest extends TestCase
                 ->where('users.data.0.role_name', OwnerRegistrationService::ROLE));
 
         $this->actingAs($this->admin)->get(route('admin.users.index', ['role' => $this->ownerRole()->id]))
-            ->assertInertia(fn ($page) => $page->has('users.data', 2)->where('role_filter', $this->ownerRole()->id));
+            ->assertInertia(fn ($page) => $page->has('users.data', 2)->where('filters.role', $this->ownerRole()->id));
+    }
+
+    public function test_the_list_filters_by_status_and_review(): void
+    {
+        $disabled = User::factory()->inactive()->create()->assignRole(OwnerRegistrationService::ROLE);
+        $pending = User::factory()->underReview()->create()->assignRole(OwnerRegistrationService::ROLE);
+        $this->supplier();
+
+        $this->actingAs($this->admin)->get(route('admin.users.index', ['status' => 'disabled']))
+            ->assertInertia(fn ($page) => $page->has('users.data', 1)->where('users.data.0.id', $disabled->id)
+                ->where('filters.status', 'disabled'));
+
+        $this->actingAs($this->admin)->get(route('admin.users.index', ['review' => 'under_review']))
+            ->assertInertia(fn ($page) => $page->has('users.data', 1)->where('users.data.0.id', $pending->id));
+    }
+
+    public function test_admins_switch_the_account_flags_from_the_table(): void
+    {
+        $user = $this->supplier();
+
+        $this->actingAs($this->admin)->patch(route('admin.users.account', $user), ['is_active' => false])
+            ->assertSessionHasNoErrors();
+        $this->actingAs($this->admin)->patch(route('admin.users.account', $user), ['under_review' => true])
+            ->assertSessionHasNoErrors();
+
+        $user->refresh();
+        $this->assertFalse($user->is_active);
+        $this->assertTrue($user->under_review);
+    }
+
+    public function test_staff_cannot_disable_themselves_and_super_admins_cannot_be_switched(): void
+    {
+        $staff = $this->staff();
+        $other = User::factory()->create()->assignRole(PermissionSeeder::SUPER_ADMIN);
+
+        $this->actingAs($staff)->patch(route('admin.users.account', $staff), ['is_active' => false])
+            ->assertSessionHasErrors('database');
+        $this->actingAs($this->admin)->patch(route('admin.users.account', $other), ['is_active' => false])
+            ->assertSessionHasErrors('database');
+
+        $this->assertTrue($staff->fresh()->is_active);
+        $this->assertTrue($other->fresh()->is_active);
     }
 
     public function test_super_admins_and_their_role_are_hidden(): void

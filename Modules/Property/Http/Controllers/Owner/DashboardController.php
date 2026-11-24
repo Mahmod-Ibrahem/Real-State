@@ -23,6 +23,7 @@ final class DashboardController extends Controller
         return Inertia::render('Owner/Dashboard', [
             'counts' => $this->properties->countsFor($request->user()),
             'notifications' => NotificationResource::collection($this->notifications->latestFor($request->user())),
+            'under_review' => $request->user()->under_review,
         ]);
     }
 }

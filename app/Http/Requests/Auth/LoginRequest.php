@@ -50,6 +50,12 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages(['email' => __('Your account is disabled.')]);
+        }
     }
 
     /**

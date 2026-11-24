@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Users\Enums\AccountReview;
+use Modules\Users\Enums\AccountStatus;
 use Modules\Users\Http\Requests\IndexUserRequest;
 use Modules\Users\Http\Requests\StoreUserRequest;
 use Modules\Users\Http\Requests\UpdateUserRequest;
@@ -27,9 +29,11 @@ final class UserController extends Controller
     public function index(IndexUserRequest $request): Response
     {
         return Inertia::render('Admin/Users/Index', [
-            'users' => UserListResource::collection($this->users->paginateForAdmin($request->search(), $request->roleId())),
+            'users' => UserListResource::collection($this->users->paginateForAdmin($request->filters())),
             'roles' => RoleResource::collection($this->roles->assignable()),
-            'role_filter' => $request->roleId(),
+            'statuses' => AccountStatus::options(),
+            'reviews' => AccountReview::options(),
+            'filters' => $request->activeFilters(),
         ]);
     }
 

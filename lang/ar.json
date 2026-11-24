@@ -24,5 +24,9 @@
     "You can't delete your own account.": "لا يمكنك حذف حسابك.",
     "This user still has properties. Move or delete them first.": "لا يزال لدى هذا المستخدم عقارات. انقلها أو احذفها أولاً.",
     "You can't change your own role.": "لا يمكنك تغيير دورك.",
-    "This account is protected and can't be changed here.": "هذا الحساب محمي ولا يمكن تعديله من هنا."
+    "This account is protected and can't be changed here.": "هذا الحساب محمي ولا يمكن تعديله من هنا.",
+    "Active": "نشط",
+    "Disabled": "معطّل",
+    "Your account is disabled.": "حسابك معطّل.",
+    "You can't disable your own account.": "لا يمكنك تعطيل حسابك."
 }

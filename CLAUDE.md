@@ -64,6 +64,12 @@ and `Support/DemoImages`, which call into the modules' seeders.
   if they can `view dashboard`, else `supplier.dashboard`. Guests hitting `/supplier/*` are sent to `supplier.login`,
   everything else to `login` (`bootstrap/app.php`).
 - Password reset (`password.*`) stays under `/admin` and is shared by both.
+- **Account flags** on `users`: `is_active` (default `true`) and `under_review` (default `false`). An inactive user
+  can't log in ("Your account is disabled."), and one who is already signed in is logged out on their next request
+  (`EnsureAccountIsActive`). New supplier sign-ups start `under_review`. They can log in and add properties, but
+  none of their properties are shown on the public site, even approved and published ones, until an admin clears
+  the flag. Admins switch both flags from the `/admin/users` table. Users can't disable themselves, and Super Admin
+  accounts can't be changed there.
 
 ## Domain rules
 
@@ -91,7 +97,8 @@ and `Support/DemoImages`, which call into the modules' seeders.
     rejected property sends it back to pending, unpublishes it, and mails admins again. A save that changes
     nothing keeps the current status. Editing a property that is already pending keeps it pending without a new
     mail.
-  - `Property::active()` (the public site) means approved **and** published.
+  - `Property::active()` (the public site) means approved **and** published **and** its owner is not
+    `under_review`. Changing an owner's `under_review` forgets the cached public lists.
 - Public listing = `ListingController@index` with query filters (`/listing?purpose=sale&city=3`). There are no
   separate Buy/Rent pages.
 

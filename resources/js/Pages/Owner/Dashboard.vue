@@ -5,6 +5,15 @@
         </template>
 
         <div class="grid gap-4">
+            <div v-if="under_review" role="status"
+                 class="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <ClockIcon class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" aria-hidden="true"/>
+                <p>
+                    <span class="font-semibold">Your account is under review.</span>
+                    You can add and edit properties, but none of them appear on the website until an admin approves your account.
+                </p>
+            </div>
+
             <Panel title="My listings" hint="New listings stay hidden until an admin approves them">
                 <MetricGroup :metrics="listingMetrics"/>
             </Panel>
@@ -40,7 +49,9 @@
 <script setup>
 import {computed, ref} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
+import axios from 'axios';
 import {PlusIcon} from '@heroicons/vue/20/solid';
+import {ClockIcon} from '@heroicons/vue/24/outline';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import MetricGroup from '@/Components/Admin/MetricGroup.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
@@ -51,6 +62,7 @@ import {formatDate} from '@/Composables/useFormatters.js';
 const props = defineProps({
     counts: {type: Object, required: true},
     notifications: {type: Object, required: true},
+    under_review: {type: Boolean, default: false},
 });
 
 const listingMetrics = computed(() => [
@@ -63,11 +75,13 @@ const listingMetrics = computed(() => [
 const hasUnread = computed(() => props.notifications.data.some((notification) => !notification.is_read));
 const markingRead = ref(false);
 
-function markAllRead() {
+async function markAllRead() {
     markingRead.value = true;
-    router.patch(route('notifications.read-all'), {}, {
-        preserveScroll: true,
-        onFinish: () => (markingRead.value = false),
-    });
+    try {
+        await axios.patch(route('notifications.read-all'));
+        router.reload({only: ['notifications']});
+    } finally {
+        markingRead.value = false;
+    }
 }
 </script>

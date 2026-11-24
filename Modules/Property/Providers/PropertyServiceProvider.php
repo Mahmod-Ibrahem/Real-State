@@ -2,6 +2,7 @@
 
 namespace Modules\Property\Providers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -12,6 +13,7 @@ use Modules\Property\Listeners\NotifyOwnerOfApprovedProperty;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyClassifications;
 use Modules\Property\Models\PropertyType;
+use Modules\Property\Observers\OwnerObserver;
 use Modules\Property\Observers\PropertyClassificationObserver;
 use Modules\Property\Observers\PropertyObserver;
 use Modules\Property\Observers\PropertyTypeObserver;
@@ -31,6 +33,7 @@ class PropertyServiceProvider extends ServiceProvider
         Property::observe(PropertyObserver::class);
         PropertyType::observe(PropertyTypeObserver::class);
         PropertyClassifications::observe(PropertyClassificationObserver::class);
+        User::observe(OwnerObserver::class);
 
         Gate::policy(Property::class, PropertyPolicy::class);
 
