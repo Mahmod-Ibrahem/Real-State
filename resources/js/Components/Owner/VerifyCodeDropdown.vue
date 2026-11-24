@@ -52,7 +52,7 @@ import {showToast} from '@/Composables/useToast.js';
 const CHANNELS = {
     phone: {
         title: 'Verify your phone',
-        hint: 'Enter the 6-digit code we texted to',
+        hint: 'Enter the 6-digit code we sent to',
         submit: 'Verify phone',
         verified: 'Phone number verified',
         sendRoute: 'supplier.phone.code',

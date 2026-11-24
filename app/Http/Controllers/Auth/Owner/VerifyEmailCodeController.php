@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyEmailCodeRequest;
-use App\Services\EmailVerificationService;
+use App\Services\EmailVerification\EmailVerificationService;
 use Illuminate\Http\RedirectResponse;
 
 final class VerifyEmailCodeController extends Controller

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\EmailVerification;
 
 use App\Exceptions\EmailAlreadyVerified;
 use App\Models\User;
-use App\Notifications\EmailVerificationCodeNotification;
 use Illuminate\Validation\ValidationException;
 
 final class EmailVerificationService
 {
-    public function __construct(private readonly VerificationCodes $codes)
+    public function __construct(private readonly EmailVerifier $verifier)
     {
     }
 
@@ -17,23 +16,18 @@ final class EmailVerificationService
     {
         $this->ensureNotVerified($user);
 
-        $user->notify(new EmailVerificationCodeNotification($this->codes->issue($this->key($user))));
+        $this->verifier->send($user->email);
     }
 
     public function confirm(User $user, string $code): void
     {
         $this->ensureNotVerified($user);
 
-        if (! $this->codes->check($this->key($user), $code)) {
+        if (! $this->verifier->check($user->email, $code)) {
             throw ValidationException::withMessages(['code' => __('That code is wrong or has expired.')]);
         }
 
         $user->markEmailAsVerified();
-    }
-
-    private function key(User $user): string
-    {
-        return "email:{$user->email}";
     }
 
     private function ensureNotVerified(User $user): void

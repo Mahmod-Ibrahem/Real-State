@@ -4,10 +4,12 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Services\OwnerRegistrationService;
-use App\Services\PhoneVerification\LogPhoneVerifier;
-use App\Services\PhoneVerification\PhoneVerifier;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Exceptions;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
@@ -21,7 +23,7 @@ class PhoneVerificationTest extends TestCase
 
         $this->withoutVite();
         $this->seed(PermissionSeeder::class);
-        $this->app->instance(PhoneVerifier::class, $this->app->make(LogPhoneVerifier::class));
+        config(['services.phone_verification.driver' => 'log']);
     }
 
     public function test_sign_up_stores_the_mobile_number_in_e164(): void
@@ -90,6 +92,41 @@ class PhoneVerificationTest extends TestCase
         $this->actingAs($supplier)->postJson(route('supplier.phone.code'))->assertTooManyRequests();
     }
 
+    public function test_the_whatsapp_driver_sends_the_code_in_the_authentication_template(): void
+    {
+        $this->useWhatsApp();
+        Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.1']]])]);
+        $supplier = $this->supplier();
+
+        $this->actingAs($supplier)->post(route('supplier.phone.code'))->assertSessionHasNoErrors();
+
+        $code = null;
+        Http::assertSent(function (Request $request) use (&$code) {
+            $code = $request['template']['components'][0]['parameters'][0]['text'] ?? null;
+
+            return $request->url() === 'https://graph.facebook.com/v23.0/123456789/messages'
+                && $request->hasHeader('Authorization', 'Bearer test-token')
+                && $request['to'] === '201001234567'
+                && $request['template']['name'] === 'qeima_verification_code'
+                && $request['template']['components'][1]['parameters'][0]['text'] === $code;
+        });
+
+        $this->actingAs($supplier)->post(route('supplier.phone.verify'), ['code' => $code])->assertSessionHasNoErrors();
+        $this->assertTrue($supplier->fresh()->hasVerifiedPhone());
+    }
+
+    public function test_a_refused_whatsapp_send_is_logged_and_shown_as_a_message(): void
+    {
+        $this->useWhatsApp();
+        Exceptions::fake();
+        Http::fake(['graph.facebook.com/*' => Http::response(['error' => ['message' => 'Recipient not in allowed list']], 400)]);
+
+        $this->actingAs($this->supplier())->post(route('supplier.phone.code'))
+            ->assertSessionHasErrors(['database' => __("We couldn't send a code to this number. Please try again later.")]);
+
+        Exceptions::assertReported(RequestException::class);
+    }
+
     public function test_the_dashboard_asks_only_unverified_suppliers_to_verify(): void
     {
         $supplier = $this->supplier();
@@ -114,6 +151,15 @@ class PhoneVerificationTest extends TestCase
             'password_confirmation' => 'password',
             ...$overrides,
         ];
+    }
+
+    private function useWhatsApp(): void
+    {
+        config([
+            'services.phone_verification.driver' => 'whatsapp',
+            'services.whatsapp.token' => 'test-token',
+            'services.whatsapp.phone_number_id' => '123456789',
+        ]);
     }
 
     private function supplier(): User

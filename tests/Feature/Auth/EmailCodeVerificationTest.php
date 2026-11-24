@@ -7,7 +7,12 @@ use App\Notifications\EmailVerificationCodeNotification;
 use App\Services\OwnerRegistrationService;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\ChannelManager;
+use Illuminate\Notifications\Channels\MailChannel;
+use Illuminate\Support\Facades\Exceptions;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Tests\TestCase;
 
 class EmailCodeVerificationTest extends TestCase
@@ -20,6 +25,7 @@ class EmailCodeVerificationTest extends TestCase
 
         $this->withoutVite();
         $this->seed(PermissionSeeder::class);
+        config(['services.email_verification.driver' => 'mail']);
         Notification::fake();
     }
 
@@ -46,14 +52,13 @@ class EmailCodeVerificationTest extends TestCase
         $this->actingAs($supplier)->post(route('supplier.email.code'))->assertSessionHasNoErrors();
 
         $code = null;
-        Notification::assertSentTo(
-            $supplier,
+        Notification::assertSentOnDemand(
             EmailVerificationCodeNotification::class,
-            function (EmailVerificationCodeNotification $notification) use ($supplier, &$code) {
-                preg_match('/\*\*(\d{6})\*\*/', implode("\n", $notification->toMail($supplier)->introLines), $matches);
+            function (EmailVerificationCodeNotification $notification, array $channels, object $notifiable) use ($supplier, &$code) {
+                preg_match('/\*\*(\d{6})\*\*/', implode("\n", $notification->toMail($notifiable)->introLines), $matches);
                 $code = $matches[1] ?? null;
 
-                return $code !== null;
+                return $notifiable->routes['mail'] === $supplier->email && $code !== null;
             },
         );
 
@@ -71,6 +76,36 @@ class EmailCodeVerificationTest extends TestCase
             ->assertSessionHasErrors(['code' => __('That code is wrong or has expired.')]);
 
         $this->assertFalse($supplier->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_the_log_driver_logs_the_code_instead_of_mailing_it(): void
+    {
+        config(['services.email_verification.driver' => 'log']);
+        $supplier = $this->supplier();
+        $code = null;
+        Log::listen(function ($message) use ($supplier, &$code) {
+            preg_match("/^Email verification code for {$supplier->email}: (\d{6})$/", $message->message, $matches) && $code = $matches[1];
+        });
+
+        $this->actingAs($supplier)->post(route('supplier.email.code'))->assertSessionHasNoErrors();
+        Notification::assertNothingSent();
+        $this->assertNotNull($code);
+
+        $this->actingAs($supplier)->post(route('supplier.email.verify'), ['code' => $code])->assertSessionHasNoErrors();
+        $this->assertTrue($supplier->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_a_mail_server_failure_is_logged_and_shown_as_a_message(): void
+    {
+        Exceptions::fake();
+        Notification::swap(new ChannelManager($this->app));
+        $this->mock(MailChannel::class)->shouldReceive('send')->andThrow(new TransportException('Connection closed.'));
+        $supplier = $this->supplier();
+
+        $this->actingAs($supplier)->post(route('supplier.email.code'))
+            ->assertSessionHasErrors(['database' => __("We couldn't send a code to this email address. Please try again later.")]);
+
+        Exceptions::assertReported(TransportException::class);
     }
 
     public function test_a_verified_email_gets_no_new_code(): void

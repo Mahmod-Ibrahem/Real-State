@@ -85,12 +85,21 @@ and `Support/DemoImages`, which call into the modules' seeders.
   (`supplier.phone.code`, `throttle:3,10`; `supplier.phone.verify`, `throttle:5,10`).
 - **Phone codes** go through `App\Services\PhoneVerification\PhoneVerificationService`, which uses a `PhoneVerifier`
   picked by `PHONE_VERIFICATION_DRIVER`: `twilio` (Twilio Verify creates, sends, expires and checks the code; keys in
-  `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_VERIFY_SID`) or `log` (default for local work: the code is written to the log
-  and a hash kept in the cache for 10 minutes). The code itself is never stored in the database.
+  `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_VERIFY_SID`), `whatsapp` (Meta's WhatsApp Cloud API sends the code in an
+  authentication template with a copy-code button; keys in `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`,
+  `WHATSAPP_OTP_TEMPLATE`, `WHATSAPP_TEMPLATE_LANGUAGE`; Meta's free test number reaches up to 5 verified recipients)
+  or `log` (default for local work: the code is written to the log). `whatsapp` and `log` issue and check the code with
+  `App\Services\VerificationCodes` (a hash in the cache for 10 minutes). The code itself is never stored in the
+  database. When Twilio or WhatsApp refuses a send, the driver reports the error and throws `PhoneCodeNotSent`.
 - **Email** is verified the same way, with a 6-digit code instead of Laravel's signed link (`User` does not implement
-  `MustVerifyEmail`). `App\Services\EmailVerificationService` issues the code through `App\Services\VerificationCodes`
-  (a hash in the cache for 10 minutes, shared with the phone's `log` driver) and mails it with
-  `EmailVerificationCodeNotification`. The profile's email row has the same Verify dropdown
+  `MustVerifyEmail`). It mirrors the phone: `App\Services\EmailVerification\EmailVerificationService` uses an
+  `EmailVerifier` picked by `EMAIL_VERIFICATION_DRIVER`: `mail` (mails the code with
+  `EmailVerificationCodeNotification`) or `log` (default for local work: writes "Email verification code for
+  {email}: {code}" to the log and sends nothing). Both keep a hash of the code in the cache for 10 minutes through
+  `App\Services\VerificationCodes` (shared with the phone's `log` driver). If the mail server fails, the `mail`
+  driver reports the error (it lands in the log) and throws `EmailCodeNotSent`, so the supplier gets an error toast
+  ("We couldn't send a code to this email address. Please try again later.") instead of an error page, like
+  `PhoneCodeNotSent`. The profile's email row has the same Verify dropdown
   (`Components/Owner/VerifyCodeDropdown.vue`, used by both rows) posting to `supplier.email.code` (`throttle:3,10`)
   and `supplier.email.verify` (`throttle:5,10`). An unverified email blocks nothing; the dashboard notice names
   whatever is still unverified.

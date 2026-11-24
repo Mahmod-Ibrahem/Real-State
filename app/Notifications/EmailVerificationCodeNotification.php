@@ -21,7 +21,7 @@ final class EmailVerificationCodeNotification extends Notification
     {
         return (new MailMessage)
             ->subject(__('Your Qeima verification code: :code', ['code' => $this->code]))
-            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->greeting(__('Hello,'))
             ->line(__('Enter this code on your profile to verify your email address:'))
             ->line("**{$this->code}**")
             ->line(__('The code expires in :minutes minutes. If you did not ask for it, you can ignore this email.', [
