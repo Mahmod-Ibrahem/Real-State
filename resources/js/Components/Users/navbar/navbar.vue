@@ -19,6 +19,11 @@
             </ul>
 
             <div class="flex items-center gap-2">
+                <a v-for="link in accountLinks" :key="link.text" :href="link.href"
+                   class="hidden md:inline-flex items-center h-10 px-[16px] text-[15px] font-semibold no-underline rounded-full transition-colors"
+                   :class="link.primary ? primaryButton : `text-black ${hoverColor}`">
+                    {{ link.text }}
+                </a>
                 <FavouritesLink/>
                 <HamburgerButton class="md:hidden" :open="isMenuOpen" @toggle="isMenuOpen = !isMenuOpen"/>
             </div>
@@ -35,13 +40,20 @@
                     {{ item.text }}
                 </Link>
             </li>
+            <li v-for="link in accountLinks" :key="link.text" class="border-b border-gray-300 last:border-b-0">
+                <a :href="link.href" class="block py-[12px] font-bold tracking-wide no-underline"
+                   :class="link.primary ? accentColor : `text-black ${hoverColor}`">
+                    {{ link.text }}
+                </a>
+            </li>
         </ul>
     </header>
 </template>
 
 <script setup>
-import {ref} from 'vue';
-import {Link} from '@inertiajs/vue3';
+import {computed, ref} from 'vue';
+import {Link, usePage} from '@inertiajs/vue3';
+import {can} from '@/Composables/usePermissions.js';
 import logo from '@/assets/images/logo.jpg';
 import {route} from '../../../../../vendor/tightenco/ziggy';
 import FavouritesLink from './FavouritesLink.vue';
@@ -62,14 +74,27 @@ const props = defineProps({
     black: {type: Boolean, default: false},
 });
 
+const VIEW_DASHBOARD = 'view dashboard';
+
+const page = usePage();
 const isMenuOpen = ref(false);
+
+// Plain <a> links: login, register and the dashboards use the dashboard bundle, so they need a full page load
+const accountLinks = computed(() => page.props.auth?.user
+    ? [{text: 'Dashboard', href: route(can(VIEW_DASHBOARD) ? 'admin.dashboard' : 'supplier.dashboard'), primary: true}]
+    : [
+        {text: 'Login', href: route('supplier.login'), primary: false},
+        {text: 'Register', href: route('supplier.register'), primary: true},
+    ]);
+
+const accentColor = computed(() => (props.black ? 'text-red-600' : 'text-sky-600'));
+const hoverColor = computed(() => (props.black ? 'hover:text-red-600' : 'hover:text-sky-600'));
+const primaryButton = computed(() => (props.black
+    ? 'bg-red-600 text-white hover:bg-red-700'
+    : 'bg-sky-600 text-white hover:bg-sky-700'));
 
 /** 'listing.index' is active on every 'listing.*' route (index, show, ...). */
 const isActive = (name) => route().current(`${name.replace(/\.index$/, '')}*`);
 
-const linkColor = (name) => {
-    const accent = props.black ? 'text-red-600' : 'text-sky-600';
-    const hover = props.black ? 'hover:text-red-600' : 'hover:text-sky-600';
-    return isActive(name) ? accent : `text-black ${hover}`;
-};
+const linkColor = (name) => (isActive(name) ? accentColor.value : `text-black ${hoverColor.value}`);
 </script>
