@@ -20,5 +20,9 @@
     "It stays hidden from the website until it is approved.": "سيظل مخفيًا عن الموقع حتى تتم الموافقة عليه.",
     "Your property “:name” was approved": "تمت الموافقة على عقارك «:name»",
     "“:name” was approved. You can publish it now.": "تمت الموافقة على «:name». يمكنك نشره الآن.",
-    "Go to my properties": "الانتقال إلى عقاراتي"
+    "Go to my properties": "الانتقال إلى عقاراتي",
+    "You can't delete your own account.": "لا يمكنك حذف حسابك.",
+    "This user still has properties. Move or delete them first.": "لا يزال لدى هذا المستخدم عقارات. انقلها أو احذفها أولاً.",
+    "You can't change your own role.": "لا يمكنك تغيير دورك.",
+    "This account is protected and can't be changed here.": "هذا الحساب محمي ولا يمكن تعديله من هنا."
 }

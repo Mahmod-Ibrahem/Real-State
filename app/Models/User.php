@@ -4,9 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Dashboard\Enums\DashboardPermission;
+use Modules\Property\Models\Property;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -51,6 +53,11 @@ class User extends Authenticatable
     public function favourites()
     {
         return $this->hasMany(Favourite::class);
+    }
+
+    public function properties(): HasMany
+    {
+        return $this->hasMany(Property::class, 'owner_id');
     }
 
     public function dashboardRoute(): string

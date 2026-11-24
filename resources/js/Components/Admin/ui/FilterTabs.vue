@@ -15,7 +15,7 @@ import {Link} from '@inertiajs/vue3';
 
 const props = defineProps({
     options: {type: Array, required: true},
-    modelValue: {type: String, default: null},
+    modelValue: {type: [String, Number], default: null},
     param: {type: String, required: true},
     allLabel: {type: String, default: 'All'},
     label: {type: String, required: true},

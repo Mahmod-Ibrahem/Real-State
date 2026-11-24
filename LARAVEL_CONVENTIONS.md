@@ -189,9 +189,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 - **Code checks permissions only:** the `permission:` middleware, `$user->can('properties.approve')`, policies,
   `@can`. Never `role:` middleware, `hasRole()`, or role names in code or in the frontend.
 - **Roles only group permissions.** They are defined in `PermissionSeeder` (`Super Admin` gets every permission,
-  `Property Owner` gets `PropertyPermission::forOwners()`). The one place code names a role is
-  `App\Services\OwnerRegistrationService::ROLE`, which gives new sign-ups their default role. Never use a role in an
-  authorization check.
+  `Property Owner` gets `PropertyPermission::forOwners()`). Code names a role in only two places:
+  `App\Services\OwnerRegistrationService::ROLE`, which gives new sign-ups their default role, and
+  `PermissionSeeder::SUPER_ADMIN`, which the `Users` module uses to hide Super Admin (the role and its accounts) from
+  `/admin/users` and refuse to assign, edit or delete it there. Never use a role in an authorization check.
 - **Permission names are `{verb} {resource}` in lowercase words**, one per action: `view cities`,
   `create cities`, `edit cities`, `delete cities`, `review properties`, `publish own properties`. The verbs are
   `view`, `create`, `edit`, `delete`, plus a domain verb where an action is special (`review`, `publish`).

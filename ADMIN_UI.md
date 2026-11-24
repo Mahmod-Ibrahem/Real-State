@@ -133,7 +133,7 @@ inside the dialog.
     dropdown). Both save immediately through a small `PATCH` endpoint, show a spinner while saving and
     toast the result.
 - **Modal create/edit** for small resources: property types, classifications, features, feature types,
-  countries, cities, areas, FAQs, brokers. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
+  countries, cities, areas, FAQs, brokers, users. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
   (`TableCard creatable @create`) calls `openCreate()`, `RowActions editable @edit` calls `openEdit(row)`; one
   `XForm.vue` renders `FormModal` (title “New city” / “Edit Cairo”). On success the modal closes and the list
   refreshes in place; on validation errors it stays open with the errors under the fields. The list

@@ -3,5 +3,6 @@
     "Property": true,
     "Lead": true,
     "Content": true,
-    "Dashboard": true
+    "Dashboard": true,
+    "Users": true
 }

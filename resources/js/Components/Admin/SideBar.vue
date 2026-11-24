@@ -6,7 +6,7 @@
         </Link>
 
         <nav class="flex-1 overflow-y-auto px-2 py-3" aria-label="Main">
-            <div v-for="group in nav.groups" :key="group.label" class="mt-4 first:mt-0">
+            <div v-for="group in nav.groups" :key="group.label" class="mt-2 first:mt-0">
                 <p class="mb-1 flex h-7 items-center px-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                     {{ group.label }}
                 </p>

@@ -13,6 +13,7 @@ domain layers. The layering is plain Laravel with a **service layer** that keeps
 | `Lead` | Property leads, contact leads, contact page, client inquiry form |
 | `Content` | FAQs, brokers, basic content, About / Terms / Privacy pages |
 | `Dashboard` | Admin dashboard (reads other modules through their services) |
+| `Users` | Admin management of users and their roles (`/admin/users`) |
 
 `app/` is the **shared kernel**. It holds only code that is shared or spans modules: `User`, auth (Breeze) and
 profile, the base `Controller`, middleware, shared traits, and the home page (`HomeController` + `HomePageService`).

@@ -11,6 +11,7 @@ use Modules\Dashboard\Enums\DashboardPermission;
 use Modules\Lead\Enums\LeadPermission;
 use Modules\Location\Enums\LocationPermission;
 use Modules\Property\Enums\PropertyPermission;
+use Modules\Users\Enums\UserPermission;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -27,6 +28,7 @@ class PermissionSeeder extends Seeder
         LocationPermission::class,
         LeadPermission::class,
         ContentPermission::class,
+        UserPermission::class,
     ];
 
     public function run(): void
