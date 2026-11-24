@@ -1,23 +1,41 @@
 <template>
     <div ref="root" class="relative">
-        <Button size="sm" :aria-expanded="open" aria-haspopup="dialog" @click="toggle">Verify</Button>
+        <Button size="sm" :aria-expanded="open" aria-haspopup="dialog" :loading="sending && !codeSent" @click="toggle">
+            Verify
+        </Button>
 
-        <transition enter-active-class="transition duration-100 ease-out" enter-from-class="opacity-0"
-                    leave-active-class="transition duration-75 ease-in" leave-to-class="opacity-0">
-            <form v-if="open" role="dialog" aria-label="Verify your phone" @submit.prevent="verify"
-                  class="absolute right-0 z-50 mt-1.5 w-72 space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
-                <p class="text-sm text-slate-600">
-                    Enter the 6-digit code we texted to <span class="font-medium text-slate-900" dir="ltr">{{ phone }}</span>
-                </p>
-                <OtpField ref="otp" v-model="form.code" :error="form.errors.code" :disabled="form.processing"
-                          @complete="verify"/>
-                <div class="space-y-1">
-                    <Button type="submit" class="w-full" :loading="form.processing" :disabled="form.code.length < 6">
-                        Verify
-                    </Button>
-                    <Button variant="ghost" class="w-full" :loading="sending" @click="sendCode">Send a new code</Button>
+        <transition enter-active-class="transition duration-150 ease-out" enter-from-class="opacity-0"
+                    leave-active-class="transition duration-100 ease-in" leave-to-class="opacity-0">
+            <div v-if="open" role="dialog" aria-labelledby="verify-phone-title"
+                 class="absolute start-0 top-full z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] rounded-xl border border-slate-200 bg-white shadow-lg">
+                <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
+                    <div class="min-w-0">
+                        <h3 id="verify-phone-title" class="text-sm font-semibold text-slate-900">Verify your phone</h3>
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            Enter the 6-digit code we texted to
+                            <span class="whitespace-nowrap font-medium text-slate-700" dir="ltr">{{ phone }}</span>
+                        </p>
+                    </div>
+                    <button type="button" aria-label="Close" @click="open = false"
+                            class="-me-1 grid h-7 w-7 shrink-0 place-content-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30">
+                        <XMarkIcon class="h-4 w-4" aria-hidden="true"/>
+                    </button>
                 </div>
-            </form>
+
+                <form class="space-y-4 p-4" @submit.prevent="verify">
+                    <OtpField ref="otp" v-model="form.code" :error="form.errors.code" :disabled="form.processing"
+                              @complete="verify"/>
+                    <Button type="submit" class="w-full" :loading="form.processing">Verify phone</Button>
+                </form>
+
+                <p class="rounded-b-xl border-t border-slate-100 bg-slate-50/80 px-4 py-2.5 text-xs text-slate-500">
+                    Didn't get it?
+                    <button type="button" :disabled="sending" @click="sendCode()"
+                            class="font-medium text-indigo-600 transition-colors hover:text-indigo-700 focus:outline-none focus-visible:underline disabled:opacity-50">
+                        {{ sending ? 'Sending…' : 'Send a new code' }}
+                    </button>
+                </p>
+            </div>
         </transition>
     </div>
 </template>
@@ -25,6 +43,7 @@
 <script setup>
 import {nextTick, ref} from 'vue';
 import {router, useForm} from '@inertiajs/vue3';
+import {XMarkIcon} from '@heroicons/vue/24/outline';
 import Button from '@/Components/Admin/ui/Button.vue';
 import OtpField from '@/Components/Admin/ui/OtpField.vue';
 import {useDismissible} from '@/Composables/useDismissible.js';
@@ -44,16 +63,22 @@ useDismissible(root, open);
 
 const showServerError = (errors) => errors.database && showToast(errors.database, 'error');
 
-async function toggle() {
-    open.value = !open.value;
-    if (!open.value) return;
+function toggle() {
+    if (open.value) {
+        open.value = false;
+        return;
+    }
 
-    if (!codeSent.value) sendCode();
+    codeSent.value ? showPanel() : sendCode(showPanel);
+}
+
+async function showPanel() {
+    open.value = true;
     await nextTick();
     otp.value?.focus();
 }
 
-function sendCode() {
+function sendCode(onSent = () => {}) {
     sending.value = true;
     router.post(route('supplier.phone.code'), {}, {
         preserveScroll: true,
@@ -62,6 +87,7 @@ function sendCode() {
             form.reset();
             form.clearErrors();
             showToast('Code sent');
+            onSent();
         },
         onError: showServerError,
         onFinish: () => (sending.value = false),

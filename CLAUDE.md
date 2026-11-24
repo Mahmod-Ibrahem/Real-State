@@ -64,8 +64,8 @@ and `Support/DemoImages`, which call into the modules' seeders.
   if they can `view dashboard`, else `supplier.dashboard`. Guests hitting `/supplier/*` are sent to `supplier.login`,
   everything else to `login` (`bootstrap/app.php`).
 - Password reset (`password.*`) stays under `/admin` and is shared by both.
-- **Login:** both `POST` login routes carry Laravel's built-in `throttle:5,1` (5 attempts a minute per IP; more get a
-  `429`). `LoginRequest`
+- **Login:** both `POST` login routes carry Laravel's built-in `throttle:5,1` (5 attempts a minute per IP; more are
+  refused with "Too many attempts…", see LARAVEL_CONVENTIONS.md, Errors). `LoginRequest`
   only validates and exposes `credentials()` / `remember()`. `App\Services\LoginService` checks the credentials and
   `is_active`, then signs the user in. It throws a `ValidationException` on `email`, so the form shows the message
   under the field. The controller only regenerates the session and redirects.

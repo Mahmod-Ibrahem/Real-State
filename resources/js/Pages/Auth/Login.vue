@@ -17,7 +17,7 @@
 
             <form class="space-y-4" @submit.prevent="submit">
                 <TextField v-model="form.email" label="Email Address" type="email" placeholder="name@example.com"
-                           autocomplete="username" required autofocus :error="form.errors.email"/>
+                           autocomplete="username" required autofocus :error="form.errors.email || form.errors.database"/>
                 <TextField v-model="form.password" label="Password" type="password" placeholder="Password"
                            autocomplete="current-password" required :error="form.errors.password"/>
 

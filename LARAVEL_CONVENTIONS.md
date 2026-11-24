@@ -254,6 +254,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
   ```
   This keeps the admin's error-toast contract (`errors.database`) without `try/catch` in controllers. Messages go
   through `__()`. Create the base class when the first one is needed.
+- **Too many requests** (a `throttle:` route over its limit) are rendered the same way, never as Laravel's `429`
+  page: `back()->withErrors(['database' => 'Too many attempts. Please try again in N seconds.'])`. JSON requests
+  still get the plain `429`. Pages without the toast (login) show `errors.database` under their first field.
 - **Unexpected errors** are not caught. Let them reach the handler. The legacy `handleDbErrors` trait is not used in
   new code.
 

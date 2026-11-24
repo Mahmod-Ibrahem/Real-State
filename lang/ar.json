@@ -32,6 +32,7 @@
     "Enter a valid mobile number for the selected country.": "أدخل رقم هاتف محمول صحيحًا للدولة المختارة.",
     "This phone number is already registered.": "رقم الهاتف هذا مسجل بالفعل.",
     "That code is wrong or has expired.": "الرمز غير صحيح أو انتهت صلاحيته.",
+    "Too many attempts. Please try again in :seconds seconds.": "محاولات كثيرة جدًا. يرجى المحاولة مرة أخرى بعد :seconds ثانية.",
     "We couldn't send a code to this number. Please try again later.": "تعذر إرسال رمز إلى هذا الرقم. يرجى المحاولة لاحقًا.",
     "Your phone number is already verified.": "تم التحقق من رقم هاتفك بالفعل."
 }

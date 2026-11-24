@@ -42,7 +42,9 @@ class AccountFlagsTest extends TestCase
                 ->assertSessionHasErrors(['email' => __('auth.failed')]);
         }
 
-        $this->post(route('login'), ['email' => $user->email, 'password' => 'password'])->assertTooManyRequests();
+        $this->from(route('login'))->post(route('login'), ['email' => $user->email, 'password' => 'password'])
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('database');
         $this->assertGuest();
     }
 

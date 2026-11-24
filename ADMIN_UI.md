@@ -166,7 +166,8 @@ inside the dialog.
 
 ## 6. States & behaviour
 
-- Loading: Inertia's progress bar (indigo) for navigation; `Button loading` for submits. No full-page spinners.
+- Loading: **no Inertia progress bar** (`progress: false` in both `admin.js` and `app.js`). The button that started
+  a request shows the spinner (`Button loading`). No full-page spinners.
 - Empty and “no search results” states are always handled (see recipes).
 - A server flash `error` (`->with('error', …)`) is shown as an error toast by the layout; controllers that
   refuse an action redirect with it instead of rendering a page with an error prop.

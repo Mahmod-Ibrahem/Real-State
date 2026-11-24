@@ -86,7 +86,8 @@ class PhoneVerificationTest extends TestCase
             $this->actingAs($supplier)->post(route('supplier.phone.code'))->assertSessionHasNoErrors();
         }
 
-        $this->actingAs($supplier)->post(route('supplier.phone.code'))->assertTooManyRequests();
+        $this->actingAs($supplier)->post(route('supplier.phone.code'))->assertSessionHasErrors('database');
+        $this->actingAs($supplier)->postJson(route('supplier.phone.code'))->assertTooManyRequests();
     }
 
     public function test_the_dashboard_asks_only_unverified_suppliers_to_verify(): void

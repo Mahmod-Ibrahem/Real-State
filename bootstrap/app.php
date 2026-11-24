@@ -4,6 +4,7 @@ use App\Exceptions\BusinessRuleException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -32,5 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(
             fn (BusinessRuleException $exception) => back()->withErrors(['database' => $exception->getMessage()])
+        );
+        $exceptions->render(fn (ThrottleRequestsException $exception, Request $request) => $request->expectsJson()
+            ? null
+            : back()->withErrors(['database' => __('Too many attempts. Please try again in :seconds seconds.', [
+                'seconds' => $exception->getHeaders()['Retry-After'] ?? 60,
+            ])])
         );
     })->create();
