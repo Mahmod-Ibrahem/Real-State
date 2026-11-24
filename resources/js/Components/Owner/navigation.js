@@ -3,7 +3,7 @@ import {BuildingOffice2Icon, Squares2X2Icon} from '@heroicons/vue/24/outline';
 export const OWNER_NAV = {
     home: 'supplier.dashboard',
     label: 'Supplier',
-    profileRoute: null,
+    profileRoute: 'supplier.profile.show',
     groups: [
         {
             label: 'My listings',

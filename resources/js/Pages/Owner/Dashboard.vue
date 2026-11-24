@@ -14,7 +14,16 @@
                 </p>
             </div>
 
-            <PhoneVerificationPanel v-if="unverified_phone" :phone="unverified_phone"/>
+            <div v-if="unverified_phone" role="status"
+                 class="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <DevicePhoneMobileIcon class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" aria-hidden="true"/>
+                <p>
+                    <span class="font-semibold">Your phone number isn't verified.</span>
+                    <Link :href="route('supplier.profile.show')" class="font-medium underline hover:text-amber-900">
+                        Verify it on your profile.
+                    </Link>
+                </p>
+            </div>
 
             <Panel title="My listings" hint="New listings stay hidden until an admin approves them">
                 <MetricGroup :metrics="listingMetrics"/>
@@ -53,13 +62,12 @@ import {computed, ref} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
 import axios from 'axios';
 import {PlusIcon} from '@heroicons/vue/20/solid';
-import {ClockIcon} from '@heroicons/vue/24/outline';
+import {ClockIcon, DevicePhoneMobileIcon} from '@heroicons/vue/24/outline';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import MetricGroup from '@/Components/Admin/MetricGroup.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
 import Panel from '@/Components/Admin/ui/Panel.vue';
 import {OWNER_NAV} from '@/Components/Owner/navigation.js';
-import PhoneVerificationPanel from '@/Components/Owner/PhoneVerificationPanel.vue';
 import {formatDate} from '@/Composables/useFormatters.js';
 
 const props = defineProps({
