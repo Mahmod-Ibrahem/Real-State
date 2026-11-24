@@ -33,6 +33,19 @@ class AccountFlagsTest extends TestCase
         }
     }
 
+    public function test_login_is_locked_after_too_many_failed_attempts(): void
+    {
+        $user = User::factory()->create();
+
+        foreach (range(1, 5) as $attempt) {
+            $this->post(route('login'), ['email' => $user->email, 'password' => 'wrong'])
+                ->assertSessionHasErrors(['email' => __('auth.failed')]);
+        }
+
+        $this->post(route('login'), ['email' => $user->email, 'password' => 'password'])->assertTooManyRequests();
+        $this->assertGuest();
+    }
+
     public function test_a_signed_in_user_is_logged_out_once_disabled(): void
     {
         $supplier = User::factory()->create()->assignRole(OwnerRegistrationService::ROLE);

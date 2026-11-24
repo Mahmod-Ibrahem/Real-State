@@ -64,6 +64,11 @@ and `Support/DemoImages`, which call into the modules' seeders.
   if they can `view dashboard`, else `supplier.dashboard`. Guests hitting `/supplier/*` are sent to `supplier.login`,
   everything else to `login` (`bootstrap/app.php`).
 - Password reset (`password.*`) stays under `/admin` and is shared by both.
+- **Login:** both `POST` login routes carry Laravel's built-in `throttle:5,1` (5 attempts a minute per IP; more get a
+  `429`). `LoginRequest`
+  only validates and exposes `credentials()` / `remember()`. `App\Services\LoginService` checks the credentials and
+  `is_active`, then signs the user in. It throws a `ValidationException` on `email`, so the form shows the message
+  under the field. The controller only regenerates the session and redirects.
 - **Account flags** on `users`: `is_active` (default `true`) and `under_review` (default `false`). An inactive user
   can't log in ("Your account is disabled."), and one who is already signed in is logged out on their next request
   (`EnsureAccountIsActive`). New supplier sign-ups start `under_review`. They can log in and add properties, but
@@ -99,6 +104,8 @@ and `Support/DemoImages`, which call into the modules' seeders.
     mail.
   - `Property::active()` (the public site) means approved **and** published **and** its owner is not
     `under_review`. Changing an owner's `under_review` forgets the cached public lists.
+  - Every public read uses `active()`, including the property page (`listing.show`, via `PropertyDetailService`):
+    a property that isn't listed is a 404 there, and its related properties are listed ones only.
 - Public listing = `ListingController@index` with query filters (`/listing?purpose=sale&city=3`). There are no
   separate Buy/Rent pages.
 

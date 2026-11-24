@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\LoginService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,10 @@ use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
+    public function __construct(private readonly LoginService $login)
+    {
+    }
+
     public function create(): Response
     {
         return Inertia::render('Auth/Login', [
@@ -23,11 +28,11 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $user = $this->login->attempt($request->credentials(), $request->remember());
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route($request->user()->dashboardRoute(), absolute: false));
+        return redirect()->intended(route($user->dashboardRoute(), absolute: false));
     }
 
     public function destroy(Request $request): RedirectResponse

@@ -16,7 +16,7 @@ Route::prefix('admin')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login')
         ->middleware('guest');
     Route::post('login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('guest');
+        ->middleware(['guest', 'throttle:5,1']);
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request')
         ->middleware('guest');
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email')
@@ -46,7 +46,7 @@ Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('login', [OwnerSessionController::class, 'create'])->name('login')
         ->middleware('guest');
     Route::post('login', [OwnerSessionController::class, 'store'])
-        ->middleware('guest');
+        ->middleware(['guest', 'throttle:5,1']);
     Route::get('register', [OwnerRegistrationController::class, 'create'])->name('register')
         ->middleware('guest');
     Route::post('register', [OwnerRegistrationController::class, 'store'])

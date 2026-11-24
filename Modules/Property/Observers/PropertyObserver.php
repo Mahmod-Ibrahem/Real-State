@@ -16,7 +16,6 @@ class PropertyObserver
         Cache::forget('classifications');
         Cache::forget('cities');
         Cache::forget('areas');
-        Cache::forget("property.{$property->slug}");
     }
 
     /**
@@ -28,8 +27,6 @@ class PropertyObserver
         Cache::forget('classifications');
         Cache::forget('cities');
         Cache::forget('areas');
-        Cache::forget("property.{$property->slug}");
-
     }
 
     /**
@@ -41,7 +38,6 @@ class PropertyObserver
         Cache::forget('classifications');
         Cache::forget('cities');
         Cache::forget('areas');
-        Cache::forget("property.{$property->slug}");
     }
 
     /**
@@ -53,7 +49,6 @@ class PropertyObserver
         Cache::forget('classifications');
         Cache::forget('cities');
         Cache::forget('areas');
-        Cache::forget("property.{$property->slug}");
     }
 
     /**

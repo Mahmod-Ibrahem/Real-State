@@ -9,18 +9,19 @@ use Modules\Location\Http\Resources\CountryResource;
 use Modules\Property\Http\Resources\PropertyClassificationeResource;
 use Modules\Property\Http\Resources\Users\PropertyResource;
 use Modules\Property\Http\Resources\Users\PropertyTypeResource;
-use Modules\Property\Models\Feature;
 use Modules\Property\Models\Property;
 use Modules\Location\Services\AreaService;
 use Modules\Location\Services\CityService;
 use Modules\Property\Services\ClassificationService;
 use Modules\Location\Services\CountryService;
+use Modules\Property\Services\PropertyDetailService;
 use Modules\Property\Services\PropertyTypeService;
 use Modules\Property\Enums\ListingPurpose;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ListingController extends Controller
 {
@@ -28,6 +29,7 @@ class ListingController extends Controller
         private CityService    $cityService, private PropertyTypeService $propertyTypeService,
         private AreaService    $areaService,
         private CountryService $countryService, private ClassificationService $classificationService,
+        private readonly PropertyDetailService $details,
     )
     {
 
@@ -128,35 +130,18 @@ class ListingController extends Controller
         ], $this->getListingFilters()));
     }
 
-    public function show(string $listing)
+    public function show(string $listing): Response
     {
-        $property = Cache::remember("property.{$listing}", now()->addHour(1), function () use ($listing) {
-            return Property::where('slug->' . app()->getLocale(), $listing)
-                ->orWhere('slug->en', $listing)
-                ->with('propertyImages')
-                ->first();
-        });
+        $property = $this->details->findListed($listing);
 
-        $features = Feature::whereHas('properties', function ($q) use ($property) {
-            $q->where('properties.id', $property->id);
-        })->whereHas('featureType')
-            ->with('featureType')->get()->groupBy('featureType.name')->map(function ($features) {
-                return $features->map(function ($feature) {
-                    return [
-                        'id' => $feature->id,
-                        'name' => $feature->name,
-                    ];
-                });
-            });
-        $relatedProperties = Property::where('property_type_id', $property->property_type_id)->where('id', ' != ', $property->id)->get();
-
-        return Inertia::render('Users/PropertyDetails',
-            [
-                'metaTitle' => $property->name,
-                'metaDescription' => $property->description,
-                'property' => new PropertyResource($property),
-                'relatedProperties' => PropertyResource::collection($relatedProperties),
-                'features' => $features]);
+        return Inertia::render('Users/PropertyDetails', [
+            'metaTitle' => $property->name,
+            'metaDescription' => $property->description,
+            'property' => PropertyResource::make($property),
+            'relatedProperties' => PropertyResource::collection($this->details->relatedTo($property)),
+            'features' => $this->details->featuresByType($property)
+                ->map(fn (Collection $features) => $features->map->only(['id', 'name'])),
+        ]);
     }
 
     private function mapFilterToColumn($filter)
