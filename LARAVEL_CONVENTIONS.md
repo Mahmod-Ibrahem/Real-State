@@ -242,6 +242,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 - Notification text goes through `__()` with Arabic strings in `lang/ar.json`. Mail links use `route()`.
 - Run mail locally with `MAIL_MAILER=log`. Queued mail needs a queue worker (`composer dev` starts one); database
   notifications don't.
+- **Exception: one-time codes.** A verification code is sent by the service that issues it, straight to the user
+  (`$user->notify(new EmailVerificationCodeNotification($code))`), with no event and **no queue** (the notification
+  does not implement `ShouldQueue`), so the code never sits in an event payload or the `jobs` table and arrives at
+  once.
 
 ## Errors
 

@@ -87,6 +87,13 @@ and `Support/DemoImages`, which call into the modules' seeders.
   picked by `PHONE_VERIFICATION_DRIVER`: `twilio` (Twilio Verify creates, sends, expires and checks the code; keys in
   `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_VERIFY_SID`) or `log` (default for local work: the code is written to the log
   and a hash kept in the cache for 10 minutes). The code itself is never stored in the database.
+- **Email** is verified the same way, with a 6-digit code instead of Laravel's signed link (`User` does not implement
+  `MustVerifyEmail`). `App\Services\EmailVerificationService` issues the code through `App\Services\VerificationCodes`
+  (a hash in the cache for 10 minutes, shared with the phone's `log` driver) and mails it with
+  `EmailVerificationCodeNotification`. The profile's email row has the same Verify dropdown
+  (`Components/Owner/VerifyCodeDropdown.vue`, used by both rows) posting to `supplier.email.code` (`throttle:3,10`)
+  and `supplier.email.verify` (`throttle:5,10`). An unverified email blocks nothing; the dashboard notice names
+  whatever is still unverified.
 
 ## Domain rules
 

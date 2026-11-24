@@ -14,13 +14,13 @@
                 </p>
             </div>
 
-            <div v-if="unverified_phone" role="status"
+            <div v-if="unverifiedNotice" role="status"
                  class="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                <DevicePhoneMobileIcon class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" aria-hidden="true"/>
+                <ShieldExclamationIcon class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" aria-hidden="true"/>
                 <p>
-                    <span class="font-semibold">Your phone number isn't verified.</span>
+                    <span class="font-semibold">{{ unverifiedNotice }}</span>
                     <Link :href="route('supplier.profile.show')" class="font-medium underline hover:text-amber-900">
-                        Verify it on your profile.
+                        Verify on your profile.
                     </Link>
                 </p>
             </div>
@@ -62,7 +62,7 @@ import {computed, ref} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
 import axios from 'axios';
 import {PlusIcon} from '@heroicons/vue/20/solid';
-import {ClockIcon, DevicePhoneMobileIcon} from '@heroicons/vue/24/outline';
+import {ClockIcon, ShieldExclamationIcon} from '@heroicons/vue/24/outline';
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import MetricGroup from '@/Components/Admin/MetricGroup.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
@@ -74,8 +74,14 @@ const props = defineProps({
     counts: {type: Object, required: true},
     notifications: {type: Object, required: true},
     under_review: {type: Boolean, default: false},
-    // E.164 while the supplier still has to verify it, otherwise null
-    unverified_phone: {type: String, default: null},
+    unverified_email: {type: Boolean, default: false},
+    unverified_phone: {type: Boolean, default: false},
+});
+
+const unverifiedNotice = computed(() => {
+    if (props.unverified_email && props.unverified_phone) return "Your email address and phone number aren't verified.";
+    if (props.unverified_email) return "Your email address isn't verified.";
+    return props.unverified_phone ? "Your phone number isn't verified." : null;
 });
 
 const listingMetrics = computed(() => [

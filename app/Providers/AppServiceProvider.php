@@ -14,12 +14,12 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(PhoneVerifier::class, fn () => match ($driver = config('services.phone_verification.driver')) {
+        $this->app->bind(PhoneVerifier::class, fn ($app) => match ($driver = config('services.phone_verification.driver')) {
             'twilio' => new TwilioPhoneVerifier(
                 new Client(config('services.twilio.sid'), config('services.twilio.token')),
                 config('services.twilio.verify_sid'),
             ),
-            'log' => new LogPhoneVerifier(),
+            'log' => $app->make(LogPhoneVerifier::class),
             default => throw new InvalidArgumentException("Unknown phone verification driver [{$driver}]."),
         });
     }

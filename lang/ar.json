@@ -33,6 +33,10 @@
     "This phone number is already registered.": "رقم الهاتف هذا مسجل بالفعل.",
     "That code is wrong or has expired.": "الرمز غير صحيح أو انتهت صلاحيته.",
     "Too many attempts. Please try again in :seconds seconds.": "محاولات كثيرة جدًا. يرجى المحاولة مرة أخرى بعد :seconds ثانية.",
+    "Your email address is already verified.": "تم التحقق من بريدك الإلكتروني بالفعل.",
+    "Your Qeima verification code: :code": "رمز التحقق من قيمة: :code",
+    "Enter this code on your profile to verify your email address:": "أدخل هذا الرمز في ملفك الشخصي للتحقق من بريدك الإلكتروني:",
+    "The code expires in :minutes minutes. If you did not ask for it, you can ignore this email.": "تنتهي صلاحية الرمز خلال :minutes دقائق. إذا لم تطلبه، يمكنك تجاهل هذه الرسالة.",
     "We couldn't send a code to this number. Please try again later.": "تعذر إرسال رمز إلى هذا الرقم. يرجى المحاولة لاحقًا.",
     "Your phone number is already verified.": "تم التحقق من رقم هاتفك بالفعل."
 }

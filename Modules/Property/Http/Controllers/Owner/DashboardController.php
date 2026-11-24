@@ -24,7 +24,8 @@ final class DashboardController extends Controller
             'counts' => $this->properties->countsFor($request->user()),
             'notifications' => NotificationResource::collection($this->notifications->latestFor($request->user())),
             'under_review' => $request->user()->under_review,
-            'unverified_phone' => $request->user()->hasVerifiedPhone() ? null : $request->user()->phone,
+            'unverified_email' => ! $request->user()->hasVerifiedEmail(),
+            'unverified_phone' => $request->user()->phone !== null && ! $request->user()->hasVerifiedPhone(),
         ]);
     }
 }

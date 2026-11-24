@@ -29,6 +29,7 @@ class OwnerProfileTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('Owner/Profile/Show')->where('profile', [
                 'name' => 'Sara Owner',
                 'email' => $supplier->email,
+                'email_verified' => true,
                 'phone' => '+201001234567',
                 'phone_verified' => false,
             ]));

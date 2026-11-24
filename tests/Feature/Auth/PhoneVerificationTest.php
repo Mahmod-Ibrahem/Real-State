@@ -21,7 +21,7 @@ class PhoneVerificationTest extends TestCase
 
         $this->withoutVite();
         $this->seed(PermissionSeeder::class);
-        $this->app->instance(PhoneVerifier::class, new LogPhoneVerifier());
+        $this->app->instance(PhoneVerifier::class, $this->app->make(LogPhoneVerifier::class));
     }
 
     public function test_sign_up_stores_the_mobile_number_in_e164(): void
@@ -95,12 +95,12 @@ class PhoneVerificationTest extends TestCase
         $supplier = $this->supplier();
 
         $this->actingAs($supplier)->get(route('supplier.dashboard'))
-            ->assertInertia(fn ($page) => $page->where('unverified_phone', '+201001234567'));
+            ->assertInertia(fn ($page) => $page->where('unverified_phone', true));
 
         $supplier->forceFill(['phone_verified_at' => now()])->save();
 
         $this->actingAs($supplier)->get(route('supplier.dashboard'))
-            ->assertInertia(fn ($page) => $page->where('unverified_phone', null));
+            ->assertInertia(fn ($page) => $page->where('unverified_phone', false));
     }
 
     private function signUp(array $overrides = []): array

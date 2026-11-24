@@ -6,14 +6,14 @@
 
         <transition enter-active-class="transition duration-150 ease-out" enter-from-class="opacity-0"
                     leave-active-class="transition duration-100 ease-in" leave-to-class="opacity-0">
-            <div v-if="open" role="dialog" aria-labelledby="verify-phone-title"
+            <div v-if="open" role="dialog" :aria-labelledby="`verify-${channel}-title`"
                  class="absolute start-0 top-full z-50 mt-2 w-[22rem] max-w-[calc(100vw-2rem)] rounded-xl border border-slate-200 bg-white shadow-lg">
                 <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
                     <div class="min-w-0">
-                        <h3 id="verify-phone-title" class="text-sm font-semibold text-slate-900">Verify your phone</h3>
+                        <h3 :id="`verify-${channel}-title`" class="text-sm font-semibold text-slate-900">{{ config.title }}</h3>
                         <p class="mt-0.5 text-xs text-slate-500">
-                            Enter the 6-digit code we texted to
-                            <span class="whitespace-nowrap font-medium text-slate-700" dir="ltr">{{ phone }}</span>
+                            {{ config.hint }}
+                            <span class="break-all font-medium text-slate-700" dir="ltr">{{ destination }}</span>
                         </p>
                     </div>
                     <button type="button" aria-label="Close" @click="open = false"
@@ -25,7 +25,7 @@
                 <form class="space-y-4 p-4" @submit.prevent="verify">
                     <OtpField ref="otp" v-model="form.code" :error="form.errors.code" :disabled="form.processing"
                               @complete="verify"/>
-                    <Button type="submit" class="w-full" :loading="form.processing">Verify phone</Button>
+                    <Button type="submit" class="w-full" :loading="form.processing">{{ config.submit }}</Button>
                 </form>
 
                 <p class="rounded-b-xl border-t border-slate-100 bg-slate-50/80 px-4 py-2.5 text-xs text-slate-500">
@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import {nextTick, ref} from 'vue';
+import {computed, nextTick, ref} from 'vue';
 import {router, useForm} from '@inertiajs/vue3';
 import {XMarkIcon} from '@heroicons/vue/24/outline';
 import Button from '@/Components/Admin/ui/Button.vue';
@@ -49,9 +49,32 @@ import OtpField from '@/Components/Admin/ui/OtpField.vue';
 import {useDismissible} from '@/Composables/useDismissible.js';
 import {showToast} from '@/Composables/useToast.js';
 
-defineProps({
-    phone: {type: String, required: true},
+const CHANNELS = {
+    phone: {
+        title: 'Verify your phone',
+        hint: 'Enter the 6-digit code we texted to',
+        submit: 'Verify phone',
+        verified: 'Phone number verified',
+        sendRoute: 'supplier.phone.code',
+        verifyRoute: 'supplier.phone.verify',
+    },
+    email: {
+        title: 'Verify your email',
+        hint: 'Enter the 6-digit code we emailed to',
+        submit: 'Verify email',
+        verified: 'Email address verified',
+        sendRoute: 'supplier.email.code',
+        verifyRoute: 'supplier.email.verify',
+    },
+};
+
+const props = defineProps({
+    channel: {type: String, required: true, validator: (value) => ['phone', 'email'].includes(value)},
+    // Where the code goes: the readable phone number or the email address
+    destination: {type: String, required: true},
 });
+
+const config = computed(() => CHANNELS[props.channel]);
 
 const open = ref(false);
 const root = ref(null);
@@ -80,7 +103,7 @@ async function showPanel() {
 
 function sendCode(onSent = () => {}) {
     sending.value = true;
-    router.post(route('supplier.phone.code'), {}, {
+    router.post(route(config.value.sendRoute), {}, {
         preserveScroll: true,
         onSuccess: () => {
             codeSent.value = true;
@@ -97,11 +120,11 @@ function sendCode(onSent = () => {}) {
 function verify() {
     if (form.processing) return;
 
-    form.post(route('supplier.phone.verify'), {
+    form.post(route(config.value.verifyRoute), {
         preserveScroll: true,
         onSuccess: () => {
             open.value = false;
-            showToast('Phone number verified');
+            showToast(config.value.verified);
         },
         onError: (errors) => {
             form.reset('code');

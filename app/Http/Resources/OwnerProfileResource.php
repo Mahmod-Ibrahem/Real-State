@@ -14,6 +14,7 @@ class OwnerProfileResource extends JsonResource
         return [
             'name' => $this->name,
             'email' => $this->email,
+            'email_verified' => $this->hasVerifiedEmail(),
             'phone' => $this->phone,
             'phone_verified' => $this->hasVerifiedPhone(),
         ];
