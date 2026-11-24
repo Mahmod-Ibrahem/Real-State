@@ -11,7 +11,7 @@ domain layers. The layering is plain Laravel with a **service layer** that keeps
 | `Location` | Country → City → Area |
 | `Property` | Listings, gallery, types, classifications, features, favourites, sell page, the owner dashboard (`/supplier`) and the review flow |
 | `Lead` | Property leads, contact leads, contact page, client inquiry form |
-| `Content` | FAQs, basic content, About / Terms / Privacy pages |
+| `Content` | FAQs, About / Terms / Privacy pages |
 | `Dashboard` | Admin dashboard (reads other modules through their services) |
 | `Users` | Admin management of users and their roles (`/admin/users`) |
 

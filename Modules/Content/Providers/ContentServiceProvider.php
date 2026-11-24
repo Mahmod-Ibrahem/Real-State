@@ -3,9 +3,7 @@
 namespace Modules\Content\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Content\Models\BasicContent;
 use Modules\Content\Models\Faq;
-use Modules\Content\Observers\BasicContentObserver;
 use Modules\Content\Observers\FaqObserver;
 
 class ContentServiceProvider extends ServiceProvider
@@ -19,8 +17,6 @@ class ContentServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(module_path('Content', 'Database/Migrations'));
 
-        // Observers forget the cached public lists when these models change
-        BasicContent::observe(BasicContentObserver::class);
         Faq::observe(FaqObserver::class);
     }
 }

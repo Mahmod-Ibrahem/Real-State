@@ -5,13 +5,6 @@
                 <div class="position-relative overflow-hidden shadow p-3 rounded-top-pill rounded-5 bg-white">
                     <img :src="efficiencyImage" class="img-fluid rounded-top-pill rounded-5"
                          alt="work-image">
-
-                    <div class="position-absolute top-50 start-50 translate-middle">
-                        <a @click="toggle" data-type="youtube" data-id="yba7hPeTSjk"
-                           class="avatar avatar-md-md rounded-pill shadow card d-flex justify-content-center align-items-center lightbox">
-                            <i class="mdi mdi-play mdi-24px text-primary"></i>
-                        </a>
-                    </div>
                 </div>
             </div><!--end col-->
 
@@ -68,39 +61,11 @@
             </div><!--end col-->
         </div><!--end row-->
     </div><!--end container-->
-
-    <div :class="isActive === false ? 'position-fixed ' : 'd-none'" class="modal-video" tabindex="-1" role="dialog"
-         area-modal="true" aria-label="You just opened the modal video">
-        <div class="modal-video-body">
-            <div class="modal-video-inner">
-                <div class="modal-video-movie-wrap" style="">
-                    <iframe width="460" height="230"
-                            :src="props.homeVideo.content"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen="" tabindex="-1">
-                    </iframe>
-                    <a @click="toggle" class="mdi mdi-close m-3 text-light h4 position-class title-dark"> </a>
-                </div>
-                <div>
-                </div>
-            </div>
-        </div>
-    </div>
 </template>
 
 <script setup>
-import {ref} from 'vue';
 import CountUp from 'vue-countup-v3';
 import efficiencyImage from "@/assets/images/hero.jpg"
-
-const isActive = ref(true);
-const props = defineProps({
-    homeVideo: Object
-})
-const toggle = () => {
-    isActive.value = !isActive.value
-}
 </script>
 
 <style lang="scss" scoped></style>

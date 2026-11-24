@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Modules\Content\Http\Resources\Users\FaqResource;
-use Modules\Content\Models\BasicContent;
 use Modules\Content\Services\FaqService;
 use Modules\Location\Http\Resources\AreaResource;
 use Modules\Location\Http\Resources\CityResource;
@@ -34,7 +33,6 @@ class HomePageService
     function getHomePageData(): array
     {
         return [
-            'homeVideo' => $this->homeVideo(),
             'propertyTypes' => PropertyTypeResource::collection($this->propertyTypeService->all()),
             'classifications' => $this->propertiesClassification(),
             'purposes' => ListingPurpose::options(),
@@ -43,12 +41,6 @@ class HomePageService
             'countries' => CountryResource::collection($this->countryService->all()),
             'faqs' => FaqResource::collection($this->faqService->all()),
         ];
-    }
-
-    protected
-    function homeVideo()
-    {
-        return Cache::rememberForever('home_video', fn() => BasicContent::where('type', 'home_video')->first()?->only('content') ?? '');
     }
 
     protected function propertiesClassification()

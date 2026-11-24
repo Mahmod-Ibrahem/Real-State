@@ -65,7 +65,6 @@ Complete administrative control panel for managing the entire platform:
 - **Client Inquiry System** - Centralized inquiry management
 
 #### Content Management
-- **Basic Content** - Manage static content pages
 - **FAQs** - Create and organize frequently asked questions
 - **About Us, Privacy Policy, Terms of Service** - Editable pages
 

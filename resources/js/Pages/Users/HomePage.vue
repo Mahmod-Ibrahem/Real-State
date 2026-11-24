@@ -41,7 +41,7 @@
             :areas="areas.data"/>
 
         <div class="container  mt-16">
-            <efficiency :homeVideo="props.homeVideo"/>
+            <efficiency/>
         </div>
         <div class="container  mt-16">
             <howitwork/>
@@ -82,7 +82,6 @@ import listingCategory from '@/Components/Users/listing-categories.vue';
 import FaqSection from '@/Components/Users/FaqSection.vue';
 
 const props = defineProps({
-    homeVideo: Object,
     propertyTypes: Object,
     classifications: Object,
     properties: Object,

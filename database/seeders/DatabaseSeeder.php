@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Content\Database\Seeders\ContentSeeder;
 use Modules\Location\Database\Seeders\LocationSeeder;
 use Modules\Property\Database\Seeders\ClassificationSeeder;
 use Modules\Property\Database\Seeders\FeatureSeeder;
@@ -22,7 +21,6 @@ class DatabaseSeeder extends Seeder
             ClassificationSeeder::class,
             FeatureSeeder::class,
             PropertySeeder::class,
-            ContentSeeder::class,
         ]);
     }
 }

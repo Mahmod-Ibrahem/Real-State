@@ -33,7 +33,7 @@
     <!-- Hero End -->
     <section class="section">
         <div class="container">
-            <efficiency :aboutVideo="props.aboutVideo"/>
+            <efficiency/>
         </div>
         <div class="container mt-16">
             <howitwork/>
@@ -59,9 +59,6 @@ import {ref} from "vue";
 import aboutBG from '@/assets/images/bg/03.jpg';
 import {Head} from "@inertiajs/vue3";
 
-const props = defineProps({
-    aboutVideo: String,
-})
 const aboutImage = ref(aboutBG);
 </script>
 
