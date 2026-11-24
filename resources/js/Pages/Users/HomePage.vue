@@ -54,9 +54,6 @@
         <!--                <div class="container  mt-60">-->
         <!--                    <clients />-->
         <!--                </div>-->
-        <div class="container  mt-16">
-            <broker :brokers="props.brokers"/>
-        </div>
         <div v-if="faqs.data.length" class="container mt-16">
             <FaqSection :faqs="faqs.data"/>
         </div>
@@ -78,7 +75,6 @@ import BuySell from '@/Components/Users/buy-sell-rent/BuySellRent.vue';
 import efficiency from '@/Components/Users/efficiency-transparency/efficiency-transparency.vue';
 import howitwork from '@/Components/Users/how-it-works.vue';
 import properties from '@/Components/Users/featured-properties.vue';
-import broker from '@/Components/Users/property-broker.vue';
 import footers from '@/Components/Users/footer/footer.vue';
 import getintouch from '@/Components/Users/get-in-touch.vue';
 import backtotop from '@/Components/Users/back-to-top.vue'
@@ -91,7 +87,6 @@ const props = defineProps({
     classifications: Object,
     properties: Object,
     purposes: Array,
-    brokers: Object,
     cities: Object,
     areas: Object,
     // Users/FaqResource collection

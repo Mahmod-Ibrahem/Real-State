@@ -8,7 +8,6 @@ use Modules\Location\Database\Seeders\LocationSeeder;
 use Modules\Property\Database\Seeders\PropertySeeder;
 use Modules\Property\Database\Seeders\FeatureSeeder;
 use Modules\Content\Database\Seeders\ContentSeeder;
-use Modules\Content\Database\Seeders\BrokerSeeder;
 use Modules\Content\Database\Seeders\FaqSeeder;
 
 use Illuminate\Database\Seeder;
@@ -36,7 +35,6 @@ class DemoDatabaseSeeder extends Seeder
             ClassificationSeeder::class,
             FeatureSeeder::class,
             PropertySeeder::class,
-            BrokerSeeder::class,
             ContentSeeder::class,
             FaqSeeder::class,
         ]);

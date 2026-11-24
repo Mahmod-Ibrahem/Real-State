@@ -11,7 +11,6 @@ import {
     Squares2X2Icon,
     SwatchIcon,
     TagIcon,
-    UserGroupIcon,
     UsersIcon,
 } from '@heroicons/vue/24/outline';
 
@@ -51,7 +50,6 @@ const ADMIN_GROUPS = [
         label: 'Content',
         items: [
             {label: 'FAQs', route: 'admin.faqs.index', icon: QuestionMarkCircleIcon},
-            {label: 'Brokers', route: 'admin.brokers.index', icon: UserGroupIcon},
         ],
     },
     {

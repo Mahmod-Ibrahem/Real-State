@@ -108,7 +108,7 @@ inside the dialog.
 | `ui/ToggleField.vue` | Switch for booleans (`is_published`): Headless UI `Switch`, `h-5 w-9`, indigo when on; label and description to the right. |
 | `ui/Checkbox.vue` | Chatwoot checkbox: `h-4 w-4 rounded` with an indigo fill and white tick drawn in SVG (`appearance-none`, so it looks the same in every browser); `v-model` boolean, the label in the default slot. For a single yes/no next to text (Login's “Remember me”); in forms prefer `ToggleField`. |
 | `ui/RichTextField.vue` | Rich-text field (property description): Quill 2 used directly, same frame as `TextField`. The toolbar (bold, italic, underline, headings, bullet/numbered lists, link, clear formatting) sits in a `bg-slate-50` bar inside one `rounded-lg border-slate-300` box with the indigo focus ring; `v-model` is HTML (`''` when empty). Restyled in `admin.css`; no Quill theme colours leak in. |
-| `ui/ImageField.vue` | Single image, Mr Egypt Tours style: a dashed `rounded-xl` box at the image's real `aspect-ratio` (“Click to upload · you can crop it next”); picking a file opens `ImageCropDialog`; the cropped result fills the box with a “Change image” hover overlay and an “Adjust crop” link. Emits the cropped `File` (JPEG). `aspect-ratio`: 4/3 for property and type covers, 1 for broker photos. |
+| `ui/ImageField.vue` | Single image, Mr Egypt Tours style: a dashed `rounded-xl` box at the image's real `aspect-ratio` (“Click to upload · you can crop it next”); picking a file opens `ImageCropDialog`; the cropped result fills the box with a “Change image” hover overlay and an “Adjust crop” link. Emits the cropped `File` (JPEG). `aspect-ratio`: 4/3 for property and type covers. |
 | `ui/ImagesField.vue` | Gallery grid: `aspect-[4/3] rounded-lg` tiles + a dashed “Add photos” tile. Picked photos go through a crop queue (“Crop & next”, “Skip”, “Cancel all”, “2 of 5”); cropped ones show as dashed-indigo “New” tiles, removable before upload. `v-model` is the cropped `File[]`; `saved` (`[{id, url}]`) renders already-saved tiles first with a remove button (`@remove`). Thumbnails open `ImageLightbox`. |
 | `ui/ImageCropDialog.vue` | `Modal` around `vue-advanced-cropper`: fixed aspect frame, rotate left/right, output capped at 1600px, JPEG 0.9. Only used through `ImageField`/`ImagesField`. |
 | `ui/ImageLightbox.vue` | Full-screen preview (`bg-slate-900/85`, `object-contain`), closes on click or Esc. |
@@ -139,7 +139,7 @@ inside the dialog.
     first asks for a reason, Pending is a `disabled` option), the page handles the choice and owns **one** shared
     modal for the whole table, never one per row.
 - **Modal create/edit** for small resources: property types, classifications, features, feature types,
-  countries, cities, areas, FAQs, brokers, users. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
+  countries, cities, areas, FAQs, users. The list page owns a `useResourceModal()`; the toolbar's “Add …” button
   (`TableCard creatable @create`) calls `openCreate()`, `RowActions editable @edit` calls `openEdit(row)`; one
   `XForm.vue` renders `FormModal` (title “New city” / “Edit Cairo”). On success the modal closes and the list
   refreshes in place; on validation errors it stays open with the errors under the fields. The list

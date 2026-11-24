@@ -39,9 +39,6 @@
             <howitwork/>
         </div>
         <trusted/>
-        <div class="container mt-16">
-            <broker :brokers="props.brokers"/>
-        </div>
         <!--        <blogs/>-->
         <getintouch/>
     </section>
@@ -54,7 +51,6 @@ import navbar from '@/Components/Users/navbar/navbar.vue';
 import efficiency from '@/Components/Users/efficiency-transparency/efficiency-transparency-our.vue';
 import howitwork from '@/Components/Users/how-it-works.vue';
 import trusted from '@/Components/Users/trusted-users.vue';
-import broker from '@/Components/Users/property-broker.vue';
 import blogs from '@/Components/Users/blog/blogs.vue';
 import getintouch from '@/Components/Users/get-in-touch.vue';
 import footers from '@/Components/Users/footer/footer.vue';
@@ -65,7 +61,6 @@ import {Head} from "@inertiajs/vue3";
 
 const props = defineProps({
     aboutVideo: String,
-    brokers: Object
 })
 const aboutImage = ref(aboutBG);
 </script>

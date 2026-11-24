@@ -12,9 +12,4 @@ enum ContentPermission: string
     case CreateFaqs = 'create faqs';
     case EditFaqs = 'edit faqs';
     case DeleteFaqs = 'delete faqs';
-
-    case ViewBrokers = 'view brokers';
-    case CreateBrokers = 'create brokers';
-    case EditBrokers = 'edit brokers';
-    case DeleteBrokers = 'delete brokers';
 }

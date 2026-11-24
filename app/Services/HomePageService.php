@@ -5,7 +5,6 @@ namespace App\Services;
 use Illuminate\Support\Facades\Cache;
 use Modules\Content\Http\Resources\Users\FaqResource;
 use Modules\Content\Models\BasicContent;
-use Modules\Content\Services\BrokerService;
 use Modules\Content\Services\FaqService;
 use Modules\Location\Http\Resources\AreaResource;
 use Modules\Location\Http\Resources\CityResource;
@@ -26,7 +25,6 @@ class HomePageService
         protected PropertyTypeService   $propertyTypeService,
         protected AreaService           $areaService,
         protected CountryService        $countryService,
-        protected BrokerService         $brokerService,
         protected FaqService            $faqService,
     )
     {
@@ -40,7 +38,6 @@ class HomePageService
             'propertyTypes' => PropertyTypeResource::collection($this->propertyTypeService->all()),
             'classifications' => $this->propertiesClassification(),
             'purposes' => ListingPurpose::options(),
-            'brokers' => $this->brokerService->all(),
             'cities' => CityResource::collection($this->cityService->all()),
             'areas' => AreaResource::collection($this->areaService->all()),
             'countries' => CountryResource::collection($this->countryService->all()),

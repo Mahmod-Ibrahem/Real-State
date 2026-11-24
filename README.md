@@ -67,7 +67,6 @@ Complete administrative control panel for managing the entire platform:
 #### Content Management
 - **Basic Content** - Manage static content pages
 - **FAQs** - Create and organize frequently asked questions
-- **Brokers** - Manage real estate brokers/agents
 - **About Us, Privacy Policy, Terms of Service** - Editable pages
 
 #### Dashboard Analytics
