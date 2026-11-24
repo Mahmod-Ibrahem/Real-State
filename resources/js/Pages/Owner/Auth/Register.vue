@@ -3,6 +3,8 @@
         <form class="space-y-4" @submit.prevent="submit">
             <TextField v-model="form.name" label="Name" autocomplete="name" required autofocus :error="form.errors.name"/>
             <TextField v-model="form.email" label="Email" type="email" autocomplete="username" required :error="form.errors.email"/>
+            <PhoneField v-model="form.phone" v-model:country="form.phone_country" required
+                        :error="form.errors.phone" :country-error="form.errors.phone_country"/>
             <TextField v-model="form.password" label="Password" type="password" autocomplete="new-password" required
                        :error="form.errors.password"/>
             <TextField v-model="form.password_confirmation" label="Confirm password" type="password" autocomplete="new-password"
@@ -20,11 +22,14 @@
 import {Link, useForm} from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/Admin/GuestLayout.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
+import PhoneField from '@/Components/Admin/ui/PhoneField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 
 const form = useForm({
     name: '',
     email: '',
+    phone: '',
+    phone_country: 'EG',
     password: '',
     password_confirmation: '',
 });

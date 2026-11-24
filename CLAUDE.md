@@ -75,6 +75,17 @@ and `Support/DemoImages`, which call into the modules' seeders.
   none of their properties are shown on the public site, even approved and published ones, until an admin clears
   the flag. Admins switch both flags from the `/admin/users` table. Users can't disable themselves, and Super Admin
   accounts can't be changed there.
+- **Phone** on `users`: `phone` (E.164, unique, e.g. `+201001234567`), `phone_country` (ISO-2) and
+  `phone_verified_at`. Supplier sign-up requires a **mobile** number: the country is picked with `PhoneField.vue`
+  (a searchable `SelectField` of every country with its dialing code, from `libphonenumber-js`) and
+  `OwnerRegistrationRequest` normalises the number to E.164 before validating (`propaganistas/laravel-phone`), so
+  the unique check compares like with like. An unverified supplier can log in and work, but their dashboard shows a
+  "Verify your phone" panel that sends a 6-digit code and checks it (`supplier.phone.code`, `throttle:3,10`;
+  `supplier.phone.verify`, `throttle:5,10`).
+- **Phone codes** go through `App\Services\PhoneVerification\PhoneVerificationService`, which uses a `PhoneVerifier`
+  picked by `PHONE_VERIFICATION_DRIVER`: `twilio` (Twilio Verify creates, sends, expires and checks the code; keys in
+  `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_VERIFY_SID`) or `log` (default for local work: the code is written to the log
+  and a hash kept in the cache for 10 minutes). The code itself is never stored in the database.
 
 ## Domain rules
 

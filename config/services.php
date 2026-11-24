@@ -32,6 +32,16 @@ return [
         'key' => env('PEXELS_API_KEY'),
     ],
 
+    'phone_verification' => [
+        'driver' => env('PHONE_VERIFICATION_DRIVER', 'log'),
+    ],
+
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_TOKEN'),
+        'verify_sid' => env('TWILIO_VERIFY_SID'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

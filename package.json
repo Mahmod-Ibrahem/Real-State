@@ -39,6 +39,7 @@
         "clsx": "^2.1.1",
         "core-js": "^3.8.3",
         "feather-icons": "^4.29.2",
+        "libphonenumber-js": "^1.13.17",
         "lucide-vue-next": "^0.483.0",
         "quill": "^2.0.3",
         "reka-ui": "^2.1.0",

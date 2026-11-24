@@ -25,6 +25,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'phone_country',
         'is_active',
         'under_review',
     ];
@@ -48,6 +50,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
             'under_review' => 'boolean',
@@ -62,6 +65,11 @@ class User extends Authenticatable
     public function properties(): HasMany
     {
         return $this->hasMany(Property::class, 'owner_id');
+    }
+
+    public function hasVerifiedPhone(): bool
+    {
+        return $this->phone_verified_at !== null;
     }
 
     public function dashboardRoute(): string

@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\Owner\OwnerRegistrationController;
 use App\Http\Controllers\Auth\Owner\OwnerSessionController;
+use App\Http\Controllers\Auth\Owner\SendPhoneCodeController;
+use App\Http\Controllers\Auth\Owner\VerifyPhoneCodeController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -51,4 +53,9 @@ Route::prefix('supplier')->name('supplier.')->group(function () {
         ->middleware('guest');
     Route::post('register', [OwnerRegistrationController::class, 'store'])
         ->middleware('guest');
+
+    Route::post('phone/code', SendPhoneCodeController::class)->name('phone.code')
+        ->middleware(['auth', 'throttle:3,10']);
+    Route::post('phone/verify', VerifyPhoneCodeController::class)->name('phone.verify')
+        ->middleware(['auth', 'throttle:5,10']);
 });

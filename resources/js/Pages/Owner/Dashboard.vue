@@ -14,6 +14,8 @@
                 </p>
             </div>
 
+            <PhoneVerificationPanel v-if="unverified_phone" :phone="unverified_phone"/>
+
             <Panel title="My listings" hint="New listings stay hidden until an admin approves them">
                 <MetricGroup :metrics="listingMetrics"/>
             </Panel>
@@ -57,12 +59,15 @@ import MetricGroup from '@/Components/Admin/MetricGroup.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
 import Panel from '@/Components/Admin/ui/Panel.vue';
 import {OWNER_NAV} from '@/Components/Owner/navigation.js';
+import PhoneVerificationPanel from '@/Components/Owner/PhoneVerificationPanel.vue';
 import {formatDate} from '@/Composables/useFormatters.js';
 
 const props = defineProps({
     counts: {type: Object, required: true},
     notifications: {type: Object, required: true},
     under_review: {type: Boolean, default: false},
+    // E.164 while the supplier still has to verify it, otherwise null
+    unverified_phone: {type: String, default: null},
 });
 
 const listingMetrics = computed(() => [

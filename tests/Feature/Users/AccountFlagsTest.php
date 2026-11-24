@@ -62,6 +62,8 @@ class AccountFlagsTest extends TestCase
         $this->post(route('supplier.register'), [
             'name' => 'Sara Owner',
             'email' => 'sara@example.com',
+            'phone_country' => 'EG',
+            'phone' => '01001234567',
             'password' => 'password',
             'password_confirmation' => 'password',
         ])->assertRedirect(route('supplier.dashboard'));

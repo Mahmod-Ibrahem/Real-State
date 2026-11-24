@@ -28,5 +28,10 @@
     "Active": "نشط",
     "Disabled": "معطّل",
     "Your account is disabled.": "حسابك معطّل.",
-    "You can't disable your own account.": "لا يمكنك تعطيل حسابك."
+    "You can't disable your own account.": "لا يمكنك تعطيل حسابك.",
+    "Enter a valid mobile number for the selected country.": "أدخل رقم هاتف محمول صحيحًا للدولة المختارة.",
+    "This phone number is already registered.": "رقم الهاتف هذا مسجل بالفعل.",
+    "That code is wrong or has expired.": "الرمز غير صحيح أو انتهت صلاحيته.",
+    "We couldn't send a code to this number. Please try again later.": "تعذر إرسال رمز إلى هذا الرقم. يرجى المحاولة لاحقًا.",
+    "Your phone number is already verified.": "تم التحقق من رقم هاتفك بالفعل."
 }

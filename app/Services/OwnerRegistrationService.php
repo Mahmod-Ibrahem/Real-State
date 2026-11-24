@@ -9,7 +9,7 @@ final class OwnerRegistrationService
 {
     public const ROLE = 'Property Owner';
 
-    /** @param array{name: string, email: string, password: string} $data */
+    /** @param array{name: string, email: string, phone: string, phone_country: string, password: string} $data */
     public function register(array $data): User
     {
         $user = User::create([...$data, 'under_review' => true]);
