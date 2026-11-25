@@ -270,6 +270,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 | Concern | Rule |
 |---|---|
 | Models | Relations (typed return), casts (enums cast), scopes (`active()`), `$fillable`, `$translatable`. No HTTP and no business workflows. |
+| Mass assignment | Services pass `$request->validated()` straight to `create()` / `fill()` / `createMany()`; `$fillable` decides which keys are columns, so don't strip non-column keys (`feature_ids`, `payment_plans`) by hand. Columns the service sets itself (an uploaded `image` it stores) stay **out** of `$fillable`, so a `null` in the request can't overwrite them. |
 | Enums (`Modules/<Name>/Enums/`) | If code branches on a value, it's an enum, not an admin-editable table. Expose `label()` (translated) and `options()` for selects. Value-dependent behaviour lives on the enum (`PropertyStatus::allowedFor()`). |
 | Observers | Cache invalidation only. Business side effects use events + listeners. |
 | Translations | `$translatable` on models. UI strings use `__()` with `lang/ar.json`; add the Arabic string with every new label or message. |

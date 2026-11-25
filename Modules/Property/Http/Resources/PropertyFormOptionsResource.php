@@ -4,6 +4,7 @@ namespace Modules\Property\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Property\Enums\InstallmentFrequency;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
 
@@ -20,6 +21,7 @@ class PropertyFormOptionsResource extends JsonResource
             'areas' => LocationOptionResource::collection($this->resource['areas']),
             'purposes' => ListingPurpose::options(),
             'statuses' => PropertyStatus::options(),
+            'installment_frequencies' => InstallmentFrequency::options(),
         ];
     }
 }

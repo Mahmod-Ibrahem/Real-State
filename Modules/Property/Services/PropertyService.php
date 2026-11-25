@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Traits\ImagesUtility;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Modules\Lead\Services\PropertyLeadService;
 use Modules\Property\Enums\PropertyStatus;
@@ -20,13 +19,13 @@ final class PropertyService
 
     private const PER_PAGE = 10;
     private const IMAGE_TYPE = 'property';
-    private const NON_COLUMN_KEYS = ['image', 'feature_ids', 'gallery_images', 'removed_image_ids', 'locale'];
-    private const EDIT_RELATIONS = ['features', 'propertyType', 'propertyClassification', 'city', 'area', 'country', 'propertyImages'];
+    private const EDIT_RELATIONS = ['features', 'propertyType', 'propertyClassification', 'city', 'area', 'country', 'propertyImages', 'paymentPlans'];
 
     public function __construct(
         private readonly PropertyGalleryService $gallery,
         private readonly PropertyPublicationService $publication,
         private readonly PropertyLeadService $leads,
+        private readonly PropertyPaymentPlanService $paymentPlans,
     ) {
     }
 
@@ -49,7 +48,8 @@ final class PropertyService
     public function create(array $data, User $owner, ReviewStatus $reviewStatus): Property
     {
         return DB::transaction(function () use ($data, $owner, $reviewStatus): Property {
-            $property = new Property($this->columns($data));
+            $property = new Property($data);
+            $this->dropSaleOnlyTerms($property);
             $property->image = $this->storeImage($data['image'], self::IMAGE_TYPE);
             $property->forceFill([
                 'owner_id' => $owner->id,
@@ -60,29 +60,26 @@ final class PropertyService
 
             $property->features()->sync($data['feature_ids']);
             $this->gallery->add($property, $data['gallery_images'] ?? []);
+            $this->paymentPlans->sync($property, $data['payment_plans'] ?? []);
 
             return $property;
         });
     }
 
-    public function update(Property $property, array $data): bool
+    public function update(Property $property, array $data): void
     {
-        return DB::transaction(function () use ($property, $data): bool {
-            $property->fill($this->columns($data));
+        DB::transaction(function () use ($property, $data): void {
+            $property->fill($data);
+            $this->dropSaleOnlyTerms($property);
             if (isset($data['image'])) {
                 $property->image = $this->storeImage($data['image'], self::IMAGE_TYPE);
             }
-            $columnsChanged = $property->isDirty();
             $property->save();
 
-            $featureChanges = $property->features()->sync($data['feature_ids']);
-            $removedImages = $this->gallery->remove($property, $data['removed_image_ids'] ?? []);
-            $addedImages = $this->gallery->add($property, $data['gallery_images'] ?? []);
-
-            return $columnsChanged
-                || array_filter($featureChanges) !== []
-                || $removedImages > 0
-                || $addedImages > 0;
+            $property->features()->sync($data['feature_ids']);
+            $this->gallery->remove($property, $data['removed_image_ids'] ?? []);
+            $this->gallery->add($property, $data['gallery_images'] ?? []);
+            $this->paymentPlans->sync($property, $data['payment_plans'] ?? []);
         });
     }
 
@@ -98,7 +95,15 @@ final class PropertyService
             $property->status = PropertyStatus::Available;
         }
 
-        $property->save();
+        $this->dropSaleOnlyTerms($property);
+
+        DB::transaction(function () use ($property): void {
+            $property->save();
+
+            if (! $property->purpose->allowsPaymentPlans()) {
+                $this->paymentPlans->clear($property);
+            }
+        });
     }
 
     public function delete(Property $property): void
@@ -107,12 +112,17 @@ final class PropertyService
             throw PropertyHasLeads::make();
         }
 
-        $property->delete();
+        DB::transaction(function () use ($property): void {
+            $this->paymentPlans->clear($property);
+            $property->delete();
+        });
     }
 
-    private function columns(array $data): array
+    private function dropSaleOnlyTerms(Property $property): void
     {
-        return Arr::except($data, self::NON_COLUMN_KEYS);
+        if (! $property->purpose->allowsPaymentPlans()) {
+            $property->maintenance_deposit_percent = null;
+        }
     }
 
     private function search(Builder $query, string $term): void

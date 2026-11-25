@@ -59,17 +59,15 @@ final class OwnerPropertyService
     {
         $wasReviewed = $property->review_status !== ReviewStatus::Pending;
 
-        $needsReview = DB::transaction(function () use ($property, $data, $wasReviewed): bool {
-            $changed = $this->properties->update($property, $data);
+        DB::transaction(function () use ($property, $data, $wasReviewed): void {
+            $this->properties->update($property, $data);
 
-            if ($changed && $wasReviewed) {
+            if ($wasReviewed) {
                 $this->review->returnToReview($property);
             }
-
-            return $changed && $wasReviewed;
         });
 
-        if ($needsReview) {
+        if ($wasReviewed) {
             PropertySubmitted::dispatch($property);
         }
 

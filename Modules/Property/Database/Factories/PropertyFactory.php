@@ -74,6 +74,13 @@ class PropertyFactory extends Factory
         return $this->state(['owner_id' => $owner->id]);
     }
 
+    public function withGallery(int $photos = Property::MIN_GALLERY_IMAGES): static
+    {
+        return $this->afterCreating(fn (Property $property) => $property->propertyImages()->createMany(
+            array_fill(0, $photos, ['image' => asset('assets/images/property/1.jpg')])
+        ));
+    }
+
     public function pending(): static
     {
         return $this->state(['review_status' => ReviewStatus::Pending, 'is_published' => false]);

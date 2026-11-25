@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('address');
             $table->string('image');
             $table->integer('price');
+            $table->unsignedTinyInteger('maintenance_deposit_percent')->nullable();
             $table->integer('bedrooms')->nullable();
             $table->integer('bathrooms')->nullable();
             $table->string('garages')->nullable();

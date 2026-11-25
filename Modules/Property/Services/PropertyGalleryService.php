@@ -15,23 +15,20 @@ final class PropertyGalleryService
     private const IMAGE_TYPE = 'property';
 
     /** @param list<UploadedFile> $images */
-    public function add(Property $property, array $images): int
+    public function add(Property $property, array $images): void
     {
         foreach ($images as $image) {
             $property->propertyImages()->create(['image' => $this->storeImage($image, self::IMAGE_TYPE)]);
         }
-
-        return count($images);
     }
 
     /** @param list<int> $imageIds */
-    public function remove(Property $property, array $imageIds): int
+    public function remove(Property $property, array $imageIds): void
     {
-        return $property->propertyImages()->whereIn('id', $imageIds)->get()
+        $property->propertyImages()->whereIn('id', $imageIds)->get()
             ->each(function (PropertyImages $image): void {
                 Storage::delete($this->getRelativePath($image->image));
                 $image->delete();
-            })
-            ->count();
+            });
     }
 }

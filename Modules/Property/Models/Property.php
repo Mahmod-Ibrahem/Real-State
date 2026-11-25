@@ -21,9 +21,11 @@ class Property extends Model
 {
     use HasTranslations, HasFactory, Sluggable;
 
-    protected $fillable = ['slug', 'name', 'description', 'address', 'image', 'price', 'bedrooms', 'bathrooms', 'garages', 'year_built', 'sqft',
+    public const MIN_GALLERY_IMAGES = 5;
+
+    protected $fillable = ['slug', 'name', 'description', 'address', 'price', 'bedrooms', 'bathrooms', 'garages', 'year_built', 'sqft',
         'google_map', 'is_published', 'property_type_id', 'area_id',
-        'city_id', 'property_classification_id', 'purpose', 'status', 'floor', 'country_id'];
+        'city_id', 'property_classification_id', 'purpose', 'status', 'floor', 'country_id', 'maintenance_deposit_percent'];
     public $translatable = ['slug', 'name', 'description', 'address','floor'];
 
     protected $casts = [
@@ -87,6 +89,11 @@ class Property extends Model
     public function propertyImages(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PropertyImages::class);
+    }
+
+    public function paymentPlans(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PropertyPaymentPlan::class)->orderBy('id');
     }
 
     public function favourites()

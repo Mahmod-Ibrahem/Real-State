@@ -136,14 +136,33 @@ and `Support/DemoImages`, which call into the modules' seeders.
   - Admins approve (`PropertyApproved` notifies the owner by mail + database) or reject with a required reason
     (shown on the owner's dashboard, no notification). Properties an admin creates are approved at once.
   - Only approved properties can be published. The owner publishes and unpublishes them.
-  - Owners can edit every field. **Any real change** (a field, features, cover or gallery) to an approved or
-    rejected property sends it back to pending, unpublishes it, and mails admins again. A save that changes
-    nothing keeps the current status. Editing a property that is already pending keeps it pending without a new
-    mail.
+  - Owners can edit every field. **Every save** of an approved or rejected property by its owner sends it back to
+    pending, unpublishes it, and mails admins again, even when nothing changed (no change detection). Editing a
+    property that is already pending keeps it pending without a new mail. Admin saves never change the review
+    status.
   - `Property::active()` (the public site) means approved **and** published **and** its owner is not
     `under_review`. Changing an owner's `under_review` forgets the cached public lists.
   - Every public read uses `active()`, including the property page (`listing.show`, via `PropertyDetailService`):
     a property that isn't listed is a 404 there, and its related properties are listed ones only.
+- **Photos:** every property has a cover (`image`) and **at least 5 gallery photos** (`Property::MIN_GALLERY_IMAGES`),
+  for admins and owners alike. Creating needs 5 `gallery_images`. Updating counts the saved photos that aren't in
+  `removed_image_ids` plus the new ones (the update requests' `after()` check), so removing photos can't drop a
+  property below 5. The error is shown on the gallery (`gallery_images`).
+- **Payment plans** (`PropertyPaymentPlan`): only **Sale** properties (`ListingPurpose::allowsPaymentPlans()`)
+  have them, 0 to 3 each, interest-free like Egyptian developer plans. A plan is a down payment % (0–90), a number
+  of years (1–15) and a frequency (`InstallmentFrequency`: monthly / quarterly). **Only these terms are stored.**
+  The amounts (down payment, installment per period, monthly equivalent) are derived from the property's price
+  whenever they are shown (`PropertyPaymentPlan::downPaymentAmount()`, `installmentAmount()`, `monthlyInstallment()`
+  given the price), so they always follow the current price and are never stored or typed. The monthly equivalent
+  of a quarterly plan is its installment ÷ 3. A property may also have a `maintenance_deposit_percent` (paid at
+  handover), shown on the property page but never part of the installment. Switching a property to Rent deletes its
+  plans and the deposit. Every save replaces the plans (delete, then `createMany()`). Deleting a property deletes
+  its plans in the same transaction (the FK itself is `restrictOnDelete`).
+  - Public search (`listing.index`, `IndexListingRequest` → `ListingSearchService`): `payment=cash|installments`,
+    `max_monthly` (EGP, computed in the query from `properties.price` and the plan terms) and
+    `max_down_payment_percent` (0–100, a plain column compare; 0 means "no down payment"). The budget filters match
+    only when **one** plan fits both limits. Cards show the lowest monthly installment; the property page lists
+    every plan in the order they were entered.
 - **Property leads** (`Modules/Lead`, `PropertyLead`): a visitor contacts the owner of a **listed** property from
   its page (any other property is a 404) in one of three ways, saved as `source` (`LeadSource`):
   - The enquiry **form** (`listing.leads.store`, `throttle:5,1`): name, email, phone and message, all required. The

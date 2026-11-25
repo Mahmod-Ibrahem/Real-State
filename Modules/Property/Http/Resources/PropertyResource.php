@@ -19,6 +19,12 @@ class PropertyResource extends JsonResource
             'description' => $this->getTranslation('description', $locale, $this->description),
             'address' => $this->getTranslation('address', $locale, $this->address),
             'price' => $this->price,
+            'maintenance_deposit_percent' => $this->maintenance_deposit_percent,
+            'payment_plans' => $this->whenLoaded('paymentPlans', fn () => $this->paymentPlans->map(fn ($plan) => [
+                'down_payment_percent' => $plan->down_payment_percent,
+                'installment_years' => $plan->installment_years,
+                'installment_frequency' => $plan->installment_frequency->value,
+            ])),
             'image' => $this->image,
             'bedrooms' => $this->bedrooms,
             'bathrooms' => $this->bathrooms,

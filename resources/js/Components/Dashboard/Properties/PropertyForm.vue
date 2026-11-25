@@ -43,6 +43,15 @@
                          description="Unpublished properties are hidden from the website." class="self-end pb-1"/>
         </FormSection>
 
+        <FormSection v-if="form.purpose === 'sale'" title="Payment"
+                     description="Up to 3 installment plans. Amounts are worked out from the price.">
+            <PaymentPlansField v-model="form.payment_plans" :price="form.price" :frequencies="installment_frequencies"
+                               :errors="form.errors" class="sm:col-span-2"/>
+            <TextField v-model="form.maintenance_deposit_percent" label="Maintenance deposit (%)" type="number" min="0"
+                       max="30" hint="Paid at handover. Not part of the installments."
+                       :error="form.errors.maintenance_deposit_percent"/>
+        </FormSection>
+
         <FormSection title="Details">
             <TextField v-model="form.bedrooms" label="Bedrooms" type="number" min="0" :error="form.errors.bedrooms"/>
             <TextField v-model="form.bathrooms" label="Bathrooms" type="number" min="0" :error="form.errors.bathrooms"/>
@@ -61,8 +70,7 @@
                         hint="The main photo on cards and the property page." :required="!property"
                         :error="form.errors.image" class="sm:col-span-2"/>
             <PropertyGallery v-model="form.gallery_images" v-model:removed-ids="form.removed_image_ids" :saved="gallery"
-                             :saving="form.processing" :progress="form.progress" :required="!property"
-                             :error="galleryError" class="sm:col-span-2"/>
+                             :saving="form.processing" :progress="form.progress" :error="galleryError" class="sm:col-span-2"/>
         </FormSection>
     </FormCard>
 </template>
@@ -77,6 +85,7 @@ import RichTextField from '@/Components/Admin/ui/RichTextField.vue';
 import SelectField from '@/Components/Admin/ui/SelectField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import ToggleField from '@/Components/Admin/ui/ToggleField.vue';
+import PaymentPlansField from './PaymentPlansField.vue';
 import PropertyGallery from './PropertyGallery.vue';
 import {PROPERTY_FORM_PROPS} from './formProps.js';
 import {currentLocale, saveResource} from '@/Composables/useResourceForm.js';
@@ -107,6 +116,8 @@ const form = useForm({
     purpose: props.property?.purpose ?? '',
     status: props.property?.status ?? 'available',
     price: props.property?.price ?? '',
+    payment_plans: props.property?.payment_plans ?? [],
+    maintenance_deposit_percent: props.property?.maintenance_deposit_percent ?? '',
     ...(props.publishable && {is_published: Boolean(props.property?.is_published ?? false)}),
     bedrooms: props.property?.bedrooms ?? '',
     bathrooms: props.property?.bathrooms ?? '',
@@ -133,8 +144,12 @@ watch(() => form.city_id, () => {
 const allowedStatuses = computed(() =>
     props.statuses.filter((status) => !form.purpose || status.purposes.includes(form.purpose))
 );
-watch(() => form.purpose, () => {
+watch(() => form.purpose, (purpose) => {
     if (!allowedStatuses.value.some((status) => status.id === form.status)) form.status = 'available';
+    if (purpose !== 'sale') {
+        form.payment_plans = [];
+        form.maintenance_deposit_percent = '';
+    }
 });
 
 const galleryError = computed(() => form.errors.gallery_images

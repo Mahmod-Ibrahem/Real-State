@@ -138,13 +138,15 @@ class OwnerPropertyReviewTest extends TestCase
     {
         $owner = $this->owner();
         $admin = $this->admin();
-        $property = Property::factory()->ownedBy($owner)->create(['is_published' => true]);
+        $property = Property::factory()->ownedBy($owner)->withGallery()->create(['is_published' => true]);
+        $cover = $property->image;
 
         $this->actingAs($owner)
             ->put(route('supplier.properties.update', $property), [...$this->payload(), 'image' => null, 'gallery_images' => []])
             ->assertRedirect(route('supplier.properties.index'));
 
         $property->refresh();
+        $this->assertSame($cover, $property->image);
         $this->assertSame(ReviewStatus::Pending, $property->review_status);
         $this->assertFalse($property->is_published);
         Notification::assertSentTo($admin, PropertySubmittedNotification::class);
@@ -167,7 +169,7 @@ class OwnerPropertyReviewTest extends TestCase
         Notification::assertSentTo($admin, PropertySubmittedNotification::class);
     }
 
-    public function test_saving_without_changes_keeps_an_approved_property_live(): void
+    public function test_saving_without_changes_still_sends_an_approved_property_back_to_review(): void
     {
         $owner = $this->owner();
         $admin = $this->admin();
@@ -178,9 +180,52 @@ class OwnerPropertyReviewTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $property->refresh();
-        $this->assertSame(ReviewStatus::Approved, $property->review_status);
-        $this->assertTrue($property->is_published);
+        $this->assertSame(ReviewStatus::Pending, $property->review_status);
+        $this->assertFalse($property->is_published);
+        Notification::assertSentTo($admin, PropertySubmittedNotification::class);
+    }
+
+    public function test_editing_a_pending_property_keeps_it_pending_without_a_new_mail(): void
+    {
+        $owner = $this->owner();
+        $admin = $this->admin();
+        $property = Property::factory()->ownedBy($owner)->pending()->withGallery()->create();
+        $property->features()->attach(Feature::factory()->create());
+
+        $this->actingAs($owner)
+            ->put(route('supplier.properties.update', $property), $this->payloadFor($property->load('features')))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(ReviewStatus::Pending, $property->fresh()->review_status);
         Notification::assertNotSentTo($admin, PropertySubmittedNotification::class);
+    }
+
+    public function test_a_property_keeps_at_least_five_gallery_photos(): void
+    {
+        $owner = $this->owner();
+        $message = __('Add at least :count gallery photos.', ['count' => Property::MIN_GALLERY_IMAGES]);
+
+        $this->actingAs($owner)
+            ->post(route('supplier.properties.store'), [...$this->payload(), 'gallery_images' => $this->photos(4)])
+            ->assertSessionHasErrors(['gallery_images' => $message]);
+        $this->assertSame(0, Property::count());
+
+        $property = $this->liveListingOf($owner);
+        $firstPhotoId = $property->propertyImages()->value('id');
+
+        $this->actingAs($owner)
+            ->put(route('supplier.properties.update', $property), [...$this->payloadFor($property), 'removed_image_ids' => [$firstPhotoId]])
+            ->assertSessionHasErrors(['gallery_images' => $message]);
+        $this->assertSame(Property::MIN_GALLERY_IMAGES, $property->propertyImages()->count());
+
+        $this->actingAs($owner)
+            ->put(route('supplier.properties.update', $property), [
+                ...$this->payloadFor($property),
+                'removed_image_ids' => [$firstPhotoId],
+                'gallery_images' => $this->photos(1),
+            ])
+            ->assertSessionHasNoErrors();
+        $this->assertSame(Property::MIN_GALLERY_IMAGES, $property->propertyImages()->count());
     }
 
     public function test_owners_are_kept_out_of_the_admin_and_guests_go_to_the_owner_login(): void
@@ -221,6 +266,12 @@ class OwnerPropertyReviewTest extends TestCase
         $this->assertSame([$visible->id], Property::active()->pluck('id')->all());
     }
 
+    /** @return list<UploadedFile> */
+    private function photos(int $count): array
+    {
+        return array_map(fn (int $i) => UploadedFile::fake()->image("room-{$i}.jpg", 800, 600), range(1, $count));
+    }
+
     private function owner(): User
     {
         return User::factory()->create()->assignRole(OwnerRegistrationService::ROLE);
@@ -233,7 +284,7 @@ class OwnerPropertyReviewTest extends TestCase
 
     private function liveListingOf(User $owner): Property
     {
-        $property = Property::factory()->ownedBy($owner)->create(['is_published' => true]);
+        $property = Property::factory()->ownedBy($owner)->withGallery()->create(['is_published' => true]);
         $property->features()->attach(Feature::factory()->create());
 
         return $property->load('features');
@@ -274,7 +325,7 @@ class OwnerPropertyReviewTest extends TestCase
             'status' => 'available',
             'feature_ids' => [Feature::factory()->create()->id],
             'image' => UploadedFile::fake()->image('cover.jpg', 800, 600),
-            'gallery_images' => [UploadedFile::fake()->image('room.jpg', 800, 600)],
+            'gallery_images' => $this->photos(Property::MIN_GALLERY_IMAGES),
         ];
     }
 }

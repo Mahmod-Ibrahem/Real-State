@@ -29,12 +29,12 @@
     <!-- Hero End -->
     <section class="section">
         <div class="container">
-            <div class="row g-4">
+            <div class="grid gap-6 lg:grid-cols-3">
                 <gridsidebar :cities="props.cities.data" :propertyType="props.propertyType.data"
                              :purposes="props.purposes" :classifications="props.classifications.data"
                              :areas="props.areas.data" :countries="props.countries.data"
-                             :filters="props.filters"/>
-                <div class="col-lg-8 col-md-6 col-12">
+                             :payment-types="props.payment_types" :filters="props.filters"/>
+                <div class="min-w-0 lg:col-span-2">
                     <featured :gridproperty="properties.data"/>
                     <pagination :meta="properties.meta"/>
                 </div>
@@ -68,6 +68,7 @@ const props = defineProps({
     areas: Object,
     listingCategory: Object,
     countries: Object,
+    payment_types: {type: Array, default: () => []},
     // Active filters from the query string (e.g. {purpose: 'sale'}), used to pre-fill the sidebar.
     filters: {type: Object, default: () => ({})},
     metaTitle: {type: String, default: 'Explore All Properties in Egypt | Buy, Rent Apartments, Villas & More – Qeima'},

@@ -4,8 +4,11 @@ namespace Modules\Property\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
+use Modules\Property\Enums\InstallmentFrequency;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
+use Modules\Property\Models\Property;
 
 class UpdatePropertyRequest extends FormRequest
 {
@@ -36,6 +39,11 @@ class UpdatePropertyRequest extends FormRequest
             'property_type_id' => ['required', 'exists:property_types,id'],
             'property_classification_id' => ['required', 'exists:property_classifications,id'],
             'purpose' => ['required', Rule::enum(ListingPurpose::class)],
+            'maintenance_deposit_percent' => ['exclude_unless:purpose,sale', 'nullable', 'integer', 'between:0,30'],
+            'payment_plans' => ['exclude_unless:purpose,sale', 'nullable', 'array', 'max:3'],
+            'payment_plans.*.down_payment_percent' => ['exclude_unless:purpose,sale', 'required', 'integer', 'between:0,90'],
+            'payment_plans.*.installment_years' => ['exclude_unless:purpose,sale', 'required', 'integer', 'between:1,15'],
+            'payment_plans.*.installment_frequency' => ['exclude_unless:purpose,sale', 'required', Rule::enum(InstallmentFrequency::class)],
             'status' => ['required', Rule::enum(PropertyStatus::class)->only(
                 PropertyStatus::allowedFor(ListingPurpose::tryFrom((string) $this->input('purpose')))
             )],
@@ -53,7 +61,22 @@ class UpdatePropertyRequest extends FormRequest
         return [
             'city_id.exists' => __('The selected city is not in the selected country.'),
             'area_id.exists' => __('The selected area is not in the selected city.'),
+            'payment_plans.max' => __('A property can have up to 3 payment plans.'),
             'status.Illuminate\Validation\Rules\Enum' => __('This status does not match the listing purpose (Sold is for sale listings, Rented is for rent listings).'),
         ];
+    }
+
+    public function after(): array
+    {
+        return [function (Validator $validator): void {
+            $kept = $this->route('property')->propertyImages()
+                ->whereNotIn('id', (array) $this->input('removed_image_ids', []))
+                ->count();
+
+            if ($kept + count((array) $this->file('gallery_images', [])) < Property::MIN_GALLERY_IMAGES) {
+                $validator->errors()->add('gallery_images',
+                    __('Add at least :count gallery photos.', ['count' => Property::MIN_GALLERY_IMAGES]));
+            }
+        }];
     }
 }

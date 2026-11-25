@@ -66,5 +66,11 @@
     "A visitor opened WhatsApp about \":property\".": "فتح زائر واتساب بخصوص \":property\".",
     "This owner can't be reached by phone. Send them a message instead.": "لا يمكن التواصل مع هذا المالك عبر الهاتف. أرسل له رسالة بدلًا من ذلك.",
     "Added manually": "أُضيف يدويًا",
-    "Choose one of your properties.": "اختر أحد عقاراتك."
+    "Choose one of your properties.": "اختر أحد عقاراتك.",
+    "Monthly": "شهري",
+    "Quarterly": "ربع سنوي",
+    "Cash": "كاش",
+    "Installments": "تقسيط",
+    "A property can have up to 3 payment plans.": "يمكن أن يكون للعقار 3 أنظمة سداد كحد أقصى.",
+    "Add at least :count gallery photos.": "أضف :count صور على الأقل إلى معرض الصور."
 }

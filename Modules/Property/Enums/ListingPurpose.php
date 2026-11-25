@@ -19,6 +19,11 @@ enum ListingPurpose: string
         };
     }
 
+    public function allowsPaymentPlans(): bool
+    {
+        return $this === self::Sale;
+    }
+
     /**
      * Options for selects, tabs and filters: [['id' => 'sale', 'name' => 'For Sale'], ...]
      */

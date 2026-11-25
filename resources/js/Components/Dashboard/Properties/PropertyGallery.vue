@@ -4,7 +4,7 @@
     <div>
         <div class="mb-3">
             <p class="text-sm font-medium text-slate-700">
-                Gallery<span v-if="required" class="text-red-600" aria-hidden="true"> *</span>
+                Gallery<span class="text-red-600" aria-hidden="true"> *</span>
             </p>
             <p class="mt-0.5 text-xs text-slate-500">
                 {{ summary }}
@@ -47,7 +47,6 @@ const props = defineProps({
     saving: {type: Boolean, default: false},
     progress: {type: Object, default: null},
     error: {type: String, default: ''},
-    required: {type: Boolean, default: false},
 });
 const emit = defineEmits(['update:modelValue', 'update:removedIds']);
 

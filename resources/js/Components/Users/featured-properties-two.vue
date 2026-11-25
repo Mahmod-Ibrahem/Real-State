@@ -110,6 +110,9 @@
                             <li class="list-inline-item mb-0">
                                 <span class="text-muted">Price</span>
                                 <p class="fw-medium mb-0">EGP {{ item.price }}</p>
+                                <span v-if="item.lowest_monthly_installment" class="text-xs text-slate-500">
+                                    From {{ formatNumber(item.lowest_monthly_installment) }} EGP / month
+                                </span>
                             </li>
                         </ul>
                     </div>
@@ -123,6 +126,7 @@
 import {ref, onMounted, defineProps} from 'vue';
 import feather from 'feather-icons';
 import PropertyStatusRibbon from '@/Components/Users/PropertyStatusRibbon.vue';
+import {formatNumber} from '@/Composables/useFormatters.js';
 import {Link} from '@inertiajs/inertia-vue3'
 
 const props=defineProps({

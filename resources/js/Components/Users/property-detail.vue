@@ -164,6 +164,10 @@
                         </div>
                     </div>
                 </div>
+                <PaymentPlans v-if="props.property.payment_plans.length || props.property.maintenance_deposit_percent !== null"
+                              :plans="props.property.payment_plans"
+                              :maintenance-deposit-percent="props.property.maintenance_deposit_percent"
+                              :maintenance-deposit-amount="props.property.maintenance_deposit_amount" class="mt-[24px]"/>
                 <div class="mt-4 shadow-sm border rounded">
                     <div class="p-4">
                         <h4 class="border-bottom pb-2 mb-3">Description</h4>
@@ -207,6 +211,7 @@
 <script setup>
 import feather from 'feather-icons';
 import ContactOwnerPanel from './ContactOwnerPanel.vue';
+import PaymentPlans from './PaymentPlans.vue';
 import '../../../css/app.css';
 import {ref, watch} from "vue";
 import {useToast} from 'vue-toastification'
