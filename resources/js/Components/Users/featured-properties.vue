@@ -89,16 +89,10 @@
                                 <span class="text-muted">Price</span>
                                 <p class="fw-medium mb-0">EGP {{ item.price }}</p>
                             </li>
-                            <!--                                Rating
-                              <li class="list-inline-item mb-0 text-muted">-->
-                            <!--                                <span class="text-muted">Rating</span>-->
-                            <!--                                <ul class="fw-medium text-warning list-unstyled mb-0">-->
-                            <!--                                    <li v-for="rating in item.rating" :key="rating" class="list-inline-item mb-0"><i-->
-                            <!--                                            :class="rating"></i></li>-->
-                            <!--                                    <li class="list-inline-item mb-0 text-dark">5.0(30)</li>-->
-                            <!--                                </ul>-->
-                            <!--                            </li>-->
                         </ul>
+                        <div v-if="item.owner" class="mt-[12px] border-t border-slate-100 pt-[12px]">
+                            <OwnerLink :owner="item.owner"/>
+                        </div>
                     </div>
                 </div><!--end items-->
             </div><!--end col-->
@@ -109,6 +103,7 @@
 <script setup>
 import {onMounted, defineProps} from 'vue';
 import feather from 'feather-icons';
+import OwnerLink from '@/Components/Users/OwnerLink.vue';
 import PropertyStatusRibbon from '@/Components/Users/PropertyStatusRibbon.vue';
 import {Link} from '@inertiajs/inertia-vue3';
 import {router} from "@inertiajs/vue3";

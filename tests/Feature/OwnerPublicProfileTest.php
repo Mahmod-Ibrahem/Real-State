@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Modules\Property\Models\Property;
+use Modules\Property\Models\PropertyClassifications;
 use Tests\TestCase;
 
 class OwnerPublicProfileTest extends TestCase
@@ -122,6 +123,7 @@ class OwnerPublicProfileTest extends TestCase
         Property::factory()->ownedBy($owner)->create(['is_published' => true]);
         Property::factory()->ownedBy($owner)->pending()->create();
         $publicOwner = [
+            'id' => $owner->id,
             'name' => $owner->name,
             'avatar' => 'https://example.com/owner.jpg',
             'verified' => true,
@@ -138,6 +140,61 @@ class OwnerPublicProfileTest extends TestCase
             ->assertInertia(fn ($page) => $page->where('properties.data.0.owner', $publicOwner));
     }
 
+    public function test_the_home_page_cards_show_the_owner_and_only_listed_properties(): void
+    {
+        $owner = $this->owner();
+        $luxury = PropertyClassifications::factory()->create(['name' => 'Luxury']);
+        $listed = Property::factory()->ownedBy($owner)->create(['is_published' => true, 'property_classification_id' => $luxury->id]);
+        Property::factory()->ownedBy($owner)->pending()->create(['property_classification_id' => $luxury->id]);
+        Property::factory()->ownedBy($owner)->create(['is_published' => false, 'property_classification_id' => $luxury->id]);
+
+        $this->get(route('home'))->assertInertia(fn ($page) => $page
+            ->has('classifications.0.properties.data', 1)
+            ->where('classifications.0.properties.data.0.id', $listed->id)
+            ->where('classifications.0.properties.data.0.owner.name', $owner->name));
+
+        $owner->forceFill(['avatar' => 'https://example.com/new.jpg'])->save();
+
+        $this->get(route('home'))->assertInertia(fn ($page) => $page
+            ->where('classifications.0.properties.data.0.owner.avatar', 'https://example.com/new.jpg'));
+    }
+
+    public function test_the_owner_page_lists_only_their_listed_properties(): void
+    {
+        $owner = $this->owner();
+        $listed = Property::factory()->ownedBy($owner)->count(2)->create(['is_published' => true]);
+        Property::factory()->ownedBy($owner)->pending()->create();
+        Property::factory()->ownedBy($this->owner())->create(['is_published' => true]);
+
+        $this->get(route('owners.show', $owner))
+            ->assertOk()
+            ->assertDontSee($owner->email)
+            ->assertInertia(fn ($page) => $page->component('Users/OwnerProfile')
+                ->where('owner.name', $owner->name)
+                ->where('owner.listed_properties_count', 2)
+                ->where('properties.data', fn ($rows) => collect($rows)->pluck('id')->sort()->values()->all()
+                    === $listed->pluck('id')->sort()->values()->all()));
+    }
+
+    public function test_owners_with_nothing_listed_or_under_review_get_an_empty_page(): void
+    {
+        $nothingListed = $this->owner();
+        Property::factory()->ownedBy($nothingListed)->pending()->create();
+        $underReview = User::factory()->underReview()->create()->assignRole(OwnerRegistrationService::ROLE);
+        Property::factory()->ownedBy($underReview)->create(['is_published' => true]);
+
+        foreach ([$nothingListed, $underReview] as $owner) {
+            $this->get(route('owners.show', $owner))
+                ->assertOk()
+                ->assertInertia(fn ($page) => $page
+                    ->where('owner.name', $owner->name)
+                    ->where('owner.listed_properties_count', 0)
+                    ->has('properties.data', 0));
+        }
+
+        $this->get(route('owners.show', 999999))->assertNotFound();
+    }
+
     public function test_the_profile_pages_render(): void
     {
         $this->actingAs($this->owner())->get(route('supplier.profile.show'))->assertOk();
@@ -152,7 +209,8 @@ class OwnerPublicProfileTest extends TestCase
 
     private function owner(): User
     {
-        return User::factory()->create(['phone' => '+201001234567', 'phone_country' => 'EG', 'phone_verified_at' => now()])
+        return User::factory()
+            ->create(['phone' => '+2010' . fake()->unique()->numerify('########'), 'phone_country' => 'EG', 'phone_verified_at' => now()])
             ->assignRole(OwnerRegistrationService::ROLE);
     }
 }

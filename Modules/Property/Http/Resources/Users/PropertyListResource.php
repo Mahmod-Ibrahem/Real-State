@@ -25,6 +25,7 @@ class PropertyListResource extends JsonResource
         'price' => $this->price,
         'image_url' => $this->image,
         'status' => $this->status->badge(),
+        'owner' => OwnerResource::make($this->whenLoaded('owner')),
     ];
     }
 }

@@ -151,11 +151,17 @@ and `Support/DemoImages`, which call into the modules' seeders.
     property that is already pending keeps it pending without a new mail. Admin saves never change the review
     status.
   - `Property::active()` (the public site) means approved **and** published **and** its owner is not
-    `under_review`. Changing an owner's `under_review` forgets the cached public lists.
-  - **The owner is shown publicly** as `owner` on the public `PropertyResource`: name, avatar, whether the phone
-    is verified, the year they joined, and (property page only) how many listed properties they have. Never their
-    email or numbers. Listing cards show the avatar and name; the property page shows a "Listed by" panel
-    (`Components/Users/ListedBy.vue`) above the contact panel.
+    `under_review`. Changing an owner's `under_review` forgets the cached public lists. Eager loads of properties
+    for the public site use `active()` too (the home page sections load only listed properties).
+  - **The owner is shown publicly** through `Users\OwnerResource` (the `owner` of the public property resources):
+    id, name, avatar, whether the phone is verified, the year they joined, and (owner and property pages only) how
+    many listed properties they have. Never their email or numbers. Every property card (home, listing, owner page
+    excepted) shows the avatar and name; the property page shows a "Listed by" panel
+    (`Components/Users/ListedBy.vue`) above the contact panel. Both link to the owner's page.
+  - **Owner page** (`owners.show`, `/owners/{id}`, `OwnerPageController` → `OwnerPageService`): the owner's header
+    and their listed properties, paginated. It always opens for an existing user: an owner with nothing listed
+    (including one under review, whose properties `active()` hides) gets the page with an empty list. The home page's cached sections are forgotten when an owner's `name`, `avatar`,
+    `phone_verified_at` or `under_review` changes (`OwnerObserver`).
   - Every public read uses `active()`, including the property page (`listing.show`, via `PropertyDetailService`):
     a property that isn't listed is a 404 there, and its related properties are listed ones only.
 - **Photos:** every property has a cover (`image`) and **at least 5 gallery photos** (`Property::MIN_GALLERY_IMAGES`),

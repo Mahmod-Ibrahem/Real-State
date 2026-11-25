@@ -13,6 +13,7 @@ use Modules\Property\Http\Controllers\Admin\RejectPropertyController;
 use Modules\Property\Http\Controllers\FavouriteListingController;
 use Modules\Property\Http\Controllers\FeatureController;
 use Modules\Property\Http\Controllers\ListingController;
+use Modules\Property\Http\Controllers\OwnerPageController;
 use Modules\Property\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use Modules\Property\Http\Controllers\Owner\PropertyController as OwnerPropertyController;
 use Modules\Property\Http\Controllers\Owner\PublishPropertyController;
@@ -26,6 +27,7 @@ Route::resource('sell', SellController::class)->only('index');
 Route::get('/features', FeatureController::class)->name('features.index');
 Route::get('/property/{PropertyType:slug}', [PropertyTypeController::class, 'show'])->name('property-types.show');
 Route::resource('favourite-listing', FavouriteListingController::class)->only(['index', 'store', 'destroy']);
+Route::get('owners/{owner}', OwnerPageController::class)->name('owners.show');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('properties', [PropertyController::class, 'index'])->name('properties.index')

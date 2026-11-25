@@ -11,6 +11,7 @@ import {computed} from 'vue';
 const SIZES = {
     sm: 'h-8 w-8 text-xs',
     lg: 'h-14 w-14 text-lg',
+    xl: 'h-20 w-20 text-2xl',
 };
 
 const props = defineProps({

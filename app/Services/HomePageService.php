@@ -48,7 +48,7 @@ class HomePageService
         return Cache::rememberForever('property_classifications', function () {
             return PropertyClassifications::whereHas('properties', fn($q) => $q->active())
                 ->whereIn('name->en', ['Affordable', 'Luxury'])
-                ->with('properties')
+                ->with(['properties' => fn ($q) => $q->active()->with('owner:id,name,avatar,phone_verified_at,created_at')])
                 ->get()
                 ->map(fn($class) => [
                     'id' => $class->id,

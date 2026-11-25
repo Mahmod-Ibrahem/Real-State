@@ -7,7 +7,8 @@
             <OwnerAvatar :src="owner.avatar" :name="owner.name" size="lg"/>
             <div class="min-w-0">
                 <span class="flex items-center gap-1 text-base font-semibold text-slate-900">
-                    <span class="truncate">{{ owner.name }}</span>
+                    <Link :href="route('owners.show', owner.id)"
+                          class="truncate text-slate-900 no-underline transition-colors hover:text-sky-500">{{ owner.name }}</Link>
                     <CheckBadgeIcon v-if="owner.verified" class="h-5 w-5 shrink-0 text-sky-500" aria-label="Verified phone"
                                     title="Verified phone"/>
                 </span>
@@ -20,10 +21,15 @@
                 </span>
             </div>
         </div>
+        <Link :href="route('owners.show', owner.id)"
+              class="mt-[16px] inline-flex h-10 w-full items-center justify-center rounded-lg border-[1px] border-slate-300 text-sm font-medium text-slate-700 no-underline transition-colors hover:bg-slate-50">
+            View all their properties
+        </Link>
     </section>
 </template>
 
 <script setup>
+import {Link} from '@inertiajs/vue3';
 import {CheckBadgeIcon} from '@heroicons/vue/24/solid';
 import OwnerAvatar from './OwnerAvatar.vue';
 

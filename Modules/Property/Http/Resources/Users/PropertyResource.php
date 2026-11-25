@@ -2,7 +2,6 @@
 
 namespace Modules\Property\Http\Resources\Users;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Property\Models\PropertyPaymentPlan;
@@ -40,7 +39,7 @@ class PropertyResource extends JsonResource
             'image_url' => $this->image,
             'status' => $this->status->badge(),
             'google_map' => $this->google_map,
-            'owner' => $this->whenLoaded('owner', fn () => $this->owner === null ? null : $this->publicOwner($this->owner)),
+            'owner' => OwnerResource::make($this->whenLoaded('owner')),
             'owner_contact' => $this->whenLoaded('owner', fn () => [
                 'call' => $this->owner?->phone !== null,
                 'whatsapp' => $this->owner?->whatsapp_phone !== null,
@@ -49,18 +48,6 @@ class PropertyResource extends JsonResource
             'features' => $this->features->map(fn($feature) => [
                 'name' => $feature->name
             ]),
-        ];
-    }
-
-    /** Public facts only: never the owner's email or numbers. */
-    private function publicOwner(User $owner): array
-    {
-        return [
-            'name' => $owner->name,
-            'avatar' => $owner->avatar,
-            'verified' => $owner->hasVerifiedPhone(),
-            'member_since' => $owner->created_at?->year,
-            'listed_properties_count' => $this->when($owner->listed_properties_count !== null, $owner->listed_properties_count),
         ];
     }
 
