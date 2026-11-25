@@ -30,6 +30,8 @@ class PropertyResource extends JsonResource
             'bathrooms' => $this->bathrooms,
             'garages' => $this->garages,
             'year_built' => $this->year_built,
+            'finishing' => $this->finishing->value,
+            'delivery_year' => $this->delivery_year,
             'sqft' => $this->sqft,
             'floor' => $this->floor,
             'google_map' => $this->google_map,

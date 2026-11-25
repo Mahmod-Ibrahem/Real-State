@@ -72,5 +72,9 @@
     "Cash": "كاش",
     "Installments": "تقسيط",
     "A property can have up to 3 payment plans.": "يمكن أن يكون للعقار 3 أنظمة سداد كحد أقصى.",
-    "Add at least :count gallery photos.": "أضف :count صور على الأقل إلى معرض الصور."
+    "Add at least :count gallery photos.": "أضف :count صور على الأقل إلى معرض الصور.",
+    "Core & shell": "طوب أحمر",
+    "Semi-finished": "نصف تشطيب",
+    "Fully finished": "تشطيب كامل",
+    "Furnished": "مفروش"
 }

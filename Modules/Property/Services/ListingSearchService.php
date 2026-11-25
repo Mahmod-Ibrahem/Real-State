@@ -20,9 +20,10 @@ final class ListingSearchService
         'area' => 'area_id',
         'classification' => 'property_classification_id',
         'country' => 'country_id',
+        'finishing' => 'finishing',
     ];
 
-    /** @param array<string, mixed> $filters search, purpose, type, city, area, classification, country, payment, max_monthly, max_down_payment_percent */
+    /** @param array<string, mixed> $filters search, purpose, type, city, area, classification, country, payment, max_monthly, max_down_payment_percent, finishing, delivered_by */
     public function paginate(array $filters): LengthAwarePaginator
     {
         $query = Property::query()
@@ -33,6 +34,8 @@ final class ListingSearchService
         foreach (self::COLUMNS as $key => $column) {
             $query->when($filters[$key], fn (Builder $query, $value) => $query->where($column, $value));
         }
+
+        $query->when($filters['delivered_by'], fn (Builder $query, int $year) => $query->deliveredBy($year));
 
         return $this->byPayment($query, $filters)
             ->paginate(self::PER_PAGE)

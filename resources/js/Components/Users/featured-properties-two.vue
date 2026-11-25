@@ -88,6 +88,7 @@
                         <Link :href="route('listing.show', item.slug)"
                               class="title fs-5 text-dark fw-medium">{{ item.name }}
                         </Link>
+                        <PropertyTags :property="item" class="mt-[8px]"/>
 
                         <ul
                             class="list-unstyled mt-3 py-3 border-top border-bottom d-flex align-items-center justify-content-between">
@@ -129,6 +130,7 @@
 import {ref, onMounted, defineProps} from 'vue';
 import feather from 'feather-icons';
 import OwnerLink from '@/Components/Users/OwnerLink.vue';
+import PropertyTags from '@/Components/Users/PropertyTags.vue';
 import PropertyStatusRibbon from '@/Components/Users/PropertyStatusRibbon.vue';
 import {formatNumber} from '@/Composables/useFormatters.js';
 import {Link} from '@inertiajs/inertia-vue3'

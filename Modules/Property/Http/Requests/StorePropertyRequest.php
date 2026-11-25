@@ -4,6 +4,7 @@ namespace Modules\Property\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Modules\Property\Enums\FinishingType;
 use Modules\Property\Enums\InstallmentFrequency;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
@@ -27,7 +28,7 @@ class StorePropertyRequest extends FormRequest
             'bathrooms' => ['nullable', 'numeric'],
             'floor' => ['nullable', 'string'],
             'garages' => ['nullable', 'numeric'],
-            'year_built' => ['required', 'numeric'],
+            'year_built' => ['nullable', 'numeric'],
             'sqft' => ['required', 'numeric'],
             'google_map' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
@@ -39,6 +40,8 @@ class StorePropertyRequest extends FormRequest
             'property_classification_id' => ['required', 'exists:property_classifications,id'],
             'purpose' => ['required', Rule::enum(ListingPurpose::class)],
             'maintenance_deposit_percent' => ['exclude_unless:purpose,sale', 'nullable', 'integer', 'between:0,30'],
+            'finishing' => ['required', Rule::enum(FinishingType::class)],
+            'delivery_year' => ['exclude_unless:purpose,sale', 'nullable', 'integer'],
             'payment_plans' => ['exclude_unless:purpose,sale', 'nullable', 'array', 'max:3'],
             'payment_plans.*.down_payment_percent' => ['exclude_unless:purpose,sale', 'required', 'integer', 'between:0,90'],
             'payment_plans.*.installment_years' => ['exclude_unless:purpose,sale', 'required', 'integer', 'between:1,15'],

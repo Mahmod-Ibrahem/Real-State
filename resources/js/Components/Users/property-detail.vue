@@ -11,6 +11,7 @@
                             {{ props.property.status.label }}
                         </span>
                     </h4>
+                    <PropertyTags :property="props.property" class="mt-[12px]"/>
 
                     <ul class="list-unstyled mb-0 py-3">
                         <li class="list-inline-item">
@@ -23,6 +24,12 @@
                             <span class="d-flex align-items-center me-4">
                                 <i class="mdi mdi-office-building fs-4 me-2 text-primary"></i>
                                 <span class="text-muted fs-5">{{ props.property.floor }} Floor </span>
+                            </span>
+                        </li>
+                        <li class="list-inline-item" v-if="props.property.year_built">
+                            <span class="d-flex align-items-center me-4">
+                                <i class="mdi mdi-calendar fs-4 me-2 text-primary"></i>
+                                <span class="text-muted fs-5">Built {{ props.property.year_built }}</span>
                             </span>
                         </li>
 
@@ -213,6 +220,7 @@
 import feather from 'feather-icons';
 import ContactOwnerPanel from './ContactOwnerPanel.vue';
 import ListedBy from './ListedBy.vue';
+import PropertyTags from './PropertyTags.vue';
 import PaymentPlans from './PaymentPlans.vue';
 import '../../../css/app.css';
 import {ref, watch} from "vue";

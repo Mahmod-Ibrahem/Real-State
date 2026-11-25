@@ -10,6 +10,7 @@ use Modules\Property\Models\Property;
 use Modules\Property\Services\ListingFilterService;
 use Modules\Property\Services\ListingSearchService;
 use Modules\Property\Services\PropertyDetailService;
+use Modules\Property\Enums\FinishingType;
 use Modules\Property\Enums\ListingPurpose;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -38,6 +39,7 @@ class ListingController extends Controller
             'properties' => PropertyResource::collection($this->search->paginate($filters)),
             'filters' => $filters,
             'payment_types' => PaymentType::options(),
+            'finishing_types' => FinishingType::options(),
             ...$this->filterOptions->getFilters(),
         ]);
     }

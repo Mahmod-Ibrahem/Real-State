@@ -7,6 +7,7 @@ export const PROPERTY_FORM_PROPS = {
     purposes: {type: Array, required: true},
     statuses: {type: Array, required: true},
     installment_frequencies: {type: Array, required: true},
+    finishing_types: {type: Array, required: true},
     features: {type: Object, required: true},
 };
 

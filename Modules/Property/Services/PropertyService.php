@@ -123,6 +123,10 @@ final class PropertyService
         if (! $property->purpose->allowsPaymentPlans()) {
             $property->maintenance_deposit_percent = null;
         }
+
+        if (! $property->purpose->allowsDeliveryDate()) {
+            $property->delivery_year = null;
+        }
     }
 
     private function search(Builder $query, string $term): void

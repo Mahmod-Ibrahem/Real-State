@@ -38,6 +38,9 @@ class PropertyResource extends JsonResource
                 : (int) round($this->price * $this->maintenance_deposit_percent / 100),
             'image_url' => $this->image,
             'status' => $this->status->badge(),
+            'year_built' => $this->year_built,
+            'finishing' => ['id' => $this->finishing->value, 'name' => $this->finishing->label()],
+            'delivery' => ['ready' => $this->isReady(), 'year' => $this->isReady() ? null : $this->delivery_year],
             'google_map' => $this->google_map,
             'owner' => OwnerResource::make($this->whenLoaded('owner')),
             'owner_contact' => $this->whenLoaded('owner', fn () => [

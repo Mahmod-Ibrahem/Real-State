@@ -168,6 +168,14 @@ and `Support/DemoImages`, which call into the modules' seeders.
   for admins and owners alike. Creating needs 5 `gallery_images`. Updating counts the saved photos that aren't in
   `removed_image_ids` plus the new ones (the update requests' `after()` check), so removing photos can't drop a
   property below 5. The error is shown on the gallery (`gallery_images`).
+- **Finishing and delivery:** every property has a required `finishing` (`FinishingType`: core_and_shell /
+  semi_finished / fully_finished / furnished). Only **Sale** properties have a `delivery_year`
+  (`ListingPurpose::allowsDeliveryDate()`); empty means ready to move, and a year that
+  has arrived counts as ready too (`Property::isReady()`, `deliveredBy($year)` scope), so nothing ever shows a past
+  "Delivery 2025". Switching a property to Rent clears it (`PropertyService::dropSaleOnlyTerms()`). `year_built` is
+  optional. Cards and the property page show both (`finishing`, `delivery: {ready, year}` on the public resources).
+  Public search: `finishing=<type>` and `delivery=ready|<year>`, where a year means "ready or delivered by then"
+  (`IndexListingRequest` turns both into `delivered_by`, ready being this year).
 - **Payment plans** (`PropertyPaymentPlan`): only **Sale** properties (`ListingPurpose::allowsPaymentPlans()`)
   have them, 0 to 3 each, interest-free like Egyptian developer plans. A plan is a down payment % (0–90), a number
   of years (1–15) and a frequency (`InstallmentFrequency`: monthly / quarterly). **Only these terms are stored.**

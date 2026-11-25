@@ -3,6 +3,7 @@
 namespace Modules\Property\Database\Factories;
 
 use Modules\Property\Models\Property;
+use Modules\Property\Enums\FinishingType;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
 use Modules\Property\Enums\ReviewStatus;
@@ -62,6 +63,11 @@ class PropertyFactory extends Factory
             'city_id' => $area->city_id,
             'country_id' => $area->city->country_id,
             'purpose' => $purpose,
+            'finishing' => $this->faker->randomElement(FinishingType::cases()),
+            // About a third of sale listings are off-plan.
+            'delivery_year' => $purpose->allowsDeliveryDate() && $this->faker->boolean(33)
+                ? (int) date('Y') + $this->faker->numberBetween(1, 5)
+                : null,
             // ~25% of demo listings are already closed, so the Sold/Rented ribbons show up.
             'status' => $this->faker->boolean(75) ? PropertyStatus::Available : PropertyStatus::closedFor($purpose),
             'owner_id' => fn () => User::query()->orderBy('id')->value('id') ?? User::factory()->create()->id,

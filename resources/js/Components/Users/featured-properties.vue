@@ -66,6 +66,7 @@
                                 item.name
                             }}
                         </Link>
+                        <PropertyTags :property="item" class="mt-[8px]"/>
 
                         <ul
                             class="list-unstyled mt-3 py-3 border-top border-bottom d-flex align-items-center justify-content-between">
@@ -104,6 +105,7 @@
 import {onMounted, defineProps} from 'vue';
 import feather from 'feather-icons';
 import OwnerLink from '@/Components/Users/OwnerLink.vue';
+import PropertyTags from '@/Components/Users/PropertyTags.vue';
 import PropertyStatusRibbon from '@/Components/Users/PropertyStatusRibbon.vue';
 import {Link} from '@inertiajs/inertia-vue3';
 import {router} from "@inertiajs/vue3";

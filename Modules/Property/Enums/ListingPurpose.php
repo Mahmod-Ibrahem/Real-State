@@ -24,6 +24,12 @@ enum ListingPurpose: string
         return $this === self::Sale;
     }
 
+    /** Off-plan units are only sold; a rental is always ready to move. */
+    public function allowsDeliveryDate(): bool
+    {
+        return $this === self::Sale;
+    }
+
     /**
      * Options for selects, tabs and filters: [['id' => 'sale', 'name' => 'For Sale'], ...]
      */

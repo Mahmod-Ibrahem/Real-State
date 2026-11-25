@@ -6,6 +6,7 @@ use Modules\Property\Database\Factories\PropertyFactory;
 use Modules\Location\Models\Country;
 use Modules\Location\Models\Area;
 use Modules\Location\Models\City;
+use Modules\Property\Enums\FinishingType;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PropertyStatus;
 use Modules\Property\Enums\ReviewStatus;
@@ -25,12 +26,15 @@ class Property extends Model
 
     protected $fillable = ['slug', 'name', 'description', 'address', 'price', 'bedrooms', 'bathrooms', 'garages', 'year_built', 'sqft',
         'google_map', 'is_published', 'property_type_id', 'area_id',
-        'city_id', 'property_classification_id', 'purpose', 'status', 'floor', 'country_id', 'maintenance_deposit_percent'];
+        'city_id', 'property_classification_id', 'purpose', 'status', 'floor', 'country_id', 'maintenance_deposit_percent',
+        'finishing', 'delivery_year'];
     public $translatable = ['slug', 'name', 'description', 'address','floor'];
 
     protected $casts = [
         'purpose' => ListingPurpose::class,
         'status' => PropertyStatus::class,
+        'finishing' => FinishingType::class,
+        'delivery_year' => 'integer',
         'review_status' => ReviewStatus::class,
         'reviewed_at' => 'datetime',
         'is_published' => 'boolean',
@@ -54,6 +58,12 @@ class Property extends Model
     public function isApproved(): bool
     {
         return $this->review_status === ReviewStatus::Approved;
+    }
+
+    /** No delivery year, or one that has arrived. */
+    public function isReady(): bool
+    {
+        return $this->delivery_year === null || $this->delivery_year <= now()->year;
     }
 
     public function propertyType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -106,6 +116,14 @@ class Property extends Model
         return $query->where('is_published', true)
             ->where('review_status', ReviewStatus::Approved)
             ->whereRelation('owner', 'under_review', false);
+    }
+
+    /** Ready to move, or delivered by the end of $year (this year = ready now). */
+    public function scopeDeliveredBy(Builder $query, int $year): Builder
+    {
+        return $query->where(fn (Builder $query) => $query
+            ->whereNull('delivery_year')
+            ->orWhere('delivery_year', '<=', $year));
     }
 
     public function scopeOwnedBy(Builder $query, User $owner): Builder

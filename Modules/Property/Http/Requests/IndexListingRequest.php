@@ -3,12 +3,14 @@
 namespace Modules\Property\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\Property\Enums\FinishingType;
 use Modules\Property\Enums\ListingPurpose;
 use Modules\Property\Enums\PaymentType;
 
 class IndexListingRequest extends FormRequest
 {
     private const MAX_PERCENT = 100;
+    private const DELIVERY_READY = 'ready';
 
     public function authorize(): bool
     {
@@ -25,7 +27,9 @@ class IndexListingRequest extends FormRequest
      * Normalised filters; ids and amounts are ints so the sidebar fields match the URL.
      *
      * @return array{search: ?string, purpose: ?string, type: ?int, city: ?int, area: ?int, classification: ?int,
-     *     country: ?int, payment: ?PaymentType, max_monthly: ?int, max_down_payment_percent: ?int}
+     *     country: ?int, payment: ?PaymentType, max_monthly: ?int, max_down_payment_percent: ?int,
+     *     finishing: ?string, delivery: string|int|null, delivered_by: ?int}
+     *     delivery is what the sidebar shows ('ready' or a year); delivered_by is the year the search uses (ready = this year)
      */
     public function filters(): array
     {
@@ -45,6 +49,20 @@ class IndexListingRequest extends FormRequest
             'payment' => PaymentType::tryFrom((string) $this->query('payment')),
             'max_monthly' => $positive('max_monthly'),
             'max_down_payment_percent' => $percent === false ? null : $percent,
+            'finishing' => FinishingType::tryFrom((string) $this->query('finishing'))?->value,
+            'delivery' => $delivery = $this->delivery(),
+            'delivered_by' => $delivery === self::DELIVERY_READY ? now()->year : $delivery,
         ];
+    }
+
+    private function delivery(): string|int|null
+    {
+        if ($this->query('delivery') === self::DELIVERY_READY) {
+            return self::DELIVERY_READY;
+        }
+
+        $year = filter_var($this->query('delivery'), FILTER_VALIDATE_INT);
+
+        return $year === false ? null : $year;
     }
 }

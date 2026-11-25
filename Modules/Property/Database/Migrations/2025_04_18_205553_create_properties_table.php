@@ -23,6 +23,8 @@ return new class extends Migration {
             $table->integer('bathrooms')->nullable();
             $table->string('garages')->nullable();
             $table->integer('year_built')->nullable();
+            $table->string('finishing', 20)->index();
+            $table->unsignedSmallInteger('delivery_year')->nullable()->index();
             $table->integer('sqft');
             $table->mediumText('google_map')->nullable();
             $table->boolean('is_published')->default(0);

@@ -56,8 +56,23 @@
                     </option>
                 </select>
             </div>
+            <div class="mt-[20px]">
+                <label for="filter-finishing" :class="LABEL">Finishing</label>
+                <select id="filter-finishing" v-model="form.finishing" :class="CONTROL">
+                    <option value="">Any finishing</option>
+                    <option v-for="finishing in finishingTypes" :key="finishing.id" :value="finishing.id">{{ finishing.name }}</option>
+                </select>
+            </div>
 
             <template v-if="form.purpose !== 'rent'">
+                <div class="mt-[20px]">
+                    <label for="filter-delivery" :class="LABEL">Delivery</label>
+                    <select id="filter-delivery" v-model="form.delivery" :class="CONTROL">
+                        <option value="">Any delivery date</option>
+                        <option v-for="option in DELIVERY_OPTIONS" :key="option.id" :value="option.id">{{ option.name }}</option>
+                    </select>
+                </div>
+
                 <fieldset class="mt-[20px]">
                     <legend :class="LABEL">Payment</legend>
                     <div class="grid grid-cols-3 gap-1 rounded-lg bg-slate-100 p-1">
@@ -113,6 +128,13 @@ const DOWN_PAYMENT_OPTIONS = [
     {id: 20, name: 'Up to 20%'},
     {id: 30, name: 'Up to 30%'},
 ];
+// "By 2027" also matches properties that are ready now
+const CURRENT_YEAR = new Date().getFullYear();
+const DELIVERY_YEARS_SHOWN = 5;
+const DELIVERY_OPTIONS = [
+    {id: 'ready', name: 'Ready to move'},
+    ...Array.from({length: DELIVERY_YEARS_SHOWN}, (_, i) => ({id: CURRENT_YEAR + i + 1, name: `By ${CURRENT_YEAR + i + 1}`})),
+];
 
 const props = defineProps({
     cities: Object,
@@ -123,6 +145,8 @@ const props = defineProps({
     countries: Object,
     // PaymentType options [{id, name}]
     paymentTypes: {type: Array, default: () => []},
+    // FinishingType options [{id, name}]
+    finishingTypes: {type: Array, default: () => []},
     // Currently applied filters (from the URL), so the form shows what the results are filtered by.
     filters: {type: Object, default: () => ({})},
 })
@@ -138,6 +162,8 @@ const form = useForm({
     payment: props.filters.payment ?? '',
     max_monthly: props.filters.max_monthly ?? '',
     max_down_payment_percent: props.filters.max_down_payment_percent ?? '',
+    finishing: props.filters.finishing ?? '',
+    delivery: props.filters.delivery ?? '',
 })
 
 const purposeOptions = computed(() => [{id: '', name: 'All'}, ...props.purposes]);
@@ -159,9 +185,12 @@ watch(visibleAreas, () => {
     if (form.area && !visibleAreas.value.some(area => area.id === form.area)) form.area = '';
 });
 
-// Payment plans exist only on sale listings, and a cash search has no budget to match.
+// Payment plans and delivery dates exist only on sale listings, and a cash search has no budget to match.
 watch(() => form.purpose, (purpose) => {
-    if (purpose === 'rent') form.payment = '';
+    if (purpose === 'rent') {
+        form.payment = '';
+        form.delivery = '';
+    }
 });
 watch(() => [form.purpose, form.payment], ([purpose, payment]) => {
     if (purpose === 'rent' || payment === 'cash') {

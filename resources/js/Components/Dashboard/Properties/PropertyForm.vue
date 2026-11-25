@@ -58,7 +58,11 @@
             <TextField v-model="form.garages" label="Garages" type="number" min="0" :error="form.errors.garages"/>
             <TextField v-model="form.floor" label="Floor" placeholder="e.g. 3 or Ground" :error="form.errors.floor"/>
             <TextField v-model="form.sqft" label="Area (sq ft)" type="number" min="0" required :error="form.errors.sqft"/>
-            <TextField v-model="form.year_built" label="Year built" type="number" min="1900" :max="CURRENT_YEAR" required
+            <SelectField v-model="form.finishing" label="Finishing" :options="finishing_types" placeholder="Select finishing"
+                         required :error="form.errors.finishing"/>
+            <SelectField v-if="form.purpose === 'sale'" v-model="form.delivery_year" label="Delivery" :options="DELIVERY_OPTIONS"
+                         placeholder="Ready to move" hint="Pick a year for off-plan units." :error="form.errors.delivery_year"/>
+            <TextField v-model="form.year_built" label="Year built" type="number" min="1900" :max="CURRENT_YEAR"
                        :error="form.errors.year_built"/>
             <SelectField v-model="form.feature_ids" label="Features" :options="features.data" multiple searchable
                          :max-chips="6" placeholder="Select features" search-placeholder="Search features…" required
@@ -93,6 +97,11 @@ import {currentLocale, saveResource} from '@/Composables/useResourceForm.js';
 defineOptions({inheritAttrs: false});
 
 const CURRENT_YEAR = new Date().getFullYear();
+const DELIVERY_YEARS_SHOWN = 11;
+const DELIVERY_OPTIONS = [
+    {id: '', name: 'Ready to move'},
+    ...Array.from({length: DELIVERY_YEARS_SHOWN}, (_, i) => ({id: CURRENT_YEAR + i, name: `Delivery ${CURRENT_YEAR + i}`})),
+];
 
 const props = defineProps({
     ...PROPERTY_FORM_PROPS,
@@ -125,6 +134,8 @@ const form = useForm({
     floor: props.property?.floor ?? '',
     sqft: props.property?.sqft ?? '',
     year_built: props.property?.year_built ?? '',
+    finishing: props.property?.finishing ?? '',
+    delivery_year: props.property?.delivery_year ?? '',
     feature_ids: props.property?.feature_ids ?? [],
     image: null,
     gallery_images: [],
@@ -149,6 +160,7 @@ watch(() => form.purpose, (purpose) => {
     if (purpose !== 'sale') {
         form.payment_plans = [];
         form.maintenance_deposit_percent = '';
+        form.delivery_year = '';
     }
 });
 

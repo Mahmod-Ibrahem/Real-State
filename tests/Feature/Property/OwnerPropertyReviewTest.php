@@ -299,6 +299,8 @@ class OwnerPropertyReviewTest extends TestCase
             ]),
             'purpose' => $property->purpose->value,
             'status' => $property->status->value,
+            'finishing' => $property->finishing->value,
+            'delivery_year' => $property->delivery_year,
             'feature_ids' => $property->features->pluck('id')->all(),
             'locale' => 'en',
         ];
@@ -323,6 +325,7 @@ class OwnerPropertyReviewTest extends TestCase
             'property_classification_id' => PropertyClassifications::factory()->create()->id,
             'purpose' => 'sale',
             'status' => 'available',
+            'finishing' => 'fully_finished',
             'feature_ids' => [Feature::factory()->create()->id],
             'image' => UploadedFile::fake()->image('cover.jpg', 800, 600),
             'gallery_images' => $this->photos(Property::MIN_GALLERY_IMAGES),
