@@ -25,8 +25,8 @@
                         <form v-else class="mt-[16px] space-y-[12px]" @submit.prevent="submit">
                             <p class="m-0 text-sm text-slate-500">Leave your name and number so the owner knows who's calling.</p>
                             <LeadField v-model="form.full_name" placeholder="Full name" autocomplete="name" :error="form.errors.full_name"/>
-                            <LeadField v-model="form.phone" type="tel" placeholder="Phone (e.g. 0100 123 4567)" autocomplete="tel"
-                                       :error="form.errors.phone"/>
+                            <LeadPhoneField v-model="form.phone" v-model:country="form.phone_country" :error="form.errors.phone"
+                                            :country-error="form.errors.phone_country"/>
                             <div class="flex gap-2 pt-2">
                                 <button type="button" @click="emit('close')"
                                         class="h-11 flex-1 rounded-lg border-[1px] border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50">
@@ -51,6 +51,7 @@ import {useForm, usePage} from '@inertiajs/vue3';
 import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot} from '@headlessui/vue';
 import {ChatBubbleOvalLeftEllipsisIcon, PhoneIcon} from '@heroicons/vue/24/outline';
 import LeadField from './LeadField.vue';
+import LeadPhoneField from './LeadPhoneField.vue';
 
 const COPY = {
     call: {title: 'Call the owner', action: 'Call now', icon: PhoneIcon},
@@ -67,7 +68,7 @@ const emit = defineEmits(['close']);
 const page = usePage();
 const copy = computed(() => COPY[props.source] ?? COPY.call);
 const contactUrl = ref(null);
-const form = useForm({source: '', full_name: '', phone: ''});
+const form = useForm({source: '', full_name: '', phone_country: 'EG', phone: ''});
 
 watch(() => props.source, (source) => source && (form.source = source));
 

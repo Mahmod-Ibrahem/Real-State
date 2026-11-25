@@ -9,25 +9,9 @@ use Propaganistas\LaravelPhone\PhoneNumber;
 
 class StorePropertyLeadRequest extends FormRequest
 {
-    private const DEFAULT_PHONE_COUNTRY = 'EG';
-
     public function authorize(): bool
     {
         return true;
-    }
-
-    protected function prepareForValidation(): void
-    {
-        if (! $this->filled('phone')) {
-            return;
-        }
-
-        // Visitors type a local Egyptian number or an international one; both are stored as E.164
-        $e164 = rescue(fn () => (new PhoneNumber($this->input('phone'), self::DEFAULT_PHONE_COUNTRY))->formatE164(), report: false);
-
-        if ($e164 !== null) {
-            $this->merge(['phone' => $e164]);
-        }
     }
 
     public function rules(): array
@@ -35,7 +19,8 @@ class StorePropertyLeadRequest extends FormRequest
         return [
             'source' => ['required', Rule::enum(LeadSource::class)],
             'full_name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'phone:INTERNATIONAL,' . self::DEFAULT_PHONE_COUNTRY],
+            'phone_country' => ['required', 'string', 'size:2'],
+            'phone' => ['required', 'phone:phone_country'],
             'email' => [Rule::requiredIf(fn () => $this->source() === LeadSource::Form), 'nullable', 'email', 'max:255'],
             'message' => ['nullable', 'string', 'max:2000'],
         ];
@@ -44,7 +29,7 @@ class StorePropertyLeadRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.phone' => __('Enter a valid phone number.'),
+            'phone.phone' => __('Enter a valid phone number for the selected country.'),
         ];
     }
 
@@ -56,6 +41,9 @@ class StorePropertyLeadRequest extends FormRequest
     /** @return array{full_name: string, phone: string, email: ?string, message: ?string} */
     public function lead(): array
     {
-        return $this->safe()->only(['full_name', 'phone', 'email', 'message']);
+        return [
+            ...$this->safe()->only(['full_name', 'email', 'message']),
+            'phone' => (new PhoneNumber($this->validated('phone'), $this->validated('phone_country')))->formatE164(),
+        ];
     }
 }

@@ -21,7 +21,8 @@
         <form class="mt-[16px] space-y-[12px]" @submit.prevent="send">
             <LeadField v-model="form.full_name" placeholder="Full name" autocomplete="name" :error="form.errors.full_name"/>
             <LeadField v-model="form.email" type="email" placeholder="Email" autocomplete="email" :error="form.errors.email"/>
-            <LeadField v-model="form.phone" type="tel" placeholder="Phone (e.g. 0100 123 4567)" autocomplete="tel" :error="form.errors.phone"/>
+            <LeadPhoneField v-model="form.phone" v-model:country="form.phone_country" :error="form.errors.phone"
+                            :country-error="form.errors.phone_country"/>
             <LeadField v-model="form.message" type="textarea" placeholder="How can the owner help you?" :error="form.errors.message"/>
             <button type="submit" :disabled="form.processing"
                     class="inline-flex h-11 w-full items-center justify-center rounded-lg bg-sky-400 text-sm font-semibold text-white transition-colors hover:bg-sky-500 disabled:opacity-60">
@@ -39,6 +40,7 @@ import {useForm, usePage} from '@inertiajs/vue3';
 import {ChatBubbleOvalLeftEllipsisIcon, PhoneIcon} from '@heroicons/vue/24/outline';
 import {useToast} from 'vue-toastification';
 import LeadField from './LeadField.vue';
+import LeadPhoneField from './LeadPhoneField.vue';
 import QuickContactDialog from './QuickContactDialog.vue';
 
 const props = defineProps({
@@ -50,7 +52,7 @@ const toast = useToast();
 const page = usePage();
 const quickSource = ref(null);
 
-const form = useForm({source: 'form', full_name: '', email: '', phone: '', message: ''});
+const form = useForm({source: 'form', full_name: '', email: '', phone_country: 'EG', phone: '', message: ''});
 
 function send() {
     form.post(route('listing.leads.store', props.property.slug), {

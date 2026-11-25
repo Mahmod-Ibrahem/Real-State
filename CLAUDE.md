@@ -149,7 +149,9 @@ and `Support/DemoImages`, which call into the modules' seeders.
   `source` (`LeadSource`): the enquiry **form** (name, email, phone, message), or the **Call** / **WhatsApp**
   buttons, which ask for name and phone, save the lead, then hand back the owner's `tel:` / `wa.me` link
   (`flash.contact_url`). The owner's number is never in the page's props until a lead is saved, and the buttons are
-  hidden when the owner has no phone (`owner_reachable`). Phones are stored in E.164.
+  hidden when the owner has no phone (`owner_reachable`). Both forms ask for the phone as a country
+  (`phone_country`, ISO-2, picked in `Components/Users/LeadPhoneField.vue`, default `EG`) plus the number; both are
+  required, and `StorePropertyLeadRequest::lead()` hands the service the number in E.164, which is what is stored.
   - Each lead stores `owner_id`, copied from the property when it arrives (who it was sent to), and a `status`
     (`LeadStatus`: new → contacted → closed). `PropertyLeadReceived` notifies the owner (mail + bell) and every user
     with `receive property lead notifications`.

@@ -62,11 +62,11 @@ class PropertyLeadTest extends TestCase
             ->assertDontSee('201009998887')
             ->assertInertia(fn ($page) => $page->where('property.owner_reachable', true));
 
-        $this->post(route('listing.leads.store', $property->slug), ['source' => 'call', 'full_name' => 'Omar', 'phone' => '01001234567'])
+        $this->post(route('listing.leads.store', $property->slug), ['source' => 'call', 'full_name' => 'Omar', 'phone_country' => 'EG', 'phone' => '01001234567'])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('contact_url', 'tel:+201009998887');
 
-        $this->post(route('listing.leads.store', $property->slug), ['source' => 'whatsapp', 'full_name' => 'Omar', 'phone' => '+44 7911 123456'])
+        $this->post(route('listing.leads.store', $property->slug), ['source' => 'whatsapp', 'full_name' => 'Omar', 'phone_country' => 'GB', 'phone' => '07400 123456'])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('contact_url', fn (string $url) => str_starts_with($url, 'https://wa.me/201009998887?text='));
 
@@ -74,7 +74,7 @@ class PropertyLeadTest extends TestCase
             [LeadSource::Call, LeadSource::WhatsApp],
             PropertyLead::pluck('source')->all(),
         );
-        $this->assertSame('+447911123456', PropertyLead::firstWhere('source', LeadSource::WhatsApp)->phone);
+        $this->assertSame('+447400123456', PropertyLead::firstWhere('source', LeadSource::WhatsApp)->phone);
     }
 
     public function test_an_owner_without_a_phone_gets_no_call_or_whatsapp_buttons(): void
@@ -95,13 +95,12 @@ class PropertyLeadTest extends TestCase
         $this->post(route('listing.leads.store', $pending->slug), $this->enquiry())->assertNotFound();
         $this->post(route('listing.leads.store', $listed->slug), [...$this->enquiry(), 'email' => ''])->assertSessionHasErrors('email');
         $this->post(route('listing.leads.store', $listed->slug), [...$this->enquiry(), 'phone' => '123'])->assertSessionHasErrors('phone');
+        $this->post(route('listing.leads.store', $listed->slug), [...$this->enquiry(), 'phone_country' => ''])->assertSessionHasErrors('phone_country');
 
-        foreach (range(1, 2) as $attempt) {
-            $this->post(route('listing.leads.store', $listed->slug), $this->enquiry())->assertSessionHasNoErrors();
-        }
+        $this->post(route('listing.leads.store', $listed->slug), $this->enquiry())->assertSessionHasNoErrors();
         $this->post(route('listing.leads.store', $listed->slug), $this->enquiry())->assertSessionHasErrors('database');
 
-        $this->assertSame(2, PropertyLead::count());
+        $this->assertSame(1, PropertyLead::count());
     }
 
     public function test_owners_see_and_move_only_their_own_leads(): void
@@ -187,6 +186,7 @@ class PropertyLeadTest extends TestCase
             'source' => 'form',
             'full_name' => 'Sara Visitor',
             'email' => 'sara@example.com',
+            'phone_country' => 'EG',
             'phone' => '0100 123 4567',
             'message' => 'Is it still available?',
         ];

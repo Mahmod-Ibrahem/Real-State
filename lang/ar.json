@@ -53,7 +53,7 @@
     "Enquiry form": "نموذج الاستفسار",
     "Call": "اتصال",
     "WhatsApp": "واتساب",
-    "Enter a valid phone number.": "أدخل رقم هاتف صحيحًا.",
+    "Enter a valid phone number for the selected country.": "أدخل رقم هاتف صحيحًا للدولة المختارة.",
     "Hello, I am interested in \":property\" on Qeima.": "مرحبًا، أنا مهتم بـ \":property\" على قيمة.",
     "New lead for \":property\"": "عميل محتمل جديد لـ \":property\"",
     "Phone: :phone": "الهاتف: :phone",
