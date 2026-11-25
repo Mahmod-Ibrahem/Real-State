@@ -11,9 +11,9 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('property_id')->constrained('properties')->restrictOnDelete();
             $table->foreignId('owner_id')->constrained('users')->restrictOnDelete();
-            $table->string('full_name');
+            $table->string('full_name')->nullable();
             $table->string('email')->nullable();
-            $table->string('phone', 20);
+            $table->string('phone', 20)->nullable();
             $table->text('message')->nullable();
             $table->string('source', 20);
             $table->string('status', 20)->default('new');

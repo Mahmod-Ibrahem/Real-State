@@ -33,7 +33,7 @@ final class NewPropertyLeadNotification extends Notification implements ShouldQu
             ->subject(__('New lead for ":property"', ['property' => $this->lead->property->name]))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line($this->message())
-            ->line(__('Phone: :phone', ['phone' => $this->lead->phone]))
+            ->when($this->lead->phone, fn (MailMessage $mail) => $mail->line(__('Phone: :phone', ['phone' => $this->lead->phone])))
             ->when($this->lead->email, fn (MailMessage $mail) => $mail->line(__('Email: :email', ['email' => $this->lead->email])))
             ->when($this->lead->message, fn (MailMessage $mail) => $mail->line('“' . $this->lead->message . '”'))
             ->action(__('Open leads'), $this->url);
@@ -53,9 +53,9 @@ final class NewPropertyLeadNotification extends Notification implements ShouldQu
         $replace = ['name' => $this->lead->full_name, 'property' => $this->lead->property->name];
 
         return match ($this->lead->source) {
-            LeadSource::Form => __('New enquiry from :name about ":property".', $replace),
-            LeadSource::Call => __(':name wants to call about ":property".', $replace),
-            LeadSource::WhatsApp => __(':name wants to chat on WhatsApp about ":property".', $replace),
+            LeadSource::Form, LeadSource::Manual => __('New enquiry from :name about ":property".', $replace),
+            LeadSource::Call => __('A visitor tapped Call on ":property".', $replace),
+            LeadSource::WhatsApp => __('A visitor opened WhatsApp about ":property".', $replace),
         };
     }
 }

@@ -161,7 +161,11 @@ inside the dialog.
 - **Leads** (`/admin/property-leads`, `/supplier/leads`) = toolbar (`ViewSwitcher` Board/Table, search, `FilterSelect`
   for source, plus status in the table) → `KanbanBoard` of `Dashboard/Leads/LeadCard` (one column per status,
   dragging saves the status) or `Dashboard/Leads/LeadsTable` (`InlineSelect` status). Clicking a lead opens **one**
-  shared `Dashboard/Leads/LeadDetailsModal` (read-only details + status). Leads are never edited.
+  shared `Dashboard/Leads/LeadForm` (a `FormModal`, Cancel · Save only), straight in edit mode: the fixed facts
+  (property, source, received, owner, message) read-only on top, then name, email and `PhoneField`. Status is
+  changed on the board or in the table, not in the modal. **Add lead** (toolbar button on the board, `TableCard
+  creatable` in the table, shown only with the create permission) opens the same `LeadForm` empty, with a
+  searchable property `SelectField` and a note field.
 - **Read-only details** (supplier profile) = a `Panel` holding a `<dl class="divide-y divide-slate-100">`; each row
   is a label (`text-xs font-medium text-slate-500`) above a value (`text-sm text-slate-900`), with any status badge
   or action (e.g. the phone's Verify dropdown) beside the value.

@@ -21,6 +21,15 @@ export function examplePhone(country) {
     return example ? withoutCallingCode(example) : '';
 }
 
+// A stored E.164 number back into PhoneField's two inputs: "+201001234567" → {country: 'EG', number: '10 01234567'}
+export function splitPhone(e164, fallbackCountry = 'EG') {
+    const number = e164 ? parsePhoneNumberFromString(e164) : null;
+
+    return number?.country
+        ? {country: number.country, number: withoutCallingCode(number)}
+        : {country: fallbackCountry, number: e164 ?? ''};
+}
+
 // "01001234567" or "+20 100 123 4567" typed for Egypt becomes "10 01234567"; anything unparseable is kept as typed
 export function toLocalPhone(value, country) {
     const number = parsePhoneNumberFromString(value ?? '', country);

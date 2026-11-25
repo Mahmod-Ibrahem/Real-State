@@ -4,7 +4,7 @@ namespace Modules\Lead\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Modules\Lead\Enums\LeadSource;
+use Modules\Property\Models\Property;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
 class StorePropertyLeadRequest extends FormRequest
@@ -17,11 +17,11 @@ class StorePropertyLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'source' => ['required', Rule::enum(LeadSource::class)],
+            'property_id' => ['required', 'integer', Rule::exists(Property::class, 'id')],
             'full_name' => ['required', 'string', 'max:100'],
-            'phone_country' => ['required', 'string', 'size:2'],
-            'phone' => ['required', 'phone:phone_country'],
-            'email' => [Rule::requiredIf(fn () => $this->source() === LeadSource::Form), 'nullable', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone_country' => ['required_with:phone', 'nullable', 'string', 'size:2'],
+            'phone' => ['nullable', 'phone:phone_country'],
             'message' => ['nullable', 'string', 'max:2000'],
         ];
     }
@@ -33,17 +33,14 @@ class StorePropertyLeadRequest extends FormRequest
         ];
     }
 
-    public function source(): ?LeadSource
-    {
-        return LeadSource::tryFrom((string) $this->input('source'));
-    }
-
-    /** @return array{full_name: string, phone: string, email: ?string, message: ?string} */
+    /** @return array{property_id: int, full_name: string, email: ?string, phone: ?string, message: ?string} */
     public function lead(): array
     {
+        $phone = $this->validated('phone');
+
         return [
-            ...$this->safe()->only(['full_name', 'email', 'message']),
-            'phone' => (new PhoneNumber($this->validated('phone'), $this->validated('phone_country')))->formatE164(),
+            ...$this->safe()->only(['property_id', 'full_name', 'email', 'message']),
+            'phone' => $phone === null ? null : (new PhoneNumber($phone, $this->validated('phone_country')))->formatE164(),
         ];
     }
 }

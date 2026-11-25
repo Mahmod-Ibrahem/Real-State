@@ -2,7 +2,7 @@
     <!-- Ported from Convoera's KanbanItem: border only at rest, the drag clone gets the shadow (admin.css .kanban-drag) -->
     <article class="relative cursor-grab select-none rounded-xl border border-slate-200 bg-white p-4 pb-3 transition-colors hover:border-slate-300 active:cursor-grabbing"
              :class="{'opacity-60': saving}" role="button" tabindex="0"
-             :aria-label="`Lead from ${lead.full_name} about ${lead.property_name ?? 'a deleted property'}`"
+             :aria-label="`Lead from ${leadName(lead)} about ${lead.property_name ?? 'a deleted property'}`"
              @click="emit('open', lead)" @keydown.enter="emit('open', lead)">
         <h3 class="truncate text-[15px] font-semibold leading-tight text-slate-900" :title="lead.property_name">
             {{ lead.property_name ?? 'Deleted property' }}
@@ -12,8 +12,8 @@
             <span class="grid size-9 shrink-0 place-content-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700"
                   aria-hidden="true">{{ initials }}</span>
             <div class="min-w-0">
-                <p class="truncate text-sm font-medium text-slate-900">{{ lead.full_name }}</p>
-                <p class="truncate text-xs text-slate-500" dir="ltr">{{ lead.phone }}</p>
+                <p class="truncate text-sm font-medium" :class="lead.full_name ? 'text-slate-900' : 'text-slate-500'">{{ leadName(lead) }}</p>
+                <p v-if="lead.phone" class="truncate text-xs text-slate-500" dir="ltr">{{ lead.phone }}</p>
             </div>
         </div>
 
@@ -36,7 +36,7 @@
 import {computed} from 'vue';
 import ContactActions from '@/Components/Admin/ContactActions.vue';
 import {formatRelativeTime} from '@/Composables/useFormatters.js';
-import {SOURCE_ICONS} from './constants.js';
+import {SOURCE_ICONS, leadName} from './constants.js';
 
 const props = defineProps({
     lead: {type: Object, required: true},
@@ -46,6 +46,6 @@ const props = defineProps({
 const emit = defineEmits(['open']);
 
 const initials = computed(() =>
-    props.lead.full_name.split(' ').filter(Boolean).slice(0, 2).map((word) => word[0].toUpperCase()).join('')
+    (props.lead.full_name ?? '?').split(' ').filter(Boolean).slice(0, 2).map((word) => word[0].toUpperCase()).join('')
 );
 </script>

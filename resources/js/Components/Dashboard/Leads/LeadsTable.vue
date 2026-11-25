@@ -1,5 +1,6 @@
 <template>
-    <TableCard noun="leads" :meta="leads.meta" :empty="!leads.data.length" :empty-text="emptyText">
+    <TableCard noun="leads" :meta="leads.meta" :empty="!leads.data.length" :empty-text="emptyText"
+               :creatable="creatable" create-label="Add lead" @create="emit('create')">
         <template #actions>
             <slot name="filters"/>
         </template>
@@ -19,10 +20,10 @@
         <tbody class="divide-y divide-slate-100">
         <tr v-for="lead in leads.data" :key="lead.id" class="transition-colors hover:bg-slate-50">
             <TableCell>
-                <RowTitle title="Open lead" @click="emit('open', lead)">{{ lead.full_name }}</RowTitle>
+                <RowTitle title="Open lead" @click="emit('open', lead)">{{ leadName(lead) }}</RowTitle>
                 <p v-if="lead.email" class="text-xs text-slate-500">{{ lead.email }}</p>
             </TableCell>
-            <TableCell class="whitespace-nowrap tabular-nums"><span dir="ltr">{{ lead.phone }}</span></TableCell>
+            <TableCell class="whitespace-nowrap tabular-nums"><span dir="ltr">{{ lead.phone ?? '—' }}</span></TableCell>
             <TableCell>
                 <p class="max-w-[14rem] truncate" :title="lead.property_name">{{ lead.property_name ?? 'Deleted property' }}</p>
             </TableCell>
@@ -34,7 +35,7 @@
                 </span>
             </TableCell>
             <TableCell>
-                <InlineSelect :model-value="lead.status" :options="statuses" :label="`Status of the lead from ${lead.full_name}`"
+                <InlineSelect :model-value="lead.status" :options="statuses" :label="`Status of the lead from ${leadName(lead)}`"
                               :tone="toneOf(lead.status)" :loading="Boolean(saving[lead.id])"
                               @update:model-value="(status) => emit('change-status', lead, status)"/>
             </TableCell>
@@ -59,7 +60,7 @@ import TableCell from '@/Components/Admin/ui/TableCell.vue';
 import TableHeadingCell from '@/Components/Admin/ui/TableHeadingCell.vue';
 import {confirmDelete} from '@/Composables/useConfirmDelete.js';
 import {formatDate} from '@/Composables/useFormatters.js';
-import {SOURCE_ICONS} from './constants.js';
+import {SOURCE_ICONS, leadName} from './constants.js';
 
 const props = defineProps({
     // PropertyLeadListResource collection with paginator meta
@@ -70,8 +71,10 @@ const props = defineProps({
     // Admins delete leads; owners can't
     destroyRoute: {type: String, default: null},
     emptyText: {type: String, default: 'No leads yet.'},
+    // Shows the toolbar's "Add lead" button
+    creatable: {type: Boolean, default: false},
 });
-const emit = defineEmits(['open', 'change-status']);
+const emit = defineEmits(['open', 'change-status', 'create']);
 
 const toneOf = (status) => props.statuses.find((option) => option.id === status)?.tone ?? 'neutral';
 </script>

@@ -9,9 +9,11 @@ enum LeadPermission: string
     use IsPermission;
 
     case ViewPropertyLeads = 'view property leads';
+    case CreatePropertyLeads = 'create property leads';
     case EditPropertyLeads = 'edit property leads';
     case DeletePropertyLeads = 'delete property leads';
     case ViewOwnPropertyLeads = 'view own property leads';
+    case CreateOwnPropertyLeads = 'create own property leads';
     case EditOwnPropertyLeads = 'edit own property leads';
 
     case ViewContactLeads = 'view contact leads';
@@ -21,6 +23,6 @@ enum LeadPermission: string
     /** @return list<self> */
     public static function forOwners(): array
     {
-        return [self::ViewOwnPropertyLeads, self::EditOwnPropertyLeads];
+        return [self::ViewOwnPropertyLeads, self::CreateOwnPropertyLeads, self::EditOwnPropertyLeads];
     }
 }

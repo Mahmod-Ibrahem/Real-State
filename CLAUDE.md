@@ -145,20 +145,32 @@ and `Support/DemoImages`, which call into the modules' seeders.
   - Every public read uses `active()`, including the property page (`listing.show`, via `PropertyDetailService`):
     a property that isn't listed is a 404 there, and its related properties are listed ones only.
 - **Property leads** (`Modules/Lead`, `PropertyLead`): a visitor contacts the owner of a **listed** property from
-  its page (`listing.leads.store`, `throttle:5,1`; any other property is a 404) in one of three ways, saved as
-  `source` (`LeadSource`): the enquiry **form** (name, email, phone, message), or the **Call** / **WhatsApp**
-  buttons, which ask for name and phone, save the lead, then hand back the owner's `tel:` / `wa.me` link
-  (`flash.contact_url`). The owner's number is never in the page's props until a lead is saved, and the buttons are
-  hidden when the owner has no phone (`owner_reachable`). Both forms ask for the phone as a country
-  (`phone_country`, ISO-2, picked in `Components/Users/LeadPhoneField.vue`, default `EG`) plus the number; both are
-  required, and `StorePropertyLeadRequest::lead()` hands the service the number in E.164, which is what is stored.
+  its page (any other property is a 404) in one of three ways, saved as `source` (`LeadSource`):
+  - The enquiry **form** (`listing.leads.store`, `throttle:5,1`): name, email, phone and message, all required. The
+    phone is a country (`phone_country`, ISO-2, picked in `Components/Users/LeadPhoneField.vue`, default `EG`) plus
+    the number; `SubmitPropertyLeadRequest::lead()` hands the service the number in E.164, which is what is stored.
+  - **One-tap Call / WhatsApp** (`listing.contact`, `throttle:10,1`): each button is a plain HTML `<form method="post">`
+    (not Inertia, CSRF token from the shared `csrf_token` prop; WhatsApp opens in a new tab). The server saves a lead
+    with that `source` and no name or phone, then redirects to the owner's `tel:` / `wa.me` link (the WhatsApp text
+    names the property and links to it). POST, so crawlers and link previews never create leads. The owner's number
+    is never in the page, and the buttons are hidden when the owner has no phone (`owner_reachable`). A tap only
+    records that the visitor opened the dialer or WhatsApp, not that a call happened. The boards show these leads as
+    "Anonymous visitor".
   - Each lead stores `owner_id`, copied from the property when it arrives (who it was sent to), and a `status`
     (`LeadStatus`: new → contacted → closed). `PropertyLeadReceived` notifies the owner (mail + bell) and every user
     with `receive property lead notifications`.
   - Owners work their own leads at `/supplier/leads`, admins see every lead at `/admin/property-leads`. Both pages
     switch between a **Board** (Kanban: drag a card to change its status) and a **Table** (`?view=board|table`).
-  - A lead's contact details and message are never edited; only its status changes (or an admin deletes it). A
+  - Whoever works a lead (its owner, or an admin with `edit property leads`) can fill in or correct its contact
+    details later, e.g. after a one-tap caller gives their name: `full_name`, `email` and `phone` (country + number,
+    stored in E.164), all optional (`admin.property-leads.update`, `supplier.leads.update`). The visitor's message,
+    `source`, property and owner are never edited. Besides that, only its status changes (or an admin deletes it). A
     property that still has leads can't be deleted.
+  - Leads that reach the owner outside the site (a call to their own number, a walk-in) are **added by hand**: admins
+    with `create property leads` for any property (`admin.property-leads.store`), owners with
+    `create own property leads` for their own (`supplier.leads.store`). Name and property are required; email,
+    phone and a note (saved as `message`) are optional. They get `source` **manual** ("Added manually"), start as
+    new, and notify nobody: whoever adds one already knows about it.
 - Public listing = `ListingController@index` with query filters (`/listing?purpose=sale&city=3`). There are no
   separate Buy/Rent pages.
 

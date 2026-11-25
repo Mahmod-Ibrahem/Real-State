@@ -7,6 +7,7 @@ enum LeadSource: string
     case Form = 'form';
     case Call = 'call';
     case WhatsApp = 'whatsapp';
+    case Manual = 'manual';
 
     public function label(): string
     {
@@ -14,12 +15,8 @@ enum LeadSource: string
             self::Form => __('Enquiry form'),
             self::Call => __('Call'),
             self::WhatsApp => __('WhatsApp'),
+            self::Manual => __('Added manually'),
         };
-    }
-
-    public function revealsOwnerPhone(): bool
-    {
-        return $this !== self::Form;
     }
 
     /** @return list<array{id: string, name: string}> */

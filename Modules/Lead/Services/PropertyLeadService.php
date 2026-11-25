@@ -5,9 +5,11 @@ namespace Modules\Lead\Services;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Modules\Lead\Enums\LeadSource;
 use Modules\Lead\Enums\LeadStatus;
 use Modules\Lead\Events\PropertyLeadReceived;
+use Modules\Lead\Exceptions\OwnerNotReachable;
 use Modules\Lead\Models\PropertyLead;
 use Modules\Property\Models\Property;
 use Modules\Property\Services\PropertyDetailService;
@@ -22,39 +24,21 @@ final class PropertyLeadService
     {
     }
 
-    /** @param array{full_name: string, phone: string, email: ?string, message: ?string} $data */
-    public function submit(string $slug, array $data, LeadSource $source): PropertyLead
+    /** @param array{full_name: string, phone: string, email: string, message: ?string} $data */
+    public function submit(string $slug, array $data): PropertyLead
     {
-        $property = $this->properties->findListed($slug);
-
-        $lead = PropertyLead::create([
-            ...$data,
-            'property_id' => $property->id,
-            'owner_id' => $property->owner_id,
-            'source' => $source,
-            'status' => LeadStatus::New,
-        ]);
-
-        PropertyLeadReceived::dispatch($lead);
-
-        return $lead;
+        return $this->record($this->properties->findListed($slug), LeadSource::Form, $data);
     }
 
-    public function contactLinkFor(PropertyLead $lead): ?string
+    /** Saves a one-tap Call / WhatsApp lead and returns the owner's tel: or wa.me link. */
+    public function contact(string $slug, LeadSource $source): string
     {
-        $phone = $lead->owner->phone;
+        $property = $this->properties->findListed($slug);
+        $phone = $property->owner->phone ?? throw OwnerNotReachable::make();
 
-        if ($phone === null) {
-            return null;
-        }
+        $this->record($property, $source);
 
-        return match ($lead->source) {
-            LeadSource::Form => null,
-            LeadSource::Call => "tel:{$phone}",
-            LeadSource::WhatsApp => 'https://wa.me/' . ltrim($phone, '+') . '?text=' . rawurlencode(
-                __('Hello, I am interested in ":property" on Qeima.', ['property' => $lead->property->name])
-            ),
-        };
+        return $source === LeadSource::Call ? "tel:{$phone}" : $this->whatsAppLink($phone, $property);
     }
 
     /** @param array{search: ?string, status: ?LeadStatus, source: ?LeadSource} $filters */
@@ -96,6 +80,38 @@ final class PropertyLeadService
         return PropertyLead::query()->whereBelongsTo($property)->exists();
     }
 
+    /** @param array{property_id: int, full_name: string, email: ?string, phone: ?string, message: ?string} $data */
+    public function add(array $data): PropertyLead
+    {
+        $property = Property::query()->findOrFail($data['property_id']);
+
+        return PropertyLead::create([
+            ...$data,
+            'owner_id' => $property->owner_id,
+            'source' => LeadSource::Manual,
+            'status' => LeadStatus::New,
+        ]);
+    }
+
+    /**
+     * The properties a lead can be added to by hand. A null owner means every property (admins).
+     *
+     * @return Collection<int, Property>
+     */
+    public function propertyOptions(?User $owner): Collection
+    {
+        return Property::query()
+            ->when($owner, fn (Builder $query) => $query->whereBelongsTo($owner, 'owner'))
+            ->latest('id')
+            ->get(['id', 'name']);
+    }
+
+    /** @param array{full_name: ?string, email: ?string, phone: ?string} $contact */
+    public function updateContact(PropertyLead $lead, array $contact): void
+    {
+        $lead->update($contact);
+    }
+
     public function updateStatus(PropertyLead $lead, LeadStatus $status): void
     {
         $lead->update(['status' => $status]);
@@ -104,6 +120,32 @@ final class PropertyLeadService
     public function delete(PropertyLead $lead): void
     {
         $lead->delete();
+    }
+
+    /** @param array{full_name?: string, phone?: string, email?: string, message?: ?string} $contact */
+    private function record(Property $property, LeadSource $source, array $contact = []): PropertyLead
+    {
+        $lead = PropertyLead::create([
+            ...$contact,
+            'property_id' => $property->id,
+            'owner_id' => $property->owner_id,
+            'source' => $source,
+            'status' => LeadStatus::New,
+        ]);
+
+        PropertyLeadReceived::dispatch($lead);
+
+        return $lead;
+    }
+
+    private function whatsAppLink(string $phone, Property $property): string
+    {
+        $text = __('Hello, I am interested in ":property" on Qeima: :url', [
+            'property' => $property->name,
+            'url' => route('listing.show', $property->slug),
+        ]);
+
+        return 'https://wa.me/' . ltrim($phone, '+') . '?text=' . rawurlencode($text);
     }
 
     /**

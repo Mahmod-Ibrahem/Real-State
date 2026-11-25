@@ -6,6 +6,7 @@ use Modules\Lead\Http\Controllers\Admin\ContactLeadController;
 use Modules\Lead\Http\Controllers\Admin\PropertyLeadController as AdminPropertyLeadController;
 use Modules\Lead\Http\Controllers\Admin\PropertyLeadStatusController as AdminPropertyLeadStatusController;
 use Modules\Lead\Http\Controllers\ContactController;
+use Modules\Lead\Http\Controllers\ContactOwnerController;
 use Modules\Lead\Http\Controllers\Owner\PropertyLeadController as OwnerPropertyLeadController;
 use Modules\Lead\Http\Controllers\Owner\PropertyLeadStatusController as OwnerPropertyLeadStatusController;
 use Modules\Lead\Http\Controllers\PropertyLeadController;
@@ -14,10 +15,16 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact.index
 Route::post('/send', [ContactController::class, 'send'])->name('contact.post');
 Route::post('listing/{listing}/leads', [PropertyLeadController::class, 'store'])->name('listing.leads.store')
     ->middleware(['throttle:5,1']);
+Route::post('listing/{listing}/contact', ContactOwnerController::class)->name('listing.contact')
+    ->middleware(['throttle:10,1']);
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('property-leads', [AdminPropertyLeadController::class, 'index'])->name('property-leads.index')
         ->middleware(['auth', LeadPermission::ViewPropertyLeads->middleware()]);
+    Route::post('property-leads', [AdminPropertyLeadController::class, 'store'])->name('property-leads.store')
+        ->middleware(['auth', LeadPermission::CreatePropertyLeads->middleware()]);
+    Route::put('property-leads/{property_lead}', [AdminPropertyLeadController::class, 'update'])->name('property-leads.update')
+        ->middleware(['auth', LeadPermission::EditPropertyLeads->middleware()]);
     Route::patch('property-leads/{property_lead}/status', AdminPropertyLeadStatusController::class)->name('property-leads.status')
         ->middleware(['auth', LeadPermission::EditPropertyLeads->middleware()]);
     Route::delete('property-leads/{property_lead}', [AdminPropertyLeadController::class, 'destroy'])->name('property-leads.destroy')
@@ -36,6 +43,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('leads', [OwnerPropertyLeadController::class, 'index'])->name('leads.index')
         ->middleware(['auth', LeadPermission::ViewOwnPropertyLeads->middleware()]);
+    Route::post('leads', [OwnerPropertyLeadController::class, 'store'])->name('leads.store')
+        ->middleware(['auth', LeadPermission::CreateOwnPropertyLeads->middleware()]);
+    Route::put('leads/{property_lead}', [OwnerPropertyLeadController::class, 'update'])->name('leads.update')
+        ->middleware(['auth', LeadPermission::EditOwnPropertyLeads->middleware(), 'can:update,property_lead']);
     Route::patch('leads/{property_lead}/status', OwnerPropertyLeadStatusController::class)->name('leads.status')
         ->middleware(['auth', LeadPermission::EditOwnPropertyLeads->middleware(), 'can:update,property_lead']);
 });
