@@ -3,43 +3,42 @@
 namespace Modules\Lead\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
+use Modules\Lead\Enums\LeadSource;
+use Modules\Lead\Enums\LeadStatus;
+use Modules\Lead\Http\Requests\IndexPropertyLeadRequest;
+use Modules\Lead\Http\Resources\LeadBoardColumnResource;
+use Modules\Lead\Http\Resources\PropertyLeadListResource;
+use Modules\Lead\Models\PropertyLead;
+use Modules\Lead\Services\PropertyLeadService;
 
-class PropertyLeadController extends Controller
+final class PropertyLeadController extends Controller
 {
-    public function index()
+    public function __construct(private readonly PropertyLeadService $leads)
     {
-        $propertyLeads = \Modules\Lead\Models\PropertyLead::with('property')->latest()->paginate(10)
-            // Tables refer to records by name, never by id (ADMIN_UI.md §5)
-            ->through(fn ($lead) => [...$lead->withoutRelations()->toArray(), 'property_name' => $lead->property?->name]);
-
-        return Inertia::render('Admin/PropertyLeads/Index', ['propertyLeads' => $propertyLeads]);
     }
 
-    public function edit($propertyLead)
+    public function index(IndexPropertyLeadRequest $request): Response
     {
-        $propertyLead = \Modules\Lead\Models\PropertyLead::findOrFail($propertyLead);
-
-        return Inertia::render('Admin/PropertyLeads/Edit', [
-            'propertyLead' => $propertyLead,
-            // Picked by title, never typed as an id (ADMIN_UI.md §5)
-            'properties' => \Modules\Property\Models\Property::orderBy('id')->get(['id', 'name'])
-                ->map(fn ($property) => ['id' => $property->id, 'name' => $property->name]),
+        return Inertia::render('Admin/PropertyLeads/Index', [
+            'board' => $request->isBoard()
+                ? LeadBoardColumnResource::collection($this->leads->board(null, $request->filters()))
+                : null,
+            'leads' => $request->isBoard()
+                ? null
+                : PropertyLeadListResource::collection($this->leads->paginate(null, $request->filters())),
+            'filters' => $request->selected(),
+            'statuses' => LeadStatus::options(),
+            'sources' => LeadSource::options(),
         ]);
     }
 
-    public function update($propertyLead, Request $request)
+    public function destroy(PropertyLead $propertyLead): RedirectResponse
     {
-        $propertyLead=\Modules\Lead\Models\PropertyLead::find($propertyLead);
-        $propertyLead->update($request->all());
-        return redirect()->route('admin.property-leads.index');
-    }
+        $this->leads->delete($propertyLead);
 
-    public function destroy($propertyLead)
-    {
-        $propertyLead=\Modules\Lead\Models\PropertyLead::find($propertyLead);
-        $propertyLead->delete();
-        return redirect()->route('admin.property-leads.index');
+        return back();
     }
 }

@@ -16,7 +16,7 @@ final class PropertyDetailService
         return Property::query()
             ->active()
             ->whereJsonContainsLocales('slug', [app()->getLocale(), config('app.fallback_locale')], $slug)
-            ->with('propertyImages')
+            ->with(['propertyImages', 'owner:id,phone'])
             ->firstOrFail();
     }
 

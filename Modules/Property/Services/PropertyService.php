@@ -8,7 +8,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Modules\Lead\Services\PropertyLeadService;
 use Modules\Property\Enums\PropertyStatus;
+use Modules\Property\Exceptions\PropertyHasLeads;
 use Modules\Property\Enums\ReviewStatus;
 use Modules\Property\Models\Property;
 
@@ -24,6 +26,7 @@ final class PropertyService
     public function __construct(
         private readonly PropertyGalleryService $gallery,
         private readonly PropertyPublicationService $publication,
+        private readonly PropertyLeadService $leads,
     ) {
     }
 
@@ -100,6 +103,10 @@ final class PropertyService
 
     public function delete(Property $property): void
     {
+        if ($this->leads->existsFor($property)) {
+            throw PropertyHasLeads::make();
+        }
+
         $property->delete();
     }
 

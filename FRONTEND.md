@@ -7,7 +7,9 @@ Inertia + Vue 3 (`<script setup>`), Ziggy `route()`, Headless UI. **Tailwind 3 i
 - **Never add Bootstrap**: no classes (`btn`, `row`, `col-*`, `d-flex`, `card`, `form-control`, `badge`, `nav-*`,
   `list-unstyled`, …), no Bootstrap JS/components, no new SCSS, no `@apply` component classes. Utilities go in the
   template.
-- No other CSS or UI framework. Use Headless UI plus our own components only. **No PrimeVue.**
+- No other CSS or UI framework. Use Headless UI plus our own components only. **No PrimeVue.** Behaviour-only
+  libraries without CSS are fine where they earn it: `vuedraggable` (SortableJS) powers drag and drop on Kanban
+  boards.
 - Admin controls are our custom inputs in `Components/Admin/ui/`, never a native `<select>` or checkbox
   ([ADMIN_UI.md](ADMIN_UI.md) §4).
 

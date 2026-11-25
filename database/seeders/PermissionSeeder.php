@@ -65,6 +65,7 @@ class PermissionSeeder extends Seeder
         return [
             OwnerRegistrationService::ROLE => $this->values([
                 ...PropertyPermission::forOwners(),
+                ...LeadPermission::forOwners(),
                 NotificationPermission::Receive,
             ]),
         ];

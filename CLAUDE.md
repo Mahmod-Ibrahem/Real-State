@@ -144,6 +144,19 @@ and `Support/DemoImages`, which call into the modules' seeders.
     `under_review`. Changing an owner's `under_review` forgets the cached public lists.
   - Every public read uses `active()`, including the property page (`listing.show`, via `PropertyDetailService`):
     a property that isn't listed is a 404 there, and its related properties are listed ones only.
+- **Property leads** (`Modules/Lead`, `PropertyLead`): a visitor contacts the owner of a **listed** property from
+  its page (`listing.leads.store`, `throttle:5,1`; any other property is a 404) in one of three ways, saved as
+  `source` (`LeadSource`): the enquiry **form** (name, email, phone, message), or the **Call** / **WhatsApp**
+  buttons, which ask for name and phone, save the lead, then hand back the owner's `tel:` / `wa.me` link
+  (`flash.contact_url`). The owner's number is never in the page's props until a lead is saved, and the buttons are
+  hidden when the owner has no phone (`owner_reachable`). Phones are stored in E.164.
+  - Each lead stores `owner_id`, copied from the property when it arrives (who it was sent to), and a `status`
+    (`LeadStatus`: new → contacted → closed). `PropertyLeadReceived` notifies the owner (mail + bell) and every user
+    with `receive property lead notifications`.
+  - Owners work their own leads at `/supplier/leads`, admins see every lead at `/admin/property-leads`. Both pages
+    switch between a **Board** (Kanban: drag a card to change its status) and a **Table** (`?view=board|table`).
+  - A lead's contact details and message are never edited; only its status changes (or an admin deletes it). A
+    property that still has leads can't be deleted.
 - Public listing = `ListingController@index` with query filters (`/listing?purpose=sale&city=3`). There are no
   separate Buy/Rent pages.
 

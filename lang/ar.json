@@ -46,5 +46,22 @@
     "Enter this code on your profile to verify your email address:": "أدخل هذا الرمز في ملفك الشخصي للتحقق من بريدك الإلكتروني:",
     "The code expires in :minutes minutes. If you did not ask for it, you can ignore this email.": "تنتهي صلاحية الرمز خلال :minutes دقائق. إذا لم تطلبه، يمكنك تجاهل هذه الرسالة.",
     "We couldn't send a code to this number. Please try again later.": "تعذر إرسال رمز إلى هذا الرقم. يرجى المحاولة لاحقًا.",
-    "Your phone number is already verified.": "تم التحقق من رقم هاتفك بالفعل."
+    "Your phone number is already verified.": "تم التحقق من رقم هاتفك بالفعل.",
+    "New": "جديد",
+    "Contacted": "تم التواصل",
+    "Closed": "مغلق",
+    "Enquiry form": "نموذج الاستفسار",
+    "Call": "اتصال",
+    "WhatsApp": "واتساب",
+    "Enter a valid phone number.": "أدخل رقم هاتف صحيحًا.",
+    "Hello, I am interested in \":property\" on Qeima.": "مرحبًا، أنا مهتم بـ \":property\" على قيمة.",
+    "New lead for \":property\"": "عميل محتمل جديد لـ \":property\"",
+    "Phone: :phone": "الهاتف: :phone",
+    "Email: :email": "البريد الإلكتروني: :email",
+    "Open leads": "عرض العملاء المحتملين",
+    "New enquiry from :name about \":property\".": "استفسار جديد من :name بخصوص \":property\".",
+    ":name wants to call about \":property\".": ":name يريد الاتصال بخصوص \":property\".",
+    ":name wants to chat on WhatsApp about \":property\".": ":name يريد التواصل عبر واتساب بخصوص \":property\".",
+    "Your message was sent to the owner.": "تم إرسال رسالتك إلى المالك.",
+    "This property still has leads.": "لا يزال لهذا العقار عملاء محتملون."
 }

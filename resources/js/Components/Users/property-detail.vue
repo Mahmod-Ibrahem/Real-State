@@ -196,31 +196,8 @@
             </div><!--end col-->
 
             <div class="col-lg-4 col-md-5 col-12">
-                <div class="rounded-3 shadow bg-white sticky-bar p-4">
-                    <h5 class="mb-3 items-center inline-flex justify-center w-full">More About This Property</h5>
-                    <form @submit.prevent="onSubmit">
-                        <div class="d-flex flex-column items-center justify-center gap-3">
-                            <input class=" w-100 border border-slate-100 focus:ring-sky-400 me-2 p-2 rounded"
-                                   placeholder="Full Name"
-                                   v-model="form.name"/>
-                            <input type="email"
-                                   class=" w-100 border border-slate-100 focus:ring-sky-400 me-2 p-2 rounded"
-                                   placeholder="Email"
-                                   v-model="form.email"/>
-                            <input type="tel"
-                                   class=" w-100 border border-slate-100 focus:ring-sky-400 me-2 p-2 rounded"
-                                   placeholder="Phone"
-                                   v-model="form.phone"/>
-                            <textarea class=" w-100 border border-slate-100 focus:ring-sky-400 me-2 p-2 rounded "
-                                      placeholder="How Can We Help You?"
-                                      v-model="form.message"/>
-                        </div>
-                        <div class="d-flex mt-3">
-                            <button type="submit" :disabled="form.processing" class="btn btn-primary w-100 me-2">Send
-                                Message
-                            </button>
-                        </div>
-                    </form>
+                <div class="sticky-bar">
+                    <ContactOwnerPanel :property="property"/>
                 </div>
             </div><!--end col-->
         </div><!--end row-->
@@ -228,8 +205,8 @@
 </template>
 
 <script setup>
-import {useForm} from '@inertiajs/vue3';
 import feather from 'feather-icons';
+import ContactOwnerPanel from './ContactOwnerPanel.vue';
 import '../../../css/app.css';
 import {ref, watch} from "vue";
 import {useToast} from 'vue-toastification'
@@ -250,13 +227,6 @@ watch(
 const props = defineProps({
     property: Object,
     features: Array
-})
-const form = useForm({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-    propertyId: props.property.id
 })
 
 const shareLink = ref(
@@ -287,17 +257,6 @@ function copyLink() {
                 rtl: false
             });
         });
-}
-
-function onSubmit() {
-    form.post(route('client-inquiries.store'), {
-        onSuccess: () => {
-            form.reset();
-        },
-        onError: () => {
-            console.log('error')
-        }
-    })
 }
 
 feather.replace();

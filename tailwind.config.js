@@ -9,6 +9,8 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
+        './resources/js/Components/**/*.js',
+        './resources/js/Composables/**/*.js',
     ],
     theme: {
     	extend: {

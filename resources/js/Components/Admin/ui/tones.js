@@ -24,3 +24,12 @@ export const TONE_HOVERS = {
     info: 'hover:bg-blue-100',
     neutral: 'hover:bg-slate-200',
 };
+
+// Top border of a Kanban column
+export const TONE_BORDERS = {
+    success: 'border-t-green-500',
+    warning: 'border-t-amber-500',
+    danger: 'border-t-red-500',
+    info: 'border-t-blue-500',
+    neutral: 'border-t-slate-400',
+};

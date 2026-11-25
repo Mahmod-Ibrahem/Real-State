@@ -198,7 +198,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
   `view`, `create`, `edit`, `delete`, plus a domain verb where an action is special (`review`, `publish`).
 - **Notification permissions are `receive {topic} notifications`** and live in `App\Enums\NotificationPermission`:
   `receive notifications` (in-dashboard notifications for any user) and one per admin alert, e.g.
-  `receive property submission notifications`.
+  `receive property submission notifications`, `receive property lead notifications`.
 - **Each module defines its permissions in one enum** (`Modules/Property/Enums/PropertyPermission`), the single
   source of truth. Enums use the `App\Enums\Concerns\IsPermission` trait, and routes call `->middleware()`:
   ```php

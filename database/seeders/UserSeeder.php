@@ -16,11 +16,17 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'Admin User',
             'email' => self::ADMIN_EMAIL,
+            'phone' => '+201112345678',
+            'phone_country' => 'EG',
+            'phone_verified_at' => now(),
         ])->assignRole(PermissionSeeder::SUPER_ADMIN);
 
         User::factory()->create([
             'name' => 'Demo Owner',
             'email' => self::DEMO_OWNER_EMAIL,
+            'phone' => '+201001234567',
+            'phone_country' => 'EG',
+            'phone_verified_at' => now(),
         ])->assignRole(OwnerRegistrationService::ROLE);
     }
 }

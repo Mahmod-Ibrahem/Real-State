@@ -30,6 +30,7 @@ class PropertyResource extends JsonResource
             'image_url' => $this->image,
             'status' => $this->status->badge(),
             'google_map' => $this->google_map,
+            'owner_reachable' => $this->whenLoaded('owner', fn () => $this->owner?->phone !== null, false),
             'propertyImages' => $this->propertyImages,
             'features' => $this->features->map(fn($feature) => [
                 'name' => $feature->name

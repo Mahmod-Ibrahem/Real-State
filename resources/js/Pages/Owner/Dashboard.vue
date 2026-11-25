@@ -29,6 +29,10 @@
                 <MetricGroup :metrics="listingMetrics"/>
             </Panel>
 
+            <Panel title="Leads" hint="People who contacted you from your listed properties">
+                <MetricGroup :metrics="leadMetrics"/>
+            </Panel>
+
             <Panel title="Notifications">
                 <template #action>
                     <button v-if="hasUnread" type="button" :disabled="markingRead" @click="markAllRead"
@@ -72,6 +76,7 @@ import {formatDate} from '@/Composables/useFormatters.js';
 
 const props = defineProps({
     counts: {type: Object, required: true},
+    new_leads: {type: Number, default: 0},
     notifications: {type: Object, required: true},
     under_review: {type: Boolean, default: false},
     unverified_email: {type: Boolean, default: false},
@@ -89,6 +94,10 @@ const listingMetrics = computed(() => [
     {label: 'Approved', value: props.counts.approved, href: route('supplier.properties.index')},
     {label: 'Rejected', value: props.counts.rejected, href: route('supplier.properties.index')},
     {label: 'Live on the site', value: props.counts.published},
+]);
+
+const leadMetrics = computed(() => [
+    {label: 'New leads', value: props.new_leads, href: route('supplier.leads.index', {view: 'table', status: 'new'})},
 ]);
 
 const hasUnread = computed(() => props.notifications.data.some((notification) => !notification.is_read));

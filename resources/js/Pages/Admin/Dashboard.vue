@@ -21,7 +21,7 @@
                     </template>
                     <ul v-if="recent_property_leads.data.length" class="-mx-6 divide-y divide-slate-100">
                         <li v-for="lead in recent_property_leads.data" :key="lead.id">
-                            <Link :href="route('admin.property-leads.edit', lead.id)"
+                            <Link :href="route('admin.property-leads.index', {view: 'table', search: lead.full_name})"
                                   class="flex items-center justify-between gap-3 px-6 py-3 transition-colors hover:bg-slate-50">
                                 <span class="min-w-0">
                                     <span class="block truncate text-sm font-medium text-slate-900">{{ lead.full_name }}</span>

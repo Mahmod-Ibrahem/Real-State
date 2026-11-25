@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => fn() => $request->session()->get('message'),
                 'error' => fn() => $request->session()->get('error'),
+                'contact_url' => fn () => $request->session()->get('contact_url'),
             ],
             'favouriteProperty' => fn() => json_decode(Cookie::get('favourite', '[]'), true),
             'locale' => app()->getLocale(),

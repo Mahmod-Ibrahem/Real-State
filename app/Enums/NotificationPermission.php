@@ -10,4 +10,5 @@ enum NotificationPermission: string
 
     case Receive = 'receive notifications';
     case PropertySubmissions = 'receive property submission notifications';
+    case PropertyLeads = 'receive property lead notifications';
 }

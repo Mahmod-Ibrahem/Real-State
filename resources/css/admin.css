@@ -106,3 +106,19 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #a1a1aa;
 }
+
+/* KanbanBoard drag states: SortableJS toggles these class names (ADMIN_UI.md §4) */
+.kanban-ghost {
+    border: 2px dashed theme('colors.indigo.300');
+    border-radius: theme('borderRadius.xl');
+    background: theme('colors.indigo.50');
+}
+
+.kanban-ghost > * {
+    visibility: hidden;
+}
+
+.kanban-drag {
+    box-shadow: theme('boxShadow.lg');
+    cursor: grabbing;
+}
