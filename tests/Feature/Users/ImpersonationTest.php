@@ -89,7 +89,10 @@ class ImpersonationTest extends TestCase
         $blocked = __("You can't do this while logged in as another user.");
         $this->post(route('supplier.phone.code'))->assertSessionHasErrors(['database' => $blocked]);
         $this->post(route('supplier.email.code'))->assertSessionHasErrors(['database' => $blocked]);
+        $this->patch(route('supplier.profile.update'), ['whatsapp_country' => 'EG', 'whatsapp_phone' => '01112223334'])
+            ->assertSessionHasErrors(['database' => $blocked]);
         Notification::assertNothingSent();
+        $this->assertNull($supplier->fresh()->whatsapp_phone);
     }
 
     public function test_the_users_table_marks_who_can_be_impersonated(): void

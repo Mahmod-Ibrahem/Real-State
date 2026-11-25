@@ -32,9 +32,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::post('impersonation/leave', StopImpersonationController::class)->name('impersonation.leave')
     ->middleware(['auth']);
 
-Route::get('supplier/profile', OwnerProfileController::class)->name('supplier.profile.show')
+Route::get('supplier/profile', [OwnerProfileController::class, 'show'])->name('supplier.profile.show')
     ->middleware(['auth', PropertyPermission::ViewOwn->middleware()]);
-
+Route::patch('supplier/profile', [OwnerProfileController::class, 'update'])->name('supplier.profile.update')
+    ->middleware(['auth', 'not-impersonating', PropertyPermission::ViewOwn->middleware()]);
 Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index')
     ->middleware(['auth', NotificationPermission::Receive->middleware()]);
 Route::get('notifications/{notification}',OpenNotificationController::class)->name('notifications.open')

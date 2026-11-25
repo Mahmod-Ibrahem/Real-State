@@ -27,6 +27,8 @@ class User extends Authenticatable
         'password',
         'phone',
         'phone_country',
+        'whatsapp_phone',
+        'whatsapp_country',
         'is_active',
         'under_review',
     ];

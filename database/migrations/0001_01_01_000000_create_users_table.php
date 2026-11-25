@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('phone', 20)->nullable()->unique();
             $table->char('phone_country', 2)->nullable();
             $table->timestamp('phone_verified_at')->nullable();
+            $table->string('whatsapp_phone', 20)->nullable();
+            $table->char('whatsapp_country', 2)->nullable();
+            $table->string('avatar')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('under_review')->default(false);
             $table->rememberToken();

@@ -54,19 +54,20 @@ class PropertyLeadTest extends TestCase
 
     public function test_one_tap_call_and_whatsapp_save_a_lead_then_redirect_to_the_owner(): void
     {
-        $owner = $this->owner('+201009998887');
+        $owner = $this->owner('+201009998887', '+201112223334');
         $property = $this->listedPropertyOf($owner);
 
         $this->get(route('listing.show', $property->slug))
             ->assertOk()
             ->assertDontSee('201009998887')
-            ->assertInertia(fn ($page) => $page->where('property.owner_reachable', true));
+            ->assertDontSee('201112223334')
+            ->assertInertia(fn ($page) => $page->where('property.owner_contact', ['call' => true, 'whatsapp' => true]));
 
         $this->post(route('listing.contact', $property->slug), ['source' => 'call'])
             ->assertRedirect('tel:+201009998887');
         $whatsApp = $this->post(route('listing.contact', $property->slug), ['source' => 'whatsapp'])->assertRedirect()
             ->headers->get('Location');
-        $this->assertStringStartsWith('https://wa.me/201009998887?text=', $whatsApp);
+        $this->assertStringStartsWith('https://wa.me/201112223334?text=', $whatsApp);
         $this->assertStringContainsString(route('listing.show', $property->slug), rawurldecode($whatsApp));
 
         $leads = PropertyLead::all();
@@ -80,11 +81,16 @@ class PropertyLeadTest extends TestCase
     {
         $property = $this->listedPropertyOf(User::factory()->create(['phone' => null])->assignRole(OwnerRegistrationService::ROLE));
         $reachable = $this->listedPropertyOf($this->owner());
+        $unreachable = __('This owner can\'t be reached by phone. Send them a message instead.');
 
         $this->get(route('listing.show', $property->slug))
-            ->assertInertia(fn ($page) => $page->where('property.owner_reachable', false));
+            ->assertInertia(fn ($page) => $page->where('property.owner_contact', ['call' => false, 'whatsapp' => false]));
         $this->post(route('listing.contact', $property->slug), ['source' => 'call'])
-            ->assertSessionHasErrors(['database' => __('This owner can\'t be reached by phone. Send them a message instead.')]);
+            ->assertSessionHasErrors(['database' => $unreachable]);
+        $this->get(route('listing.show', $reachable->slug))
+            ->assertInertia(fn ($page) => $page->where('property.owner_contact', ['call' => true, 'whatsapp' => false]));
+        $this->post(route('listing.contact', $reachable->slug), ['source' => 'whatsapp'])
+            ->assertSessionHasErrors(['database' => $unreachable]);
         $this->post(route('listing.contact', $reachable->slug), ['source' => 'form'])->assertSessionHasErrors('source');
         $this->post(route('listing.contact', Property::factory()->pending()->create()->slug), ['source' => 'call'])->assertNotFound();
 
@@ -240,10 +246,14 @@ class PropertyLeadTest extends TestCase
             ->assertInertia(fn ($page) => $page->where('new_leads', 2));
     }
 
-    private function owner(?string $phone = null): User
+    private function owner(?string $phone = null, ?string $whatsApp = null): User
     {
-        return User::factory()->create(['phone' => $phone ?? '+2010' . fake()->unique()->numerify('########'), 'phone_country' => 'EG'])
-            ->assignRole(OwnerRegistrationService::ROLE);
+        return User::factory()->create([
+            'phone' => $phone ?? '+2010' . fake()->unique()->numerify('########'),
+            'phone_country' => 'EG',
+            'whatsapp_phone' => $whatsApp,
+            'whatsapp_country' => $whatsApp ? 'EG' : null,
+        ])->assignRole(OwnerRegistrationService::ROLE);
     }
 
     private function listedPropertyOf(User $owner): Property

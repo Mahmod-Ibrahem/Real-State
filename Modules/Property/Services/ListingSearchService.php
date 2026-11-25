@@ -27,7 +27,7 @@ final class ListingSearchService
     {
         $query = Property::query()
             ->active()
-            ->with(['propertyType', 'paymentPlans'])
+            ->with(['propertyType', 'paymentPlans', 'owner:id,name,avatar,phone,phone_verified_at,whatsapp_phone,created_at'])
             ->when($filters['search'], fn (Builder $query, string $search) => $query->where('name', 'like', "%{$search}%"));
 
         foreach (self::COLUMNS as $key => $column) {

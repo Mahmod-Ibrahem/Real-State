@@ -61,6 +61,7 @@ trait ImagesUtility
     {
         return match ($type) {
             'category' => 'Images/Category/',
+            'avatar' => 'Images/Avatars/',
             'tour', 'tourCover' =>
                'Images/Tour/',
             default => 'Images/Default/',
@@ -81,6 +82,7 @@ trait ImagesUtility
                 $constraint->aspectRatio();
                 $constraint->upsize();
             }),
+            'avatar' => $image->cover(400, 400),
             'propertyType' => $image->resize(800, 550, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();

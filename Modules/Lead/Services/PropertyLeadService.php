@@ -34,7 +34,8 @@ final class PropertyLeadService
     public function contact(string $slug, LeadSource $source): string
     {
         $property = $this->properties->findListed($slug);
-        $phone = $property->owner->phone ?? throw OwnerNotReachable::make();
+        $phone = ($source === LeadSource::Call ? $property->owner->phone : $property->owner->whatsapp_phone)
+            ?? throw OwnerNotReachable::make();
 
         $this->record($property, $source);
 

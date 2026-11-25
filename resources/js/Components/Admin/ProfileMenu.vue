@@ -2,8 +2,7 @@
     <div ref="root" class="relative">
         <button type="button" :aria-expanded="open" aria-haspopup="menu" @click="open = !open"
                 class="flex h-9 items-center gap-2 rounded-lg pl-1 pr-2 transition-colors hover:bg-slate-900/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30">
-            <span class="grid h-7 w-7 place-content-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700"
-                  aria-hidden="true">{{ initials }}</span>
+            <Avatar :src="user.avatar" :name="user.name" size="sm"/>
             <span class="hidden max-w-[10rem] truncate text-sm font-medium text-slate-700 sm:block">{{ user.name }}</span>
             <ChevronDownIcon class="h-4 w-4 text-slate-400" aria-hidden="true"/>
         </button>
@@ -34,6 +33,7 @@ import {computed, ref} from 'vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import {ArrowRightStartOnRectangleIcon, ChevronDownIcon, UserCircleIcon} from '@heroicons/vue/24/outline';
 import {useDismissible} from '@/Composables/useDismissible.js';
+import Avatar from './ui/Avatar.vue';
 
 defineProps({
     profileRoute: {type: String, default: null},
@@ -41,9 +41,6 @@ defineProps({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
-const initials = computed(() =>
-    user.value.name.split(' ').filter(Boolean).slice(0, 2).map((word) => word[0].toUpperCase()).join('')
-);
 
 const open = ref(false);
 const root = ref(null);

@@ -201,6 +201,7 @@
 
             <div class="col-lg-4 col-md-5 col-12">
                 <div class="sticky-bar">
+                    <ListedBy v-if="property.owner" :owner="property.owner" class="mb-[16px]"/>
                     <ContactOwnerPanel :property="property"/>
                 </div>
             </div><!--end col-->
@@ -211,6 +212,7 @@
 <script setup>
 import feather from 'feather-icons';
 import ContactOwnerPanel from './ContactOwnerPanel.vue';
+import ListedBy from './ListedBy.vue';
 import PaymentPlans from './PaymentPlans.vue';
 import '../../../css/app.css';
 import {ref, watch} from "vue";

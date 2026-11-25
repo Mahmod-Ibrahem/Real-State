@@ -37,6 +37,7 @@ class OwnerRegistrationRequest extends FormRequest
             'phone_country' => ['required', 'string', 'size:2'],
             'phone' => ['required', 'phone:phone_country,mobile', Rule::unique(User::class)],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 

@@ -115,6 +115,12 @@
                                 </span>
                             </li>
                         </ul>
+                        <div v-if="item.owner" class="mt-[12px] flex items-center gap-2 border-t border-slate-100 pt-[12px]">
+                            <OwnerAvatar :src="item.owner.avatar" :name="item.owner.name"/>
+                            <span class="truncate text-sm text-slate-600">{{ item.owner.name }}</span>
+                            <CheckBadgeIcon v-if="item.owner.verified" class="h-4 w-4 shrink-0 text-sky-500"
+                                            aria-label="Verified phone" title="Verified phone"/>
+                        </div>
                     </div>
                 </div>
             </div><!--end items-->
@@ -125,6 +131,8 @@
 <script setup>
 import {ref, onMounted, defineProps} from 'vue';
 import feather from 'feather-icons';
+import {CheckBadgeIcon} from '@heroicons/vue/24/solid';
+import OwnerAvatar from '@/Components/Users/OwnerAvatar.vue';
 import PropertyStatusRibbon from '@/Components/Users/PropertyStatusRibbon.vue';
 import {formatNumber} from '@/Composables/useFormatters.js';
 import {Link} from '@inertiajs/inertia-vue3'

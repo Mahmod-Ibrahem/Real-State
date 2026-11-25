@@ -9,6 +9,8 @@ use Modules\Property\Database\Seeders\PropertySeeder;
 use Modules\Property\Database\Seeders\FeatureSeeder;
 use Modules\Content\Database\Seeders\FaqSeeder;
 
+use App\Models\User;
+use Database\Seeders\Support\DemoImages;
 use Illuminate\Database\Seeder;
 
 /**
@@ -36,5 +38,19 @@ class DemoDatabaseSeeder extends Seeder
             PropertySeeder::class,
             FaqSeeder::class,
         ]);
+
+        $this->seedAvatars();
+    }
+
+    private function seedAvatars(): void
+    {
+        $log = fn (string $level, string $message) => $this->command?->{$level}($message);
+        $portraits = DemoImages::pool('portrait person', 2, 'square', $log);
+
+        foreach ([UserSeeder::ADMIN_EMAIL, UserSeeder::DEMO_OWNER_EMAIL] as $index => $email) {
+            if (isset($portraits[$index])) {
+                User::firstWhere('email', $email)?->forceFill(['avatar' => $portraits[$index]])->save();
+            }
+        }
     }
 }

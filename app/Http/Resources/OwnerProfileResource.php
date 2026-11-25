@@ -17,6 +17,9 @@ class OwnerProfileResource extends JsonResource
             'email_verified' => $this->hasVerifiedEmail(),
             'phone' => $this->phone,
             'phone_verified' => $this->hasVerifiedPhone(),
+            'whatsapp_phone' => $this->whatsapp_phone,
+            'whatsapp_country' => $this->whatsapp_country,
+            'avatar' => $this->avatar,
         ];
     }
 }

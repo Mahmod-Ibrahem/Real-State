@@ -27,6 +27,8 @@ class UserSeeder extends Seeder
             'phone' => '+201001234567',
             'phone_country' => 'EG',
             'phone_verified_at' => now(),
+            'whatsapp_phone' => '+201001234567',
+            'whatsapp_country' => 'EG',
         ])->assignRole(OwnerRegistrationService::ROLE);
     }
 }

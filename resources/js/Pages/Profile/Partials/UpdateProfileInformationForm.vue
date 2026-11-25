@@ -1,6 +1,8 @@
 <template>
     <Panel title="Profile information" hint="Shown in the admin top bar.">
         <form class="space-y-5" @submit.prevent="save">
+            <AvatarField v-model="form.avatar" v-model:removed="form.remove_avatar" :current="user.avatar" :name="form.name"
+                         label="Photo" :error="form.errors.avatar"/>
             <div class="grid gap-5 sm:grid-cols-2">
                 <TextField v-model="form.name" label="Name" autocomplete="name" required :error="form.errors.name"/>
                 <TextField v-model="form.email" label="Email" type="email" autocomplete="username" required
@@ -21,7 +23,9 @@
 </template>
 
 <script setup>
+import {computed} from 'vue';
 import {Link, useForm, usePage} from '@inertiajs/vue3';
+import AvatarField from '@/Components/Admin/ui/AvatarField.vue';
 import Button from '@/Components/Admin/ui/Button.vue';
 import Panel from '@/Components/Admin/ui/Panel.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
@@ -32,14 +36,21 @@ defineProps({
     status: {type: String, default: ''},
 });
 
-const user = usePage().props.auth.user;
+const page = usePage();
+const user = computed(() => page.props.auth.user);
 const form = useForm({
-    name: user.name,
-    email: user.email,
+    name: user.value.name,
+    email: user.value.email,
+    avatar: null,
+    remove_avatar: false,
 });
 
-const save = () => form.patch(route('admin.profile.update'), {
+// Sent as POST + _method so the photo uploads as multipart
+const save = () => form.transform((data) => ({...data, _method: 'patch'})).post(route('admin.profile.update'), {
     preserveScroll: true,
-    onSuccess: () => showToast('Profile updated'),
+    onSuccess: () => {
+        form.reset('avatar', 'remove_avatar');
+        showToast('Profile updated');
+    },
 });
 </script>

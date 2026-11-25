@@ -2,7 +2,9 @@
 
 namespace Modules\Property\Services;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection as BaseCollection;
 use Modules\Property\Models\Feature;
 use Modules\Property\Models\Property;
@@ -16,7 +18,13 @@ final class PropertyDetailService
         return Property::query()
             ->active()
             ->whereJsonContainsLocales('slug', [app()->getLocale(), config('app.fallback_locale')], $slug)
-            ->with(['propertyImages', 'owner:id,phone', 'paymentPlans'])
+            ->with([
+                'propertyImages',
+                'paymentPlans',
+                'owner' => fn (BelongsTo $owner) => $owner
+                    ->select(['id', 'name', 'avatar', 'phone', 'phone_verified_at', 'whatsapp_phone', 'created_at'])
+                    ->withCount(['properties as listed_properties_count' => fn (Builder $properties) => $properties->active()]),
+            ])
             ->firstOrFail();
     }
 

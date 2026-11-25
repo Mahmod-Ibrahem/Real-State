@@ -83,6 +83,16 @@ and `Support/DemoImages`, which call into the modules' seeders.
   notice linking to their profile (`supplier.profile.show`, read-only name, email and phone for now), where the
   phone's **Verify** button opens a dropdown that sends a 6-digit code and checks it, typed into `OtpField.vue`
   (`supplier.phone.code`, `throttle:3,10`; `supplier.phone.verify`, `throttle:5,10`).
+- **Avatar** on `users`: `avatar` (a URL, nullable, not fillable). It has no endpoint of its own: it is an optional
+  `avatar` file in the forms that already save the user (supplier sign-up `supplier.register`, the admin profile
+  `admin.profile.update`, the supplier profile `supplier.profile.update`), with `remove_avatar` on the profile forms
+  to clear it. The field is `ui/AvatarField.vue` (cropped square in the browser). `App\Services\ProfileService::update()`
+  stores a 400×400 WebP (`ImagesUtility`, type `avatar`) and deletes the previous upload. Without a photo, every
+  avatar shows the initials of the name.
+- **WhatsApp number** on `users`: `whatsapp_phone` (E.164) and `whatsapp_country` (ISO-2), both optional and not
+  verified. Suppliers set or clear it on their profile, saved with the rest of the profile
+  (`supplier.profile.update`, `UpdateOwnerProfileRequest`, `PhoneField`). There is no
+  fallback to the mobile `phone`: without a WhatsApp number the property page shows no WhatsApp button.
 - **Phone codes** go through `App\Services\PhoneVerification\PhoneVerificationService`, which uses a `PhoneVerifier`
   picked by `PHONE_VERIFICATION_DRIVER`: `twilio` (Twilio Verify creates, sends, expires and checks the code; keys in
   `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_VERIFY_SID`), `whatsapp` (Meta's WhatsApp Cloud API sends the code in an
@@ -142,6 +152,10 @@ and `Support/DemoImages`, which call into the modules' seeders.
     status.
   - `Property::active()` (the public site) means approved **and** published **and** its owner is not
     `under_review`. Changing an owner's `under_review` forgets the cached public lists.
+  - **The owner is shown publicly** as `owner` on the public `PropertyResource`: name, avatar, whether the phone
+    is verified, the year they joined, and (property page only) how many listed properties they have. Never their
+    email or numbers. Listing cards show the avatar and name; the property page shows a "Listed by" panel
+    (`Components/Users/ListedBy.vue`) above the contact panel.
   - Every public read uses `active()`, including the property page (`listing.show`, via `PropertyDetailService`):
     a property that isn't listed is a 404 there, and its related properties are listed ones only.
 - **Photos:** every property has a cover (`image`) and **at least 5 gallery photos** (`Property::MIN_GALLERY_IMAGES`),
@@ -170,9 +184,11 @@ and `Support/DemoImages`, which call into the modules' seeders.
     the number; `SubmitPropertyLeadRequest::lead()` hands the service the number in E.164, which is what is stored.
   - **One-tap Call / WhatsApp** (`listing.contact`, `throttle:10,1`): each button is a plain HTML `<form method="post">`
     (not Inertia, CSRF token from the shared `csrf_token` prop; WhatsApp opens in a new tab). The server saves a lead
-    with that `source` and no name or phone, then redirects to the owner's `tel:` / `wa.me` link (the WhatsApp text
-    names the property and links to it). POST, so crawlers and link previews never create leads. The owner's number
-    is never in the page, and the buttons are hidden when the owner has no phone (`owner_reachable`). A tap only
+    with that `source` and no name or phone, then redirects to the owner's `tel:` (their `phone`) or `wa.me` link
+    (their `whatsapp_phone`; the WhatsApp text names the property and links to it). Each button shows only when the
+    owner has that number. POST, so crawlers and link
+    previews never create leads. The owner's number is never in the page; `owner_contact` (`{call, whatsapp}`)
+    only says which buttons to show. A tap only
     records that the visitor opened the dialer or WhatsApp, not that a call happened. The boards show these leads as
     "Anonymous visitor".
   - Each lead stores `owner_id`, copied from the property when it arrives (who it was sent to), and a `status`

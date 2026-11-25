@@ -4,8 +4,8 @@
         <h5 class="m-0 text-center text-lg font-semibold text-slate-900">Contact the owner</h5>
 
         <!-- Plain POST forms, not Inertia: the server saves the lead, then redirects to tel: / wa.me -->
-        <div v-if="property.owner_reachable" class="mt-[16px] grid grid-cols-2 gap-2">
-            <form v-for="channel in CHANNELS" :key="channel.source" method="post"
+        <div v-if="channels.length" :class="['mt-[16px] grid gap-2', channels.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
+            <form v-for="channel in channels" :key="channel.source" method="post"
                   :action="route('listing.contact', property.slug)" :target="channel.target">
                 <input type="hidden" name="_token" :value="page.props.csrf_token">
                 <input type="hidden" name="source" :value="channel.source">
@@ -19,7 +19,7 @@
             {{ page.props.errors.database }}
         </p>
 
-        <p v-if="property.owner_reachable" class="my-[16px] flex items-center gap-2 text-xs text-slate-400">
+        <p v-if="channels.length" class="my-[16px] flex items-center gap-2 text-xs text-slate-400">
             <span class="h-px flex-1 bg-slate-200"></span> or send a message <span class="h-px flex-1 bg-slate-200"></span>
         </p>
 
@@ -38,6 +38,7 @@
 </template>
 
 <script setup>
+import {computed} from 'vue';
 import {useForm, usePage} from '@inertiajs/vue3';
 import {ChatBubbleOvalLeftEllipsisIcon, PhoneIcon} from '@heroicons/vue/24/outline';
 import {useToast} from 'vue-toastification';
@@ -53,12 +54,14 @@ const CHANNELS = [
 ];
 
 const props = defineProps({
-    // Public PropertyResource: slug, owner_reachable
+    // Public PropertyResource: slug, owner_contact ({call, whatsapp}: which numbers the owner has)
     property: {type: Object, required: true},
 });
 
 const toast = useToast();
 const page = usePage();
+
+const channels = computed(() => CHANNELS.filter((channel) => props.property.owner_contact?.[channel.source]));
 
 const form = useForm({full_name: '', email: '', phone_country: 'EG', phone: '', message: ''});
 

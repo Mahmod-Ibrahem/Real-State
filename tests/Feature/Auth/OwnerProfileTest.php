@@ -32,6 +32,9 @@ class OwnerProfileTest extends TestCase
                 'email_verified' => true,
                 'phone' => '+201001234567',
                 'phone_verified' => false,
+                'whatsapp_phone' => null,
+                'whatsapp_country' => null,
+                'avatar' => null,
             ]));
 
         $supplier->forceFill(['phone_verified_at' => now()])->save();
