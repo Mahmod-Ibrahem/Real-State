@@ -60,8 +60,8 @@
             <TextField v-model="form.sqft" label="Area (sq ft)" type="number" min="0" required :error="form.errors.sqft"/>
             <SelectField v-model="form.finishing" label="Finishing" :options="finishing_types" placeholder="Select finishing"
                          required :error="form.errors.finishing"/>
-            <SelectField v-if="form.purpose === 'sale'" v-model="form.delivery_year" label="Delivery" :options="DELIVERY_OPTIONS"
-                         placeholder="Ready to move" hint="Pick a year for off-plan units." :error="form.errors.delivery_year"/>
+            <YearPickerField v-if="form.purpose === 'sale'" v-model="form.delivery_year" label="Delivery"
+                             empty-label="Ready to move" hint="Pick a year for off-plan units." :error="form.errors.delivery_year"/>
             <TextField v-model="form.year_built" label="Year built" type="number" min="1900" :max="CURRENT_YEAR"
                        :error="form.errors.year_built"/>
             <SelectField v-model="form.feature_ids" label="Features" :options="features.data" multiple searchable
@@ -89,6 +89,7 @@ import RichTextField from '@/Components/Admin/ui/RichTextField.vue';
 import SelectField from '@/Components/Admin/ui/SelectField.vue';
 import TextField from '@/Components/Admin/ui/TextField.vue';
 import ToggleField from '@/Components/Admin/ui/ToggleField.vue';
+import YearPickerField from '@/Components/Admin/ui/YearPickerField.vue';
 import PaymentPlansField from './PaymentPlansField.vue';
 import PropertyGallery from './PropertyGallery.vue';
 import {PROPERTY_FORM_PROPS} from './formProps.js';
@@ -97,11 +98,6 @@ import {currentLocale, saveResource} from '@/Composables/useResourceForm.js';
 defineOptions({inheritAttrs: false});
 
 const CURRENT_YEAR = new Date().getFullYear();
-const DELIVERY_YEARS_SHOWN = 11;
-const DELIVERY_OPTIONS = [
-    {id: '', name: 'Ready to move'},
-    ...Array.from({length: DELIVERY_YEARS_SHOWN}, (_, i) => ({id: CURRENT_YEAR + i, name: `Delivery ${CURRENT_YEAR + i}`})),
-];
 
 const props = defineProps({
     ...PROPERTY_FORM_PROPS,
