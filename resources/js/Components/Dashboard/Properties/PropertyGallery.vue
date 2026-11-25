@@ -7,7 +7,6 @@
                 Gallery<span class="text-red-600" aria-hidden="true"> *</span>
             </p>
             <p class="mt-0.5 text-xs text-slate-500">
-                {{ summary }}
                 <button v-if="removedIds.length && !saving" type="button" @click="emit('update:removedIds', [])"
                         class="ml-1 font-medium text-indigo-600 transition-colors hover:text-indigo-800">
                     Undo
@@ -59,12 +58,4 @@ const visibleSaved = computed(() => props.saved.filter((image) => !props.removed
 
 const countOf = (count) => `${count} ${count === 1 ? 'photo' : 'photos'}`;
 // "2 saved · 1 photo to upload · 1 photo to remove on save · each photo is cropped to 4:3"
-const summary = computed(() => {
-    const changes = [
-        props.modelValue.length && `${countOf(props.modelValue.length)} to upload`,
-        props.removedIds.length && `${countOf(props.removedIds.length)} to remove`,
-    ].filter(Boolean);
-    const pending = changes.length ? ` · ${changes.join(' · ')} on save` : '';
-    return `${visibleSaved.value.length} saved${pending} · each photo is cropped to 4:3`;
-});
 </script>

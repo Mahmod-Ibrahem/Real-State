@@ -44,7 +44,7 @@
         </FormSection>
 
         <FormSection v-if="form.purpose === 'sale'" title="Payment"
-                     description="Up to 3 installment plans. Amounts are worked out from the price.">
+                     description="Up to 3 installment plans">
             <PaymentPlansField v-model="form.payment_plans" :price="form.price" :frequencies="installment_frequencies"
                                :errors="form.errors" class="sm:col-span-2"/>
             <TextField v-model="form.maintenance_deposit_percent" label="Maintenance deposit (%)" type="number" min="0"
