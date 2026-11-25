@@ -55,7 +55,4 @@ const newPhotos = computed({
 });
 
 const visibleSaved = computed(() => props.saved.filter((image) => !props.removedIds.includes(image.id)));
-
-const countOf = (count) => `${count} ${count === 1 ? 'photo' : 'photos'}`;
-// "2 saved · 1 photo to upload · 1 photo to remove on save · each photo is cropped to 4:3"
 </script>
